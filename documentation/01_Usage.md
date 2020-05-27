@@ -1,5 +1,15 @@
 # Usage
 
+## Maven dependency
+```xml
+<dependency>
+    <groupId>de.quantummaid.injectmaid</groupId>
+    <artifactId>injectmaid</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
+
+## Registering types for injection
 <!---[CodeSnippet](basicUsage)-->
 ```java
 final InjectMaid injectMaid = InjectMaid.anInjectMaid()
