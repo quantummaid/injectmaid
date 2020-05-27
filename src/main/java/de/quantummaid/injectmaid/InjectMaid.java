@@ -82,8 +82,7 @@ public final class InjectMaid {
     }
 
     private void loadEagerSingletons() {
-        final List<Definition> definitions = this.definitions.definitionsOnScope(scope);
-        definitions.stream()
+        this.definitions.definitionsOnScope(scope).stream()
                 .filter(Definition::isEagerSingleton)
                 .forEach(this::internalGetInstance);
     }
@@ -109,10 +108,10 @@ public final class InjectMaid {
             throw injectMaidException(format("Tried to enter unknown scope '%s' with object '%s'. Registered scopes: %s",
                     childScope.render(), scopeObject, registeredScopes));
         }
-        final SingletonStore singletonStore = this.singletonStore.child(resolvedType);
+        final SingletonStore childSingletonStore = this.singletonStore.child(resolvedType);
         final ScopeManager childScopeManager = scopeManager.add(resolvedType, scopeObject);
         final Interceptors childInterceptors = interceptors.enterScope(resolvedType, scopeObject);
-        return new InjectMaid(definitions, singletonStore, childScope, childScopeManager, childInterceptors);
+        return new InjectMaid(definitions, childSingletonStore, childScope, childScopeManager, childInterceptors);
     }
 
     public void addInterceptor(final SimpleInterceptor interceptor) {
@@ -183,13 +182,13 @@ public final class InjectMaid {
                                      final Supplier<Object> instantiator) {
         final boolean singleton = definition.isSingleton();
         final ResolvedType type = definition.type();
-        final Scope scope = definition.scope();
-        if (singleton && singletonStore.contains(type, scope)) {
-            return singletonStore.get(type, scope);
+        final Scope definitionScope = definition.scope();
+        if (singleton && singletonStore.contains(type, definitionScope)) {
+            return singletonStore.get(type, definitionScope);
         }
         final Object instance = instantiator.get();
         if (singleton) {
-            singletonStore.put(type, scope, instance);
+            singletonStore.put(type, definitionScope, instance);
         }
         return instance;
     }

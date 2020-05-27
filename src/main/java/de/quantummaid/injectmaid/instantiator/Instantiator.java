@@ -26,6 +26,7 @@ import de.quantummaid.reflectmaid.ResolvedType;
 
 import java.util.List;
 
+@SuppressWarnings("java:S112")
 public interface Instantiator {
 
     List<ResolvedType> dependencies();

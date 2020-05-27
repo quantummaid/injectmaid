@@ -28,6 +28,7 @@ import de.quantummaid.injectmaid.customtype.*;
 import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.injectmaid.customtype.CustomType.customType;
 
+@SuppressWarnings("java:S107")
 public interface CustomTypeConfigurators {
 
     InjectMaidBuilder withCustomType(CustomType customType, ReusePolicy reusePolicy);

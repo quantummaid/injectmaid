@@ -32,11 +32,11 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
 import static java.lang.String.format;
-import static java.util.function.Function.identity;
 
 @ToString
 @EqualsAndHashCode
@@ -66,11 +66,7 @@ public final class States {
         newStates.add(state);
     }
 
-    public void init() {
-        update(identity());
-    }
-
-    public void update(final Function<State, State> signal) {
+    public void update(final UnaryOperator<State> signal) {
         states.stream()
                 .map(signal)
                 .forEach(newStates::add);

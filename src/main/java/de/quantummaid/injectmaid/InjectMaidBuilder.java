@@ -169,10 +169,10 @@ public final class InjectMaidBuilder implements
         states.collect(State::context)
                 .map(context -> {
                     final ResolvedType type = context.type();
-                    final Scope scope = context.scope();
+                    final Scope scopeOfType = context.scope();
                     final Instantiator instantiator = context.instantiator().orElseThrow();
                     final ReusePolicy reusePolicy = context.reusePolicy();
-                    return definition(type, scope, instantiator, reusePolicy);
+                    return definition(type, scopeOfType, instantiator, reusePolicy);
                 })
                 .forEach(definition -> {
                     final ResolvedType type = definition.type();

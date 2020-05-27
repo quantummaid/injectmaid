@@ -25,6 +25,7 @@ import de.quantummaid.reflectmaid.ResolvedType;
 
 import java.util.Optional;
 
+@SuppressWarnings("java:S1452")
 public interface Interceptor {
 
     Optional<?> interceptBeforeInstantiation(ResolvedType type);

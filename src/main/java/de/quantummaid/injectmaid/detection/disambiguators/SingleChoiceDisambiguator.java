@@ -48,12 +48,6 @@ public final class SingleChoiceDisambiguator implements Disambiguator {
     @Override
     public DisambiguationResult disambiguate(final InstantiationOptions instantiationOptions) {
         final List<ConstructorInstantiator> constructors = instantiationOptions.constructors();
-        /*
-        if (constructors.size() == 1) {
-            final ConstructorInstantiator instantiator = constructors.get(0);
-            return success(instantiator);
-        }
-         */
         final List<StaticFactoryInstantiator> staticFactoryMethods = instantiationOptions.staticFactoryMethods();
         final List<NonStaticFactoryInstantiator> nonStaticFactoryMethods = instantiationOptions.nonStaticFactoryMethods();
         final int combinedSize = constructors.size() + staticFactoryMethods.size() + nonStaticFactoryMethods.size();
