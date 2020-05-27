@@ -57,6 +57,11 @@
             <artifactId>reflectmaid-parent</artifactId>
             <version>0.1.20</version>
         </dependency>
+        <dependency>
+            <groupId>de.quantummaid.injectmaid</groupId>
+            <artifactId>injectmaid</artifactId>
+            <version>0.0.1</version>
+        </dependency>
 
         <dependency>
             <groupId>javax.inject</groupId>
