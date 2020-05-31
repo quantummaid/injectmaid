@@ -22,8 +22,8 @@
 package de.quantummaid.injectmaid.detection.disambiguators;
 
 import de.quantummaid.injectmaid.detection.InstantiationOptions;
-import de.quantummaid.injectmaid.detection.ThirdPartyAnnotation;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
+import de.quantummaid.reflectmaid.ThirdPartyAnnotation;
 import de.quantummaid.reflectmaid.resolver.ResolvedConstructor;
 import de.quantummaid.reflectmaid.resolver.ResolvedMethod;
 import lombok.AccessLevel;
@@ -34,13 +34,18 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.quantummaid.injectmaid.detection.ThirdPartyAnnotation.INJECT;
 import static de.quantummaid.injectmaid.detection.disambiguators.DisambiguationResult.*;
+import static de.quantummaid.reflectmaid.ThirdPartyAnnotation.thirdPartyAnnotation;
 
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AnnotationDisambiguator implements Disambiguator {
+    public static final ThirdPartyAnnotation INJECT = thirdPartyAnnotation(
+            "javax.inject.Inject",
+            "com.google.inject.Inject",
+            "org.springframework.beans.factory.annotation.Autowired"
+    );
 
     public static AnnotationDisambiguator annotationDisambiguator() {
         return new AnnotationDisambiguator();
