@@ -56,7 +56,7 @@ No. But like any other concept, there are downsides.
 InjectMaid leaves the choice whether to use them to you. You can configure InjectMaid
 with annotations, but you don't have to.
 
-However, InjectMaid is part of the larger QuantumMaid application framework. QuantumMaid is designed around the concept of
+However, InjectMaid is part of the larger [QuantumMaid application framework](https://quantummaid.de/index.html). QuantumMaid is designed around the concept of
 clean architecture [as defined by Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 Here, developers are encouraged to strictly keep infrastructure code separate from business logic (or *domain code* in Domain-Driven Design):
 
