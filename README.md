@@ -75,7 +75,7 @@ Another downside to classical annotation processing is its implication on applic
 A classical JEE container needs to scan all classes in a newly deployed application for annotations to determine its configuration.
 This is inherently slow and leads to long initialization phases.
 With the introduction of popular serverless hosting options like
-[AWS Lambda](https://aws.amazon.com/lambda/), this becomes as crucial issue. 
+[AWS Lambda](https://aws.amazon.com/lambda/), this becomes a crucial issue. 
 Projects like [Google Dagger](https://dagger.dev/), [Quarkus](https://quarkus.io/) and [Micronaut](https://micronaut.io/)
 partially solve that problem by processing annotations at compile time.
 QuantumMaid offers an alternative approach by avoiding configuration by annotations altogether.
