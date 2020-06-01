@@ -5,7 +5,7 @@
 <dependency>
     <groupId>de.quantummaid.injectmaid</groupId>
     <artifactId>injectmaid</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 
