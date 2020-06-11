@@ -22,18 +22,14 @@
 package de.quantummaid.injectmaid.customtype;
 
 import de.quantummaid.reflectmaid.GenericType;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
-@ToString
-@EqualsAndHashCode
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class FactoryBuilder02<X, A, B> {
-    private final Builder builder;
+public final class FactoryBuilder02<X, A, B> extends FactoryBuilder<Factory02<X, A, B>> {
+
+    public FactoryBuilder02(final Builder builder) {
+        super(builder);
+    }
 
     public <C> FactoryBuilder03<X, A, B, C> withDependency(final Class<C> type) {
         return withDependency(genericType(type));
@@ -42,10 +38,5 @@ public final class FactoryBuilder02<X, A, B> {
     public <C> FactoryBuilder03<X, A, B, C> withDependency(final GenericType<C> type) {
         builder.addParameter(type);
         return new FactoryBuilder03<>(this.builder);
-    }
-
-    public CustomType usingFactory(final Factory02<X, A, B> factory) {
-        builder.setFactory(factory);
-        return builder.build();
     }
 }
