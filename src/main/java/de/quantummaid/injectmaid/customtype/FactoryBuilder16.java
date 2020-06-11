@@ -21,19 +21,10 @@
 
 package de.quantummaid.injectmaid.customtype;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+public final class FactoryBuilder16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P>
+        extends FactoryBuilder<Factory16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P>> {
 
-@ToString
-@EqualsAndHashCode
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class FactoryBuilder16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> {
-    private final Builder builder;
-
-    public CustomType usingFactory(final Factory16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> factory) {
-        builder.setFactory(factory);
-        return builder.build();
+    public FactoryBuilder16(final Builder builder) {
+        super(builder);
     }
 }
