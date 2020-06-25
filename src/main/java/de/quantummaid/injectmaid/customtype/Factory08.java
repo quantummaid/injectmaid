@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.customtype;
 
-@SuppressWarnings("java:S107")
+@SuppressWarnings({"java:S107", "java:S109"})
 public interface Factory08<X, A, B, C, D, E, F, G, H> extends InvocableFactory<X> {
 
     X create(A a, B b, C c, D d, E e, F f, G g, H h);

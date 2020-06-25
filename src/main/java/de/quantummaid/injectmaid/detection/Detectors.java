@@ -73,7 +73,8 @@ public final class Detectors {
 
         SINGLETON_DETECTORS.forEach(singletonDetector -> singletonDetector.detect(typeToInstantiate, singletonSwitch));
 
-        final InstantiationOptions instantiationOptions = loadInstantiationOptions(typeToInstantiate, creatingClassType);
+        final InstantiationOptions instantiationOptions = loadInstantiationOptions(
+                typeToInstantiate, creatingClassType);
 
         final List<String> ignoreReasons = new ArrayList<>();
         for (final Disambiguator disambiguator : DISAMBIGUATORS) {

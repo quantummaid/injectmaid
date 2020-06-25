@@ -23,6 +23,7 @@ package de.quantummaid.injectmaid.detection.disambiguators;
 
 import de.quantummaid.injectmaid.detection.InstantiationOptions;
 
+@FunctionalInterface
 public interface Disambiguator {
     DisambiguationResult disambiguate(InstantiationOptions instantiationOptions);
 }

@@ -25,7 +25,8 @@ import de.quantummaid.reflectmaid.GenericType;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
-public final class FactoryBuilder08<X, A, B, C, D, E, F, G, H> extends FactoryBuilder<Factory08<X, A, B, C, D, E, F, G, H>> {
+public final class FactoryBuilder08<X, A, B, C, D, E, F, G, H>
+        extends FactoryBuilder<Factory08<X, A, B, C, D, E, F, G, H>> {
 
     public FactoryBuilder08(final Builder builder) {
         super(builder);

@@ -25,6 +25,7 @@ import de.quantummaid.reflectmaid.GenericType;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
+@SuppressWarnings({"java:S1200", "java:S103"})
 public final class FactoryBuilder15<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>
         extends FactoryBuilder<Factory15<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>> {
 

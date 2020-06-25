@@ -24,6 +24,7 @@ package de.quantummaid.injectmaid.detection.singleton;
 import de.quantummaid.injectmaid.detection.SingletonSwitch;
 import de.quantummaid.reflectmaid.ResolvedType;
 
+@FunctionalInterface
 public interface SingletonDetector {
     void detect(ResolvedType type, SingletonSwitch singletonSwitch);
 }

@@ -25,6 +25,7 @@ import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.statemachine.Context;
 import de.quantummaid.reflectmaid.ResolvedType;
 
+@FunctionalInterface
 public interface State {
 
     Context context();

@@ -28,6 +28,7 @@ import de.quantummaid.reflectmaid.ResolvedType;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
+@FunctionalInterface
 public interface ScopeConfigurators {
 
     default InjectMaidBuilder withScope(final Class<?> scopeType, final InjectMaidModule module) {

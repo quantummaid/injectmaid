@@ -62,7 +62,8 @@ public final class CircularDependencyDetector {
                     .map(Definition::type)
                     .map(ResolvedType::simpleDescription)
                     .collect(joining(" -> "));
-            throw injectMaidException(format("Illegal circular dependency in scope '%s' detected: %s", scope.render(), circle));
+            throw injectMaidException(format("Illegal circular dependency in scope '%s' detected: %s",
+                    scope.render(), circle));
         } else {
             alreadyVisited.add(definition);
             final Instantiator instantiator = definition.instantiator();

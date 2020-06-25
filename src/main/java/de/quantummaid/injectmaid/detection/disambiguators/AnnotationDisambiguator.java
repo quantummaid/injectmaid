@@ -68,8 +68,8 @@ public final class AnnotationDisambiguator implements Disambiguator {
         return ignore("No annotations have been detected");
     }
 
-    private List<Instantiator> annotatedWith(final InstantiationOptions options,
-                                             final ThirdPartyAnnotation annotation) {
+    private static List<Instantiator> annotatedWith(final InstantiationOptions options,
+                                                    final ThirdPartyAnnotation annotation) {
         final List<Instantiator> annotatedInstantiators = new ArrayList<>();
         options.constructors().stream()
                 .filter(constructorInstantiator -> {

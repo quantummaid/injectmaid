@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.customtype;
 
+@FunctionalInterface
 public interface InvocableFactory<X> {
     X invoke(Object[] dependencies);
 }

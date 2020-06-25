@@ -29,15 +29,18 @@ import de.quantummaid.reflectmaid.ResolvedType;
 import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
+@FunctionalInterface
 public interface ImplementationConfigurators {
 
-    default <T> InjectMaidBuilder withImplementation(final Class<T> type, final Class<? extends T> implementation) {
+    default <T> InjectMaidBuilder withImplementation(final Class<T> type,
+                                                     final Class<? extends T> implementation) {
         final GenericType<T> genericType = genericType(type);
         final GenericType<? extends T> genericImplementation = genericType(implementation);
         return withImplementation(genericType, genericImplementation);
     }
 
-    default <T> InjectMaidBuilder withImplementation(final GenericType<T> type, final GenericType<? extends T> implementation) {
+    default <T> InjectMaidBuilder withImplementation(final GenericType<T> type,
+                                                     final GenericType<? extends T> implementation) {
         return withImplementation(type, implementation, PROTOTYPE);
     }
 
