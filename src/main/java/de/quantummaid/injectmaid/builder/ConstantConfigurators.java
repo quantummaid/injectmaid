@@ -27,6 +27,7 @@ import de.quantummaid.reflectmaid.ResolvedType;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
+@FunctionalInterface
 public interface ConstantConfigurators {
 
     default <T> InjectMaidBuilder withConstant(final Class<T> type, final T instance) {

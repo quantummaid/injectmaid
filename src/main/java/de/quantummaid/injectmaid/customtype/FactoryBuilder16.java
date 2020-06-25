@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.customtype;
 
+@SuppressWarnings("java:S1200")
 public final class FactoryBuilder16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P>
         extends FactoryBuilder<Factory16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P>> {
 

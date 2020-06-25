@@ -29,6 +29,7 @@ import de.quantummaid.reflectmaid.ResolvedType;
 import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
+@FunctionalInterface
 public interface FactoryConfigurators {
 
     default InjectMaidBuilder withFactory(final Class<?> type,

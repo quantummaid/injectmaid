@@ -47,9 +47,12 @@ public final class SingleChoiceDisambiguator implements Disambiguator {
 
     @Override
     public DisambiguationResult disambiguate(final InstantiationOptions instantiationOptions) {
-        final List<ConstructorInstantiator> constructors = instantiationOptions.constructors();
-        final List<StaticFactoryInstantiator> staticFactoryMethods = instantiationOptions.staticFactoryMethods();
-        final List<NonStaticFactoryInstantiator> nonStaticFactoryMethods = instantiationOptions.nonStaticFactoryMethods();
+        final List<ConstructorInstantiator> constructors =
+                instantiationOptions.constructors();
+        final List<StaticFactoryInstantiator> staticFactoryMethods =
+                instantiationOptions.staticFactoryMethods();
+        final List<NonStaticFactoryInstantiator> nonStaticFactoryMethods =
+                instantiationOptions.nonStaticFactoryMethods();
         final int combinedSize = constructors.size() + staticFactoryMethods.size() + nonStaticFactoryMethods.size();
         if (combinedSize == 0) {
             return ignore("No public constructors or static factory methods found");

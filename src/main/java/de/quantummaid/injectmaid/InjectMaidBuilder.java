@@ -61,6 +61,7 @@ import static de.quantummaid.injectmaid.statemachine.states.Unresolved.unresolve
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("java:S1200")
 public final class InjectMaidBuilder implements
         FactoryConfigurators,
         ScopeConfigurators,

@@ -105,7 +105,8 @@ public final class InjectMaid {
                     .map(Scope::render)
                     .sorted()
                     .collect(joining(", ", "[", "]"));
-            throw injectMaidException(format("Tried to enter unknown scope '%s' with object '%s'. Registered scopes: %s",
+            throw injectMaidException(format("Tried to enter unknown scope '%s' with object '%s'. " +
+                            "Registered scopes: %s",
                     childScope.render(), scopeObject, registeredScopes));
         }
         final SingletonStore childSingletonStore = this.singletonStore.child(resolvedType);
@@ -163,19 +164,24 @@ public final class InjectMaid {
     }
 
     private Object internalGetInstance(final Definition definition) {
-        return createAndRegister(definition, () -> {
-            final Instantiator instantiator = definition.instantiator();
-            final List<Object> dependencies = instantiator.dependencies().stream()
-                    .map(this::getInstance)
-                    .collect(toList());
-            try {
-                return instantiator.instantiate(dependencies, scopeManager);
-            } catch (final Exception e) {
-                throw injectMaidException(format(
-                        "Exception during instantiation of '%s' using %s",
-                        definition.type().simpleDescription(), instantiator.description()), e);
-            }
-        });
+        return createAndRegister(definition, () -> instantiate(definition));
+    }
+
+    private Object instantiate(final Definition definition) {
+        final Instantiator instantiator = definition.instantiator();
+        final List<Object> dependencies = instantiateDependencies(instantiator);
+        try {
+            return instantiator.instantiate(dependencies, scopeManager);
+        } catch (final Exception e) {
+            throw injectMaidException(format("Exception during instantiation of '%s' using %s",
+                    definition.type().simpleDescription(), instantiator.description()), e);
+        }
+    }
+
+    private List<Object> instantiateDependencies(final Instantiator instantiator) {
+        return instantiator.dependencies().stream()
+                .map(this::getInstance)
+                .collect(toList());
     }
 
     private Object createAndRegister(final Definition definition,

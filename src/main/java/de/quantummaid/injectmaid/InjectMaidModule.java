@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid;
 
+@FunctionalInterface
 public interface InjectMaidModule {
     void apply(InjectMaidBuilder builder);
 }

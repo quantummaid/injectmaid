@@ -61,7 +61,8 @@ public final class States {
         final ResolvedType type = context.type();
         final Scope scope = context.scope();
         if (containsExactly(type, scope)) {
-            throw injectMaidException(format("Type '%s' has already been registered in scope '%s'", type.description(), scope.render()));
+            throw injectMaidException(format("Type '%s' has already been registered in scope '%s'",
+                    type.description(), scope.render()));
         }
         newStates.add(state);
     }

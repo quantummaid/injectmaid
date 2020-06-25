@@ -66,7 +66,8 @@ public final class Definitions {
         return definitions.get(type).stream()
                 .filter(definition -> definition.scope().contains(scope))
                 .max(comparing(definition -> definition.scope().size()))
-                .orElseThrow(() -> injectMaidException(format("Tried to instantiate unregistered type '%s'", type.description())));
+                .orElseThrow(() -> injectMaidException(format(
+                        "Tried to instantiate unregistered type '%s'", type.description())));
     }
 
     public List<Definition> definitionsOnScope(final Scope scope) {
