@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.8](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.8/jar) - 2020-06-26
+### Changed
+- Improved singleton functionality.
+
 ## [0.0.7](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.7/jar) - 2020-06-25
 ### Changed
 - Update dependencies.

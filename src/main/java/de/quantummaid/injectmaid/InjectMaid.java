@@ -54,6 +54,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InjectMaid {
     private final Definitions definitions;
+    private final SingletonType defaultSingletonType;
     private final SingletonStore singletonStore;
     private final Scope scope;
     private final ScopeManager scopeManager;
@@ -63,28 +64,51 @@ public final class InjectMaid {
         return injectionMaidBuilder();
     }
 
-    static InjectMaid injectMaid(final Definitions definitions) {
+    static InjectMaid injectMaid(final Definitions definitions,
+                                 final SingletonType defaultSingletonType) {
         validateNoCircularDependencies(definitions);
         final Scope scope = rootScope();
         final ScopeManager scopeManager = scopeManager();
         final Interceptors interceptors = interceptors();
-        return initInScope(definitions, scope, scopeManager, interceptors);
+        return initInScope(definitions, defaultSingletonType, scope, scopeManager, interceptors);
     }
 
     private static InjectMaid initInScope(final Definitions definitions,
+                                          final SingletonType defaultSingletonType,
                                           final Scope scope,
                                           final ScopeManager scopeManager,
                                           final Interceptors interceptors) {
         final SingletonStore singletonStore = singletonStore();
-        final InjectMaid injectMaid = new InjectMaid(definitions, singletonStore, scope, scopeManager, interceptors);
+        final InjectMaid injectMaid = new InjectMaid(
+                definitions,
+                defaultSingletonType,
+                singletonStore,
+                scope,
+                scopeManager,
+                interceptors
+        );
         injectMaid.loadEagerSingletons();
         return injectMaid;
     }
 
+    public void initializeAllSingletons() {
+        this.definitions.definitionsOnScope(scope).stream()
+                .filter(Definition::isSingleton)
+                .forEach(this::internalGetInstance);
+    }
+
     private void loadEagerSingletons() {
         this.definitions.definitionsOnScope(scope).stream()
-                .filter(Definition::isEagerSingleton)
+                .filter(this::isEagerSingleton)
                 .forEach(this::internalGetInstance);
+    }
+
+    private boolean isEagerSingleton(final Definition definition) {
+        final ReusePolicy reusePolicy = definition.reusePolicy();
+        if (reusePolicy == ReusePolicy.SINGLETON) {
+            return defaultSingletonType == SingletonType.EAGER;
+        }
+        return reusePolicy == ReusePolicy.EAGER_SINGLETON;
     }
 
     public <T> InjectMaid enterScope(final Class<T> scopeType, final T scopeObject) {
@@ -112,7 +136,14 @@ public final class InjectMaid {
         final SingletonStore childSingletonStore = this.singletonStore.child(resolvedType);
         final ScopeManager childScopeManager = scopeManager.add(resolvedType, scopeObject);
         final Interceptors childInterceptors = interceptors.enterScope(resolvedType, scopeObject);
-        return new InjectMaid(definitions, childSingletonStore, childScope, childScopeManager, childInterceptors);
+        return new InjectMaid(
+                definitions,
+                defaultSingletonType,
+                childSingletonStore,
+                childScope,
+                childScopeManager,
+                childInterceptors
+        );
     }
 
     public void addInterceptor(final SimpleInterceptor interceptor) {
