@@ -30,8 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static de.quantummaid.injectmaid.ReusePolicy.EAGER_SINGLETON;
-import static de.quantummaid.injectmaid.ReusePolicy.SINGLETON;
+import static de.quantummaid.injectmaid.ReusePolicy.*;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,11 +38,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class SingletonSpecs {
 
     @Test
-    public void injectMaidSupportsSingletons() {
+    public void injectMaidSupportsLazySingletons() {
         NumberedType.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
                 .withType(TwoNumberedTypes.class)
-                .withType(NumberedType.class, SINGLETON)
+                .withType(NumberedType.class, LAZY_SINGLETON)
                 .build();
         assertThat(NumberedType.counter, is(0));
         final TwoNumberedTypes instance = injectMaid.getInstance(TwoNumberedTypes.class);
@@ -60,6 +59,39 @@ public final class SingletonSpecs {
                 .withType(TwoNumberedTypes.class)
                 .withType(NumberedType.class, EAGER_SINGLETON)
                 .build();
+        assertThat(NumberedType.counter, is(1));
+        final TwoNumberedTypes instance = injectMaid.getInstance(TwoNumberedTypes.class);
+        assertThat(instance, notNullValue());
+        assertThat(instance.numberedTypeA.instanceNumber(), is(0));
+        assertThat(instance.numberedTypeB.instanceNumber(), is(0));
+        assertThat(NumberedType.counter, is(1));
+    }
+
+    @Test
+    public void injectMaidSupportsEagerSingletonsByDefaultWhenConfigured() {
+        NumberedType.counter = 0;
+        final InjectMaid injectMaid = anInjectMaid()
+                .withType(TwoNumberedTypes.class)
+                .withType(NumberedType.class, SINGLETON)
+                .usingDefaultSingletonType(SingletonType.EAGER)
+                .build();
+        assertThat(NumberedType.counter, is(1));
+        final TwoNumberedTypes instance = injectMaid.getInstance(TwoNumberedTypes.class);
+        assertThat(instance, notNullValue());
+        assertThat(instance.numberedTypeA.instanceNumber(), is(0));
+        assertThat(instance.numberedTypeB.instanceNumber(), is(0));
+        assertThat(NumberedType.counter, is(1));
+    }
+
+    @Test
+    public void allSingletonsCanBeInitializedOnDemand() {
+        NumberedType.counter = 0;
+        final InjectMaid injectMaid = anInjectMaid()
+                .withType(TwoNumberedTypes.class)
+                .withType(NumberedType.class, LAZY_SINGLETON)
+                .build();
+        assertThat(NumberedType.counter, is(0));
+        injectMaid.initializeAllSingletons();
         assertThat(NumberedType.counter, is(1));
         final TwoNumberedTypes instance = injectMaid.getInstance(TwoNumberedTypes.class);
         assertThat(instance, notNullValue());

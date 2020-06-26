@@ -19,8 +19,12 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.builder;
 
-public enum ReusePolicy {
-    PROTOTYPE, SINGLETON, LAZY_SINGLETON, EAGER_SINGLETON
+import de.quantummaid.injectmaid.InjectMaidBuilder;
+import de.quantummaid.injectmaid.SingletonType;
+
+public interface SingletonTypeConfigurator {
+
+    InjectMaidBuilder usingDefaultSingletonType(SingletonType singletonType);
 }

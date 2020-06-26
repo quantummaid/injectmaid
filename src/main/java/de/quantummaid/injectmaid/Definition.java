@@ -60,10 +60,6 @@ public final class Definition {
         return reusePolicy != ReusePolicy.PROTOTYPE;
     }
 
-    public boolean isEagerSingleton() {
-        return reusePolicy == ReusePolicy.EAGER_SINGLETON;
-    }
-
     public ReusePolicy reusePolicy() {
         return reusePolicy;
     }

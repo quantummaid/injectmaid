@@ -23,6 +23,7 @@ package de.quantummaid.injectmaid.documentation;
 
 import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ReusePolicy;
+import de.quantummaid.injectmaid.SingletonType;
 import de.quantummaid.injectmaid.documentation.domain.*;
 import org.junit.jupiter.api.Test;
 
@@ -69,6 +70,18 @@ public final class UsageDocumentationSpecs {
     }
 
     @Test
+    public void lazySingletons() {
+        //Showcase start lazySingletons
+        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+                .withType(BookingPolicies.class, ReusePolicy.LAZY_SINGLETON)
+                .build();
+        final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
+        //Showcase end lazySingletons
+        assertThat(bookingPolicies, notNullValue());
+        assertThat(bookingPolicies, instanceOf(BookingPolicies.class));
+    }
+
+    @Test
     public void eagerSingletons() {
         //Showcase start eagerSingletons
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
@@ -78,6 +91,31 @@ public final class UsageDocumentationSpecs {
         //Showcase end eagerSingletons
         assertThat(bookingPolicies, notNullValue());
         assertThat(bookingPolicies, instanceOf(BookingPolicies.class));
+    }
+
+    @Test
+    public void defaultEagerSingletons() {
+        //Showcase start defaultEagerSingletons
+        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+                .withType(BookingPolicies.class, ReusePolicy.SINGLETON)
+                .usingDefaultSingletonType(SingletonType.EAGER)
+                .build();
+        final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
+        //Showcase end defaultEagerSingletons
+        assertThat(bookingPolicies, notNullValue());
+        assertThat(bookingPolicies, instanceOf(BookingPolicies.class));
+    }
+
+    @Test
+    public void factory() {
+        //Showcase start factory
+        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+                .withFactory(UuidService.class, UuidServiceFactory.class)
+                .build();
+        final UuidService uuidService = injectMaid.getInstance(UuidService.class);
+        //Showcase end factory
+        assertThat(uuidService, notNullValue());
+        assertThat(uuidService, instanceOf(UuidService.class));
     }
 
     @Test

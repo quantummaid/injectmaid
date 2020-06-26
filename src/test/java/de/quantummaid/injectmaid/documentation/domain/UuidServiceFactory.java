@@ -19,8 +19,14 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.documentation.domain;
 
-public enum ReusePolicy {
-    PROTOTYPE, SINGLETON, LAZY_SINGLETON, EAGER_SINGLETON
+public final class UuidServiceFactory {
+
+    private UuidServiceFactory() {
+    }
+
+    public static UuidService uuidService() {
+        return new UuidService();
+    }
 }

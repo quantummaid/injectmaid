@@ -5,7 +5,7 @@
 <dependency>
     <groupId>de.quantummaid.injectmaid</groupId>
     <artifactId>injectmaid</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.8</version>
 </dependency>
 ```
 
@@ -45,9 +45,26 @@ final InjectMaid injectMaid = InjectMaid.anInjectMaid()
         .build();
 final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
 ```
-`ReusePolicy.SINGLETON` will register the type as a lazy singleton. If you need to register an
-eager singleton, use `ReusePolicy.EAGER_SINGLETON` instead:
-
+A singleton is by default registered as a lazy singleton. You can change the default to eager
+singletons like this:
+<!---[CodeSnippet](defaultEagerSingletons)-->
+```java
+final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        .withType(BookingPolicies.class, ReusePolicy.SINGLETON)
+        .usingDefaultSingletonType(SingletonType.EAGER)
+        .build();
+final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
+```
+Alternatively, you can individually specify the kind of singleton for a specific type.
+Possible is lazy singleton:
+<!---[CodeSnippet](lazySingletons)-->
+```java
+final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        .withType(BookingPolicies.class, ReusePolicy.LAZY_SINGLETON)
+        .build();
+final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
+```
+And eager singleton:
 <!---[CodeSnippet](eagerSingletons)-->
 ```java
 final InjectMaid injectMaid = InjectMaid.anInjectMaid()
@@ -55,9 +72,17 @@ final InjectMaid injectMaid = InjectMaid.anInjectMaid()
         .build();
 final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
 ```
+
 [Read the chapter about scopes](05_Scopes.md) to see how scoped singletons work in InjectMaid.
 
 ## External factory
+<!---[CodeSnippet](factory)-->
+```java
+final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        .withFactory(UuidService.class, UuidServiceFactory.class)
+        .build();
+final UuidService uuidService = injectMaid.getInstance(UuidService.class);
+```
 
 ## Modules
 You can group common configuration options into a module:

@@ -68,10 +68,12 @@ public final class InjectMaidBuilder implements
         ImplementationConfigurators,
         TypeConfigurators,
         CustomTypeConfigurators,
-        ConstantConfigurators {
+        ConstantConfigurators,
+        SingletonTypeConfigurator {
     private final States states;
     private final Scope scope;
     private final Scopes scopes;
+    private SingletonType defaultSingletonType = SingletonType.LAZY;
 
     static InjectMaidBuilder injectionMaidBuilder() {
         final States states = states();
@@ -151,6 +153,12 @@ public final class InjectMaidBuilder implements
         return this;
     }
 
+    @Override
+    public InjectMaidBuilder usingDefaultSingletonType(final SingletonType singletonType) {
+        defaultSingletonType = singletonType;
+        return this;
+    }
+
     public InjectMaidBuilder withInstantiator(final ResolvedType resolvedType,
                                               final Instantiator instantiator,
                                               final ReusePolicy reusePolicy) {
@@ -183,6 +191,6 @@ public final class InjectMaidBuilder implements
                     definitionsMap.get(type).add(definition);
                 });
         final Definitions definitions = definitions(scopes.asList(), definitionsMap);
-        return injectMaid(definitions);
+        return injectMaid(definitions, defaultSingletonType);
     }
 }
