@@ -24,6 +24,7 @@ package de.quantummaid.injectmaid.builder;
 import de.quantummaid.injectmaid.InjectMaidBuilder;
 import de.quantummaid.injectmaid.SingletonType;
 
+@FunctionalInterface
 public interface SingletonTypeConfigurator {
 
     InjectMaidBuilder usingDefaultSingletonType(SingletonType singletonType);
