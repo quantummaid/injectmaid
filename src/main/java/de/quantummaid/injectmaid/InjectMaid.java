@@ -52,6 +52,7 @@ import static java.util.stream.Collectors.toList;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("java:S1200")
 public final class InjectMaid {
     private final Definitions definitions;
     private final SingletonType defaultSingletonType;
