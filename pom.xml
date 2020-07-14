@@ -5,12 +5,12 @@
     <parent>
         <groupId>de.quantummaid</groupId>
         <artifactId>quantummaid-opensource-parent</artifactId>
-        <version>0.9.45</version>
+        <version>0.9.46</version>
     </parent>
 
     <groupId>de.quantummaid.injectmaid</groupId>
     <artifactId>injectmaid</artifactId>
-    <version>0.0.9</version>
+    <version>0.0.10</version>
 
     <name>InjectMaid</name>
     <description>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>de.quantummaid.reflectmaid</groupId>
             <artifactId>reflectmaid-parent</artifactId>
-            <version>0.1.27</version>
+            <version>0.1.28</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
