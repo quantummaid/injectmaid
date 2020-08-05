@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.detection;
 
+import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.InjectMaidException;
 import de.quantummaid.injectmaid.detection.disambiguators.DisambiguationResult;
 import de.quantummaid.injectmaid.detection.disambiguators.Disambiguator;
@@ -39,10 +40,13 @@ import static de.quantummaid.injectmaid.detection.disambiguators.SingleChoiceDis
 import static de.quantummaid.injectmaid.detection.disambiguators.SingleConstructorDisambiguator.singleConstructorDisambiguator;
 import static de.quantummaid.injectmaid.detection.disambiguators.SingleStaticFactoryDisambiguator.singleStaticFactoryDisambiguator;
 import static de.quantummaid.injectmaid.detection.singleton.AnnotationSingletonDetector.annotationSingletonDetector;
+import static de.quantummaid.injectmaid.instantiator.SelfInstantiator.selfInstantiator;
+import static de.quantummaid.reflectmaid.ResolvedType.resolvedType;
 import static java.lang.String.format;
 import static java.lang.String.join;
 
 public final class Detectors {
+    private static final ResolvedType INJECTMAID_TYPE = resolvedType(InjectMaid.class);
 
     private static final List<Disambiguator> DISAMBIGUATORS = List.of(
             singleChoiceDisambiguator(),
@@ -68,6 +72,9 @@ public final class Detectors {
                                       final SingletonSwitch singletonSwitch) {
         if (!(creatingType instanceof ClassType)) {
             throw new IllegalArgumentException();
+        }
+        if (typeToInstantiate.equals(INJECTMAID_TYPE)) {
+            return selfInstantiator();
         }
         final ClassType creatingClassType = (ClassType) creatingType;
 
