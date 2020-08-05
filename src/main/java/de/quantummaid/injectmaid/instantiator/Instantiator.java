@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.instantiator;
 
+import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
 import de.quantummaid.reflectmaid.ResolvedType;
 
@@ -31,7 +32,7 @@ public interface Instantiator {
 
     List<ResolvedType> dependencies();
 
-    Object instantiate(List<Object> dependencies, ScopeManager scopeManager) throws Exception;
+    Object instantiate(List<Object> dependencies, ScopeManager scopeManager, InjectMaid injectMaid) throws Exception;
 
     String description();
 }

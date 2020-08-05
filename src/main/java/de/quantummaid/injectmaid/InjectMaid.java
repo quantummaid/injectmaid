@@ -112,6 +112,12 @@ public final class InjectMaid {
         return reusePolicy == ReusePolicy.EAGER_SINGLETON;
     }
 
+    @SuppressWarnings("unchecked")
+    public InjectMaid enterScope(final Object scopeObject) {
+        final Class<Object> scopeType = (Class<Object>) scopeObject.getClass();
+        return enterScope(scopeType, scopeObject);
+    }
+
     public <T> InjectMaid enterScope(final Class<T> scopeType, final T scopeObject) {
         final GenericType<T> genericType = genericType(scopeType);
         return enterScope(genericType, scopeObject);
@@ -203,7 +209,7 @@ public final class InjectMaid {
         final Instantiator instantiator = definition.instantiator();
         final List<Object> dependencies = instantiateDependencies(instantiator);
         try {
-            return instantiator.instantiate(dependencies, scopeManager);
+            return instantiator.instantiate(dependencies, scopeManager, this);
         } catch (final Exception e) {
             throw injectMaidException(format("Exception during instantiation of '%s' using %s",
                     definition.type().simpleDescription(), instantiator.description()), e);

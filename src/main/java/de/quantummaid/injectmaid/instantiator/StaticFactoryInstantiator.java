@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.instantiator;
 
+import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
 import de.quantummaid.reflectmaid.ResolvedType;
 import de.quantummaid.reflectmaid.resolver.ResolvedMethod;
@@ -59,7 +60,8 @@ public final class StaticFactoryInstantiator implements Instantiator {
 
     @Override
     public Object instantiate(final List<Object> dependencies,
-                              final ScopeManager scopeManager) throws Exception {
+                              final ScopeManager scopeManager,
+                              final InjectMaid injectMaid) throws Exception {
         final Method rawMethod = this.method.method();
         final Object[] parameters = dependencies.toArray();
         return rawMethod.invoke(null, parameters);

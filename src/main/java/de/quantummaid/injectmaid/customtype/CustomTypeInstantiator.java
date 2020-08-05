@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.customtype;
 
+import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.reflectmaid.ResolvedType;
@@ -52,7 +53,8 @@ public final class CustomTypeInstantiator implements Instantiator {
 
     @Override
     public Object instantiate(final List<Object> dependencies,
-                              final ScopeManager scopeManager) {
+                              final ScopeManager scopeManager,
+                              final InjectMaid injectMaid) {
         return invocableFactory.invoke(dependencies.toArray());
     }
 

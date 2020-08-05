@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.instantiator;
 
+import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
@@ -47,7 +48,8 @@ public final class ScopeInstantiator implements Instantiator {
 
     @Override
     public Object instantiate(final List<Object> dependencies,
-                              final ScopeManager scopeManager) {
+                              final ScopeManager scopeManager,
+                              final InjectMaid injectMaid) {
         return scopeManager.getScopeObject(type);
     }
 
