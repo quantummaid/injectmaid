@@ -19,13 +19,16 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.builder;
+package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.InjectMaidBuilder;
-import de.quantummaid.injectmaid.SingletonType;
+import de.quantummaid.injectmaid.builder.*;
 
-@FunctionalInterface
-public interface SingletonTypeConfigurator {
-
-    InjectMaidBuilder usingDefaultSingletonType(SingletonType singletonType);
+public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<?>> extends
+        FactoryConfigurators<T>,
+        ScopeConfigurators<T>,
+        ImplementationConfigurators<T>,
+        TypeConfigurators<T>,
+        CustomTypeConfigurators<T>,
+        ConstantConfigurators<T>,
+        SingletonTypeConfigurator<T> {
 }

@@ -28,35 +28,37 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static de.quantummaid.injectmaid.customtype.CustomType.customType;
-import static de.quantummaid.injectmaid.customtype.CustomTypeInstantiator.customTypeInstantiator;
+import static de.quantummaid.injectmaid.customtype.Builder.builder;
+import static de.quantummaid.reflectmaid.GenericType.genericType;
 
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Builder {
-    private final ResolvedType type;
-    private final List<ResolvedType> dependencies;
-    private InvocableFactory<?> factory;
+public final class CustomType {
+    private final ResolvedType resolvedType;
+    private final CustomTypeData customTypeData;
 
-    public static Builder builder(final ResolvedType type) {
-        return new Builder(type, new ArrayList<>());
+    static CustomType customType(final ResolvedType resolvedType,
+                                 final CustomTypeData customTypeData) {
+        return new CustomType(resolvedType, customTypeData);
     }
 
-    public void addParameter(final GenericType<?> parameter) {
-        final ResolvedType resolvedType = parameter.toResolvedType();
-        dependencies.add(resolvedType);
+    public static <X> FactoryBuilder00<X> customType(final Class<X> type) {
+        final GenericType<X> genericType = genericType(type);
+        return customType(genericType);
     }
 
-    public void setFactory(final InvocableFactory<?> factory) {
-        this.factory = factory;
+    public static <X> FactoryBuilder00<X> customType(final GenericType<X> genericType) {
+        final ResolvedType resolvedType = genericType.toResolvedType();
+        final Builder builder = builder(resolvedType);
+        return new FactoryBuilder00<>(builder);
     }
 
-    CustomType build() {
-        final CustomTypeInstantiator customTypeInstantiator = customTypeInstantiator(dependencies, factory);
-        return customType(type, customTypeInstantiator);
+    public ResolvedType resolvedType() {
+        return resolvedType;
+    }
+
+    public CustomTypeData instantiator() {
+        return customTypeData;
     }
 }

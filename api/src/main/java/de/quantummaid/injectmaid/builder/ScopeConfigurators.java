@@ -21,25 +21,24 @@
 
 package de.quantummaid.injectmaid.builder;
 
-import de.quantummaid.injectmaid.InjectMaidBuilder;
-import de.quantummaid.injectmaid.InjectMaidModule;
+import de.quantummaid.injectmaid.InjectorConfiguration;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ResolvedType;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
 @FunctionalInterface
-public interface ScopeConfigurators {
+public interface ScopeConfigurators<T extends ScopeConfigurators<?>> {
 
-    default InjectMaidBuilder withScope(final Class<?> scopeType, final InjectMaidModule module) {
+    default T withScope(final Class<?> scopeType, final InjectorConfiguration configuration) {
         final GenericType<?> genericType = genericType(scopeType);
-        return withScope(genericType, module);
+        return withScope(genericType, configuration);
     }
 
-    default InjectMaidBuilder withScope(final GenericType<?> scopeType, final InjectMaidModule module) {
+    default T withScope(final GenericType<?> scopeType, final InjectorConfiguration configuration) {
         final ResolvedType resolvedType = scopeType.toResolvedType();
-        return withScope(resolvedType, module);
+        return withScope(resolvedType, configuration);
     }
 
-    InjectMaidBuilder withScope(ResolvedType scopeType, InjectMaidModule module);
+    T withScope(ResolvedType scopeType, InjectorConfiguration configuration);
 }

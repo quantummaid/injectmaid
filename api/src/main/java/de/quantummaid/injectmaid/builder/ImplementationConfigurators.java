@@ -21,7 +21,6 @@
 
 package de.quantummaid.injectmaid.builder;
 
-import de.quantummaid.injectmaid.InjectMaidBuilder;
 import de.quantummaid.injectmaid.ReusePolicy;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ResolvedType;
@@ -30,35 +29,35 @@ import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
 @FunctionalInterface
-public interface ImplementationConfigurators {
+public interface ImplementationConfigurators<T extends ImplementationConfigurators<?>> {
 
-    default <T> InjectMaidBuilder withImplementation(final Class<T> type,
-                                                     final Class<? extends T> implementation) {
-        final GenericType<T> genericType = genericType(type);
-        final GenericType<? extends T> genericImplementation = genericType(implementation);
+    default <X> T withImplementation(final Class<X> type,
+                                     final Class<? extends X> implementation) {
+        final GenericType<X> genericType = genericType(type);
+        final GenericType<? extends X> genericImplementation = genericType(implementation);
         return withImplementation(genericType, genericImplementation);
     }
 
-    default <T> InjectMaidBuilder withImplementation(final GenericType<T> type,
-                                                     final GenericType<? extends T> implementation) {
+    default <X> T withImplementation(final GenericType<X> type,
+                                     final GenericType<? extends X> implementation) {
         return withImplementation(type, implementation, PROTOTYPE);
     }
 
-    default <T> InjectMaidBuilder withImplementation(final Class<T> type,
-                                                     final Class<? extends T> implementation,
-                                                     final ReusePolicy reusePolicy) {
-        final GenericType<T> genericType = genericType(type);
-        final GenericType<? extends T> genericImplementation = genericType(implementation);
+    default <X> T withImplementation(final Class<X> type,
+                                     final Class<? extends X> implementation,
+                                     final ReusePolicy reusePolicy) {
+        final GenericType<X> genericType = genericType(type);
+        final GenericType<? extends X> genericImplementation = genericType(implementation);
         return withImplementation(genericType, genericImplementation, reusePolicy);
     }
 
-    default <T> InjectMaidBuilder withImplementation(final GenericType<T> type,
-                                                     final GenericType<? extends T> implementation,
-                                                     final ReusePolicy reusePolicy) {
+    default <X> T withImplementation(final GenericType<X> type,
+                                     final GenericType<? extends X> implementation,
+                                     final ReusePolicy reusePolicy) {
         final ResolvedType resolvedType = type.toResolvedType();
         final ResolvedType resolvedImplementation = implementation.toResolvedType();
         return withImplementation(resolvedType, resolvedImplementation, reusePolicy);
     }
 
-    InjectMaidBuilder withImplementation(ResolvedType type, ResolvedType implementation, ReusePolicy reusePolicy);
+    T withImplementation(ResolvedType type, ResolvedType implementation, ReusePolicy reusePolicy);
 }

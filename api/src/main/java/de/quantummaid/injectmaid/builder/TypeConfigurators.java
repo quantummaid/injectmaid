@@ -21,7 +21,6 @@
 
 package de.quantummaid.injectmaid.builder;
 
-import de.quantummaid.injectmaid.InjectMaidBuilder;
 import de.quantummaid.injectmaid.ReusePolicy;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ResolvedType;
@@ -30,34 +29,26 @@ import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
 @FunctionalInterface
-public interface FactoryConfigurators {
+public interface TypeConfigurators<T extends TypeConfigurators<?>> {
 
-    default InjectMaidBuilder withFactory(final Class<?> type,
-                                          final Class<?> factory) {
+    default T withType(final Class<?> type) {
         final GenericType<?> genericType = genericType(type);
-        final GenericType<?> genericFactory = genericType(factory);
-        return withFactory(genericType, genericFactory);
+        return withType(genericType);
     }
 
-    default InjectMaidBuilder withFactory(final GenericType<?> type, final GenericType<?> factory) {
-        return withFactory(type, factory, PROTOTYPE);
+    default T withType(final GenericType<?> genericType) {
+        return withType(genericType, PROTOTYPE);
     }
 
-    default InjectMaidBuilder withFactory(final Class<?> type,
-                                          final Class<?> factory,
-                                          final ReusePolicy reusePolicy) {
+    default T withType(final Class<?> type, final ReusePolicy reusePolicy) {
         final GenericType<?> genericType = genericType(type);
-        final GenericType<?> genericFactory = genericType(factory);
-        return withFactory(genericType, genericFactory, reusePolicy);
+        return withType(genericType, reusePolicy);
     }
 
-    default InjectMaidBuilder withFactory(final GenericType<?> type,
-                                          final GenericType<?> factory,
-                                          final ReusePolicy reusePolicy) {
-        final ResolvedType resolvedType = type.toResolvedType();
-        final ResolvedType resolvedFactory = factory.toResolvedType();
-        return withFactory(resolvedType, resolvedFactory, reusePolicy);
+    default T withType(final GenericType<?> genericType, final ReusePolicy reusePolicy) {
+        final ResolvedType resolvedType = genericType.toResolvedType();
+        return withType(resolvedType, reusePolicy);
     }
 
-    InjectMaidBuilder withFactory(ResolvedType type, ResolvedType factory, ReusePolicy reusePolicy);
+    T withType(ResolvedType resolvedType, ReusePolicy reusePolicy);
 }

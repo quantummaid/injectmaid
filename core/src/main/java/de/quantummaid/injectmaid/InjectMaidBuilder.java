@@ -21,8 +21,8 @@
 
 package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.builder.*;
 import de.quantummaid.injectmaid.customtype.CustomType;
+import de.quantummaid.injectmaid.customtype.CustomTypeData;
 import de.quantummaid.injectmaid.customtype.CustomTypeInstantiator;
 import de.quantummaid.injectmaid.instantiator.BindInstantiator;
 import de.quantummaid.injectmaid.instantiator.ConstantInstantiator;
@@ -39,21 +39,21 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.quantummaid.injectmaid.Definition.definition;
 import static de.quantummaid.injectmaid.Definitions.definitions;
+import static de.quantummaid.injectmaid.DelegatingInjectorBuilder.delegatingInjectorBuilder;
 import static de.quantummaid.injectmaid.InjectMaid.injectMaid;
 import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.injectmaid.Scope.rootScope;
 import static de.quantummaid.injectmaid.Scopes.scopes;
+import static de.quantummaid.injectmaid.customtype.CustomTypeInstantiator.customTypeInstantiator;
 import static de.quantummaid.injectmaid.instantiator.BindInstantiator.bindInstantiator;
 import static de.quantummaid.injectmaid.instantiator.ConstantInstantiator.constantInstantiator;
 import static de.quantummaid.injectmaid.instantiator.ScopeInstantiator.scopeInstantiator;
 import static de.quantummaid.injectmaid.statemachine.Context.context;
+import static de.quantummaid.injectmaid.statemachine.StateMachineRunner.runStateMachine;
 import static de.quantummaid.injectmaid.statemachine.States.states;
 import static de.quantummaid.injectmaid.statemachine.states.ResolvingDependencies.resolvingDependencies;
 import static de.quantummaid.injectmaid.statemachine.states.Unresolved.unresolved;
@@ -62,14 +62,7 @@ import static de.quantummaid.injectmaid.statemachine.states.Unresolved.unresolve
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1200")
-public final class InjectMaidBuilder implements
-        FactoryConfigurators,
-        ScopeConfigurators,
-        ImplementationConfigurators,
-        TypeConfigurators,
-        CustomTypeConfigurators,
-        ConstantConfigurators,
-        SingletonTypeConfigurator {
+public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMaidBuilder> {
     private final States states;
     private final Scope scope;
     private final Scopes scopes;
@@ -90,7 +83,7 @@ public final class InjectMaidBuilder implements
 
     @Override
     public InjectMaidBuilder withScope(final ResolvedType scopeType,
-                                       final InjectMaidModule module) {
+                                       final InjectorConfiguration configuration) {
         scopes.validateElementNotUsedSomewhereElse(scopeType, scope);
         final Scope subScope = this.scope.childScope(scopeType);
         final InjectMaidBuilder scopedBuilder = new InjectMaidBuilder(states, subScope, scopes);
@@ -99,7 +92,7 @@ public final class InjectMaidBuilder implements
             scopedBuilder.withInstantiator(scopeType, scopeInstantiator, PROTOTYPE);
         }
         scopes.add(subScope);
-        module.apply(scopedBuilder);
+        configuration.apply(delegatingInjectorBuilder(scopedBuilder));
         return this;
     }
 
@@ -138,7 +131,11 @@ public final class InjectMaidBuilder implements
     public InjectMaidBuilder withCustomType(final CustomType customType,
                                             final ReusePolicy reusePolicy) {
         final ResolvedType type = customType.resolvedType();
-        final CustomTypeInstantiator instantiator = customType.instantiator();
+        final CustomTypeData customTypeData = customType.instantiator();
+        final CustomTypeInstantiator instantiator = customTypeInstantiator(
+                customTypeData.dependencies(),
+                customTypeData.invocableFactory()
+        );
         return withInstantiator(type, instantiator, reusePolicy);
     }
 
@@ -170,26 +167,7 @@ public final class InjectMaidBuilder implements
     }
 
     public InjectMaid build() {
-        while (!states.allFinal()) {
-            states.update(State::detectInstantiator);
-            states.update(State::resolvedDependencies);
-        }
-        final Map<ResolvedType, List<Definition>> definitionsMap = new HashMap<>();
-        states.collect(State::context)
-                .map(context -> {
-                    final ResolvedType type = context.type();
-                    final Scope scopeOfType = context.scope();
-                    final Instantiator instantiator = context.instantiator().orElseThrow();
-                    final ReusePolicy reusePolicy = context.reusePolicy();
-                    return definition(type, scopeOfType, instantiator, reusePolicy);
-                })
-                .forEach(definition -> {
-                    final ResolvedType type = definition.type();
-                    if (!definitionsMap.containsKey(type)) {
-                        definitionsMap.put(type, new ArrayList<>(1));
-                    }
-                    definitionsMap.get(type).add(definition);
-                });
+        final Map<ResolvedType, List<Definition>> definitionsMap = runStateMachine(states);
         final Definitions definitions = definitions(scopes.asList(), definitionsMap);
         return injectMaid(definitions, defaultSingletonType);
     }
