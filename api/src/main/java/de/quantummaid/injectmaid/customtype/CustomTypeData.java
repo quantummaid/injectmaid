@@ -23,15 +23,12 @@ package de.quantummaid.injectmaid.customtype;
 
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.List;
 
-@ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("java:S1452")
 public final class CustomTypeData {
     private final List<ResolvedType> dependencies;
     private final InvocableFactory<?> invocableFactory;
