@@ -21,7 +21,6 @@
 
 package de.quantummaid.injectmaid.builder;
 
-import de.quantummaid.injectmaid.InjectMaidBuilder;
 import de.quantummaid.injectmaid.ReusePolicy;
 import de.quantummaid.injectmaid.customtype.*;
 
@@ -30,20 +29,20 @@ import static de.quantummaid.injectmaid.customtype.CustomType.customType;
 
 @SuppressWarnings({"java:S107", "java:S1448", "java:S103", "java:S104"})
 @FunctionalInterface
-public interface CustomTypeConfigurators {
+public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<?>> {
 
-    InjectMaidBuilder withCustomType(CustomType customType, ReusePolicy reusePolicy);
+    T withCustomType(CustomType customType, ReusePolicy reusePolicy);
 
-    default InjectMaidBuilder withCustomType(final CustomType customType) {
+    default T withCustomType(final CustomType customType) {
         return withCustomType(customType, PROTOTYPE);
     }
 
-    default <X> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X> T withCustomType(final Class<X> type,
                                                  final Factory00<X> factory) {
         return withCustomType(type, factory, PROTOTYPE);
     }
 
-    default <X> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X> T withCustomType(final Class<X> type,
                                                  final Factory00<X> factory,
                                                  final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
@@ -51,13 +50,13 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A> T withCustomType(final Class<X> type,
                                                     final Class<A> dependency00,
                                                     final Factory01<X, A> factory) {
         return withCustomType(type, dependency00, factory, PROTOTYPE);
     }
 
-    default <X, A> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A> T withCustomType(final Class<X> type,
                                                     final Class<A> dependency00,
                                                     final Factory01<X, A> factory,
                                                     final ReusePolicy reusePolicy) {
@@ -67,14 +66,14 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B> T withCustomType(final Class<X> type,
                                                        final Class<A> dependency00,
                                                        final Class<B> dependency01,
                                                        final Factory02<X, A, B> factory) {
         return withCustomType(type, dependency00, dependency01, factory, PROTOTYPE);
     }
 
-    default <X, A, B> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B> T withCustomType(final Class<X> type,
                                                        final Class<A> dependency00,
                                                        final Class<B> dependency01,
                                                        final Factory02<X, A, B> factory,
@@ -86,7 +85,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C> T withCustomType(final Class<X> type,
                                                           final Class<A> dependency00,
                                                           final Class<B> dependency01,
                                                           final Class<C> dependency02,
@@ -94,7 +93,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(type, dependency00, dependency01, dependency02, factory, PROTOTYPE);
     }
 
-    default <X, A, B, C> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C> T withCustomType(final Class<X> type,
                                                           final Class<A> dependency00,
                                                           final Class<B> dependency01,
                                                           final Class<C> dependency02,
@@ -108,7 +107,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D> T withCustomType(final Class<X> type,
                                                              final Class<A> dependency00,
                                                              final Class<B> dependency01,
                                                              final Class<C> dependency02,
@@ -125,7 +124,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D> T withCustomType(final Class<X> type,
                                                              final Class<A> dependency00,
                                                              final Class<B> dependency01,
                                                              final Class<C> dependency02,
@@ -141,7 +140,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E> T withCustomType(final Class<X> type,
                                                                 final Class<A> dependency00,
                                                                 final Class<B> dependency01,
                                                                 final Class<C> dependency02,
@@ -160,7 +159,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E> T withCustomType(final Class<X> type,
                                                                 final Class<A> dependency00,
                                                                 final Class<B> dependency01,
                                                                 final Class<C> dependency02,
@@ -178,7 +177,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F> T withCustomType(final Class<X> type,
                                                                    final Class<A> dependency00,
                                                                    final Class<B> dependency01,
                                                                    final Class<C> dependency02,
@@ -199,7 +198,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F> T withCustomType(final Class<X> type,
                                                                    final Class<A> dependency00,
                                                                    final Class<B> dependency01,
                                                                    final Class<C> dependency02,
@@ -219,7 +218,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G> T withCustomType(final Class<X> type,
                                                                       final Class<A> dependency00,
                                                                       final Class<B> dependency01,
                                                                       final Class<C> dependency02,
@@ -242,7 +241,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G> T withCustomType(final Class<X> type,
                                                                       final Class<A> dependency00,
                                                                       final Class<B> dependency01,
                                                                       final Class<C> dependency02,
@@ -264,7 +263,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G, H> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H> T withCustomType(final Class<X> type,
                                                                          final Class<A> dependency00,
                                                                          final Class<B> dependency01,
                                                                          final Class<C> dependency02,
@@ -289,7 +288,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G, H> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H> T withCustomType(final Class<X> type,
                                                                          final Class<A> dependency00,
                                                                          final Class<B> dependency01,
                                                                          final Class<C> dependency02,
@@ -313,7 +312,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G, H, I> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I> T withCustomType(final Class<X> type,
                                                                             final Class<A> dependency00,
                                                                             final Class<B> dependency01,
                                                                             final Class<C> dependency02,
@@ -340,7 +339,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G, H, I> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I> T withCustomType(final Class<X> type,
                                                                             final Class<A> dependency00,
                                                                             final Class<B> dependency01,
                                                                             final Class<C> dependency02,
@@ -366,7 +365,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J> T withCustomType(final Class<X> type,
                                                                                final Class<A> dependency00,
                                                                                final Class<B> dependency01,
                                                                                final Class<C> dependency02,
@@ -395,7 +394,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J> T withCustomType(final Class<X> type,
                                                                                final Class<A> dependency00,
                                                                                final Class<B> dependency01,
                                                                                final Class<C> dependency02,
@@ -423,7 +422,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K> T withCustomType(final Class<X> type,
                                                                                   final Class<A> dependency00,
                                                                                   final Class<B> dependency01,
                                                                                   final Class<C> dependency02,
@@ -454,7 +453,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K> T withCustomType(final Class<X> type,
                                                                                   final Class<A> dependency00,
                                                                                   final Class<B> dependency01,
                                                                                   final Class<C> dependency02,
@@ -484,7 +483,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L> T withCustomType(final Class<X> type,
                                                                                      final Class<A> dependency00,
                                                                                      final Class<B> dependency01,
                                                                                      final Class<C> dependency02,
@@ -517,7 +516,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L> T withCustomType(final Class<X> type,
                                                                                      final Class<A> dependency00,
                                                                                      final Class<B> dependency01,
                                                                                      final Class<C> dependency02,
@@ -549,7 +548,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M> T withCustomType(final Class<X> type,
                                                                                         final Class<A> dependency00,
                                                                                         final Class<B> dependency01,
                                                                                         final Class<C> dependency02,
@@ -584,7 +583,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M> T withCustomType(final Class<X> type,
                                                                                         final Class<A> dependency00,
                                                                                         final Class<B> dependency01,
                                                                                         final Class<C> dependency02,
@@ -618,7 +617,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> T withCustomType(final Class<X> type,
                                                                                            final Class<A> dependency00,
                                                                                            final Class<B> dependency01,
                                                                                            final Class<C> dependency02,
@@ -655,7 +654,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> T withCustomType(final Class<X> type,
                                                                                            final Class<A> dependency00,
                                                                                            final Class<B> dependency01,
                                                                                            final Class<C> dependency02,
@@ -691,7 +690,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> T withCustomType(final Class<X> type,
                                                                                               final Class<A> dependency00,
                                                                                               final Class<B> dependency01,
                                                                                               final Class<C> dependency02,
@@ -730,7 +729,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> T withCustomType(final Class<X> type,
                                                                                               final Class<A> dependency00,
                                                                                               final Class<B> dependency01,
                                                                                               final Class<C> dependency02,
@@ -768,7 +767,7 @@ public interface CustomTypeConfigurators {
         return withCustomType(customType, reusePolicy);
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> T withCustomType(final Class<X> type,
                                                                                                  final Class<A> dependency00,
                                                                                                  final Class<B> dependency01,
                                                                                                  final Class<C> dependency02,
@@ -809,7 +808,7 @@ public interface CustomTypeConfigurators {
         );
     }
 
-    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> InjectMaidBuilder withCustomType(final Class<X> type,
+    default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> T withCustomType(final Class<X> type,
                                                                                                  final Class<A> dependency00,
                                                                                                  final Class<B> dependency01,
                                                                                                  final Class<C> dependency02,

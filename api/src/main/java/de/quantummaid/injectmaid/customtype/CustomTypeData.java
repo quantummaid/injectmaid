@@ -19,26 +19,33 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.builder;
+package de.quantummaid.injectmaid.customtype;
 
-import de.quantummaid.injectmaid.InjectMaidBuilder;
-import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ResolvedType;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-import static de.quantummaid.reflectmaid.GenericType.genericType;
+import java.util.List;
 
-@FunctionalInterface
-public interface ConstantConfigurators {
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CustomTypeData {
+    private final List<ResolvedType> dependencies;
+    private final InvocableFactory<?> invocableFactory;
 
-    default <T> InjectMaidBuilder withConstant(final Class<T> type, final T instance) {
-        final GenericType<T> genericType = genericType(type);
-        return withConstant(genericType, instance);
+    public static CustomTypeData customTypeInstantiator(final List<ResolvedType> dependencies,
+                                                        final InvocableFactory<?> invocableFactory) {
+        return new CustomTypeData(dependencies, invocableFactory);
     }
 
-    default <T> InjectMaidBuilder withConstant(final GenericType<T> genericType, final T instance) {
-        final ResolvedType resolvedType = genericType.toResolvedType();
-        return withConstant(resolvedType, instance);
+    public List<ResolvedType> dependencies() {
+        return dependencies;
     }
 
-    InjectMaidBuilder withConstant(ResolvedType resolvedType, Object instance);
+    public InvocableFactory<?> invocableFactory() {
+        return invocableFactory;
+    }
 }
