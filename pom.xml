@@ -5,12 +5,12 @@
     <parent>
         <groupId>de.quantummaid</groupId>
         <artifactId>quantummaid-opensource-parent</artifactId>
-        <version>0.9.51</version>
+        <version>0.9.52</version>
     </parent>
 
     <groupId>de.quantummaid.injectmaid</groupId>
     <artifactId>injectmaid-parent</artifactId>
-    <version>0.0.17</version>
+    <version>0.0.18</version>
     <packaging>pom</packaging>
 
     <name>InjectMaid</name>

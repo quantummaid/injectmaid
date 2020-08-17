@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.quantummaid.injectmaid</groupId>
         <artifactId>injectmaid-parent</artifactId>
-        <version>0.0.17</version>
+        <version>0.0.18</version>
     </parent>
 
     <artifactId>core</artifactId>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>de.quantummaid.injectmaid</groupId>
             <artifactId>injector-api</artifactId>
-            <version>0.0.17</version>
+            <version>0.0.18</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -57,13 +57,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.0-M1</version>
+            <version>5.7.0-RC1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.0-M1</version>
+            <version>5.7.0-RC1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
