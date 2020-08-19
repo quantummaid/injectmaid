@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.quantummaid.injectmaid</groupId>
         <artifactId>injectmaid-parent</artifactId>
-        <version>0.0.18</version>
+        <version>0.0.19</version>
     </parent>
 
     <artifactId>injector-api</artifactId>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>de.quantummaid.reflectmaid</groupId>
             <artifactId>reflectmaid-parent</artifactId>
-            <version>0.1.34</version>
+            <version>0.1.35</version>
         </dependency>
     </dependencies>
 </project>
