@@ -21,15 +21,15 @@
 
 package de.quantummaid.injectmaid.documentation.domain;
 
-import de.quantummaid.injectmaid.InjectMaidBuilder;
-import de.quantummaid.injectmaid.InjectMaidModule;
+import de.quantummaid.injectmaid.InjectorBuilder;
+import de.quantummaid.injectmaid.InjectorConfiguration;
 import de.quantummaid.injectmaid.ReusePolicy;
 
 //Showcase start module
-public final class BookingModule implements InjectMaidModule {
+public final class BookingModule implements InjectorConfiguration {
 
     @Override
-    public void apply(final InjectMaidBuilder builder) {
+    public void apply(final InjectorBuilder builder) {
         builder
                 .withType(BookFlightService.class)
                 .withImplementation(BookingRepository.class, InMemoryBookingRepository.class)

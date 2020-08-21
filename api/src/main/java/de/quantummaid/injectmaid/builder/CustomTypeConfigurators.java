@@ -29,7 +29,7 @@ import static de.quantummaid.injectmaid.customtype.CustomType.customType;
 
 @SuppressWarnings({"java:S107", "java:S1448", "java:S103", "java:S104"})
 @FunctionalInterface
-public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<?>> {
+public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
 
     T withCustomType(CustomType customType, ReusePolicy reusePolicy);
 

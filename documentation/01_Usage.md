@@ -88,10 +88,10 @@ final UuidService uuidService = injectMaid.getInstance(UuidService.class);
 You can group common configuration options into a module:
 <!---[CodeSnippet](module)-->
 ```java
-public final class BookingModule implements InjectMaidModule {
+public final class BookingModule implements InjectorConfiguration {
 
     @Override
-    public void apply(final InjectMaidBuilder builder) {
+    public void apply(final InjectorBuilder builder) {
         builder
                 .withType(BookFlightService.class)
                 .withImplementation(BookingRepository.class, InMemoryBookingRepository.class)
@@ -104,7 +104,7 @@ It can be applied to an InjectMaid builder like this:
 <!---[CodeSnippet](moduleUsage)-->
 ```java
 final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-        .withModule(new BookingModule())
+        .withConfiguration(new BookingModule())
         .build();
 final BookFlightService bookFlightService = injectMaid.getInstance(BookFlightService.class);
 ```

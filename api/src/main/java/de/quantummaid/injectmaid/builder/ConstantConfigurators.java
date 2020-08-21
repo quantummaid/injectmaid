@@ -27,7 +27,7 @@ import de.quantummaid.reflectmaid.ResolvedType;
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
 @FunctionalInterface
-public interface ConstantConfigurators<T> {
+public interface ConstantConfigurators<T extends ConfigurationConfigurators<T>> {
 
     default <X> T withConstant(final Class<X> type, final X instance) {
         final GenericType<X> genericType = genericType(type);

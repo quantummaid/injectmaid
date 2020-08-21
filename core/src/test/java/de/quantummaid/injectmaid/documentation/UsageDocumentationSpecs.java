@@ -135,7 +135,7 @@ public final class UsageDocumentationSpecs {
     public void modules() {
         //Showcase start moduleUsage
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-                .withModule(new BookingModule())
+                .withConfiguration(new BookingModule())
                 .build();
         final BookFlightService bookFlightService = injectMaid.getInstance(BookFlightService.class);
         //Showcase end moduleUsage

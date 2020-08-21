@@ -24,7 +24,7 @@ package de.quantummaid.injectmaid.builder;
 import de.quantummaid.injectmaid.SingletonType;
 
 @FunctionalInterface
-public interface SingletonTypeConfigurator<T extends SingletonTypeConfigurator<?>> {
+public interface SingletonTypeConfigurator<T extends SingletonTypeConfigurator<T>> {
 
     T usingDefaultSingletonType(SingletonType singletonType);
 }

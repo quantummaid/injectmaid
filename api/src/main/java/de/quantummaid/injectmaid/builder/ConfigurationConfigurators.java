@@ -19,9 +19,11 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.builder;
 
-@FunctionalInterface
-public interface InjectMaidModule {
-    void apply(InjectMaidBuilder builder);
+import de.quantummaid.injectmaid.InjectorConfiguration;
+
+public interface ConfigurationConfigurators<T extends ConfigurationConfigurators<T>> {
+
+    T withConfiguration(InjectorConfiguration configuration);
 }

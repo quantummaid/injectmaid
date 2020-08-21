@@ -29,7 +29,7 @@ import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
 @FunctionalInterface
-public interface TypeConfigurators<T extends TypeConfigurators<?>> {
+public interface TypeConfigurators<T extends TypeConfigurators<T>> {
 
     default T withType(final Class<?> type) {
         final GenericType<?> genericType = genericType(type);
