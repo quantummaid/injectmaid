@@ -59,7 +59,7 @@ public final class SelfInjectionSpecs {
                 .withScope(String.class, builder -> builder.withType(WithDependencyToInjectMaid.class))
                 .build();
 
-        final InjectMaid scopedInjectMaid = injectMaid.enterScope("test");
+        final Injector scopedInjectMaid = injectMaid.enterScope("test");
 
         final WithDependencyToInjectMaid instance = scopedInjectMaid.getInstance(WithDependencyToInjectMaid.class);
         final boolean sameReference = instance.injectMaid == scopedInjectMaid;

@@ -48,7 +48,7 @@ public final class ScopeSpecs {
                 })
                 .build();
         final Request request = Request.request("foo");
-        final InjectMaid scopedInjectMaid = injectMaid.enterScope(Request.class, request);
+        final Injector scopedInjectMaid = injectMaid.enterScope(Request.class, request);
 
         final Request instance = scopedInjectMaid.getInstance(Request.class);
         assertThat(instance, notNullValue());
@@ -67,7 +67,7 @@ public final class ScopeSpecs {
                 })
                 .build();
         final Request request = Request.request("foo");
-        final InjectMaid scopedInjectMaid = injectMaid.enterScope(Request.class, request);
+        final Injector scopedInjectMaid = injectMaid.enterScope(Request.class, request);
 
         final StringWrapper instance = scopedInjectMaid.getInstance(StringWrapper.class);
         assertThat(instance, notNullValue());
@@ -81,7 +81,7 @@ public final class ScopeSpecs {
                 })
                 .build();
         final Request request = Request.request("foo");
-        final InjectMaid scopedInjectMaid = injectMaid.enterScope(Request.class, request);
+        final Injector scopedInjectMaid = injectMaid.enterScope(Request.class, request);
         assertThat(scopedInjectMaid, notNullValue());
 
         final Exception exception = catchException(() -> injectMaid.getInstance(Request.class));
@@ -95,7 +95,7 @@ public final class ScopeSpecs {
                 .withScope(Request.class, builder -> {
                 })
                 .build();
-        final InjectMaid scopedInjectMaid = injectMaid.enterScope(Request.class, null);
+        final Injector scopedInjectMaid = injectMaid.enterScope(Request.class, null);
 
         final Request instance = scopedInjectMaid.getInstance(Request.class);
         assertThat(instance, nullValue());
@@ -124,13 +124,13 @@ public final class ScopeSpecs {
                 .withScope(Request.class, injectMaidBuilder -> injectMaidBuilder.withType(NumberedType.class, SINGLETON))
                 .build();
 
-        final InjectMaid requestScoped1 = injectMaid.enterScope(Request.class, request("foo"));
+        final Injector requestScoped1 = injectMaid.enterScope(Request.class, request("foo"));
         final NumberedType instance1A = requestScoped1.getInstance(NumberedType.class);
         assertThat(instance1A.instanceNumber(), is(0));
         final NumberedType instance1B = requestScoped1.getInstance(NumberedType.class);
         assertThat(instance1B.instanceNumber(), is(0));
 
-        final InjectMaid requestScoped2 = injectMaid.enterScope(Request.class, request("bar"));
+        final Injector requestScoped2 = injectMaid.enterScope(Request.class, request("bar"));
         final NumberedType instance2A = requestScoped2.getInstance(NumberedType.class);
         assertThat(instance2A.instanceNumber(), is(1));
         final NumberedType instance2B = requestScoped2.getInstance(NumberedType.class);

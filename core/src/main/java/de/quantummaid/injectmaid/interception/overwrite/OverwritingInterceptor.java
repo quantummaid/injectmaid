@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.interception.overwrite;
 
-import de.quantummaid.injectmaid.InjectMaid;
+import de.quantummaid.injectmaid.Injector;
 import de.quantummaid.injectmaid.interception.Interceptor;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
@@ -35,18 +35,18 @@ import java.util.Optional;
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OverwritingInterceptor implements Interceptor {
-    private final InjectMaid injectMaid;
+    private final Injector injector;
 
-    public static OverwritingInterceptor overwritingInterceptor(final InjectMaid injectMaid) {
-        return new OverwritingInterceptor(injectMaid);
+    public static OverwritingInterceptor overwritingInterceptor(final Injector injector) {
+        return new OverwritingInterceptor(injector);
     }
 
     @Override
     public Optional<?> interceptBeforeInstantiation(final ResolvedType type) {
-        if (!injectMaid.canInstantiate(type)) {
+        if (!injector.canInstantiate(type)) {
             return Optional.empty();
         }
-        final Object instance = injectMaid.getInstance(type);
+        final Object instance = injector.getInstance(type);
         return Optional.of(instance);
     }
 
@@ -59,7 +59,7 @@ public final class OverwritingInterceptor implements Interceptor {
     @Override
     public Interceptor enterScope(final ResolvedType scopeType,
                                   final Object scopeObject) {
-        final InjectMaid scopedInjectMaid = injectMaid.enterScope(scopeType, scopeObject);
-        return new OverwritingInterceptor(scopedInjectMaid);
+        final Injector scopedInjector = injector.enterScope(scopeType, scopeObject);
+        return new OverwritingInterceptor(scopedInjector);
     }
 }
