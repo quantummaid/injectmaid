@@ -35,38 +35,44 @@ public final class DelegatingInjectorBuilder implements InjectorBuilder {
     }
 
     @Override
+    public InjectorBuilder withConfiguration(final InjectorConfiguration configuration) {
+        configuration.apply(this);
+        return this;
+    }
+
+    @Override
     public InjectorBuilder withConstant(final ResolvedType resolvedType,
-                                                  final Object instance) {
+                                        final Object instance) {
         delegate.withConstant(resolvedType, instance);
         return this;
     }
 
     @Override
     public InjectorBuilder withCustomType(final CustomType customType,
-                                                    final ReusePolicy reusePolicy) {
+                                          final ReusePolicy reusePolicy) {
         delegate.withCustomType(customType, reusePolicy);
         return this;
     }
 
     @Override
     public InjectorBuilder withFactory(final ResolvedType type,
-                                                 final ResolvedType factory,
-                                                 final ReusePolicy reusePolicy) {
+                                       final ResolvedType factory,
+                                       final ReusePolicy reusePolicy) {
         delegate.withFactory(type, factory, reusePolicy);
         return this;
     }
 
     @Override
     public InjectorBuilder withImplementation(final ResolvedType type,
-                                                        final ResolvedType implementation,
-                                                        final ReusePolicy reusePolicy) {
+                                              final ResolvedType implementation,
+                                              final ReusePolicy reusePolicy) {
         delegate.withImplementation(type, implementation, reusePolicy);
         return this;
     }
 
     @Override
     public InjectorBuilder withScope(final ResolvedType scopeType,
-                                               final InjectorConfiguration configuration) {
+                                     final InjectorConfiguration configuration) {
         delegate.withScope(scopeType, configuration);
         return this;
     }
@@ -79,7 +85,7 @@ public final class DelegatingInjectorBuilder implements InjectorBuilder {
 
     @Override
     public InjectorBuilder withType(final ResolvedType resolvedType,
-                                              final ReusePolicy reusePolicy) {
+                                    final ReusePolicy reusePolicy) {
         delegate.withType(resolvedType, reusePolicy);
         return this;
     }

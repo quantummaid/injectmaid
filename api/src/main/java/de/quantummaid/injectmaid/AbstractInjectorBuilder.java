@@ -23,12 +23,13 @@ package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.builder.*;
 
-public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<?>> extends
+public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<T>> extends
         FactoryConfigurators<T>,
         ScopeConfigurators<T>,
         ImplementationConfigurators<T>,
         TypeConfigurators<T>,
         CustomTypeConfigurators<T>,
         ConstantConfigurators<T>,
-        SingletonTypeConfigurator<T> {
+        SingletonTypeConfigurator<T>,
+        ConfigurationConfigurators<T> {
 }

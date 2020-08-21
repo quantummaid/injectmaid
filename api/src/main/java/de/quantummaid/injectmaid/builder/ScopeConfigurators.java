@@ -28,7 +28,7 @@ import de.quantummaid.reflectmaid.ResolvedType;
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
 @FunctionalInterface
-public interface ScopeConfigurators<T extends ScopeConfigurators<?>> {
+public interface ScopeConfigurators<T extends ScopeConfigurators<T>> {
 
     default T withScope(final Class<?> scopeType, final InjectorConfiguration configuration) {
         final GenericType<?> genericType = genericType(scopeType);

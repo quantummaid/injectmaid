@@ -76,8 +76,8 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         return new InjectMaidBuilder(states, scope, scopes);
     }
 
-    public InjectMaidBuilder withModule(final InjectMaidModule module) {
-        module.apply(this);
+    public InjectMaidBuilder withConfiguration(final InjectorConfiguration configuration) {
+        configuration.apply(delegatingInjectorBuilder(this));
         return this;
     }
 

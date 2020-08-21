@@ -35,7 +35,7 @@ public final class ModuleSpecs {
     @Test
     public void injectMaidCanApplyModules() {
         final InjectMaid injectMaid = anInjectMaid()
-                .withModule(MyModule.myModule())
+                .withConfiguration(MyModule.myModule())
                 .build();
         final ZeroArgumentsConstructorType instance = injectMaid.getInstance(ZeroArgumentsConstructorType.class);
         assertThat(instance, notNullValue());
