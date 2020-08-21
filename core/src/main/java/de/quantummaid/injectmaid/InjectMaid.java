@@ -25,7 +25,6 @@ import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.interception.Interceptor;
 import de.quantummaid.injectmaid.interception.Interceptors;
 import de.quantummaid.injectmaid.interception.SimpleInterceptor;
-import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -44,7 +43,6 @@ import static de.quantummaid.injectmaid.SingletonStore.singletonStore;
 import static de.quantummaid.injectmaid.circledetector.CircularDependencyDetector.validateNoCircularDependencies;
 import static de.quantummaid.injectmaid.interception.Interceptors.interceptors;
 import static de.quantummaid.injectmaid.interception.overwrite.OverwritingInterceptor.overwritingInterceptor;
-import static de.quantummaid.reflectmaid.GenericType.genericType;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -53,7 +51,7 @@ import static java.util.stream.Collectors.toList;
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1200")
-public final class InjectMaid {
+public final class InjectMaid implements Injector {
     private final Definitions definitions;
     private final SingletonType defaultSingletonType;
     private final SingletonStore singletonStore;
@@ -92,6 +90,7 @@ public final class InjectMaid {
         return injectMaid;
     }
 
+    @Override
     public void initializeAllSingletons() {
         this.definitions.definitionsOnScope(scope).stream()
                 .filter(Definition::isSingleton)
@@ -112,22 +111,7 @@ public final class InjectMaid {
         return reusePolicy == ReusePolicy.EAGER_SINGLETON;
     }
 
-    @SuppressWarnings("unchecked")
-    public InjectMaid enterScope(final Object scopeObject) {
-        final Class<Object> scopeType = (Class<Object>) scopeObject.getClass();
-        return enterScope(scopeType, scopeObject);
-    }
-
-    public <T> InjectMaid enterScope(final Class<T> scopeType, final T scopeObject) {
-        final GenericType<T> genericType = genericType(scopeType);
-        return enterScope(genericType, scopeObject);
-    }
-
-    public <T> InjectMaid enterScope(final GenericType<T> scopeType, final T scopeObject) {
-        final ResolvedType resolvedType = scopeType.toResolvedType();
-        return enterScope(resolvedType, scopeObject);
-    }
-
+    @Override
     public InjectMaid enterScope(final ResolvedType resolvedType, final Object scopeObject) {
         final Scope childScope = this.scope.childScope(resolvedType);
         final List<Scope> scopes = definitions.allScopes();
@@ -153,26 +137,18 @@ public final class InjectMaid {
         );
     }
 
+    @Override
     public void addInterceptor(final SimpleInterceptor interceptor) {
         interceptors.addInterceptor(interceptor);
     }
 
-    public void overwriteWith(final InjectMaid injectMaid) {
-        final Interceptor interceptor = overwritingInterceptor(injectMaid);
+    @Override
+    public void overwriteWith(final Injector injector) {
+        final Interceptor interceptor = overwritingInterceptor(injector);
         interceptors.addInterceptor(interceptor);
     }
 
-    public <T> T getInstance(final Class<T> type) {
-        final GenericType<T> genericType = genericType(type);
-        return getInstance(genericType);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getInstance(final GenericType<T> genericType) {
-        final ResolvedType resolvedType = genericType.toResolvedType();
-        return (T) getInstance(resolvedType);
-    }
-
+    @Override
     public Object getInstance(final ResolvedType type) {
         final Optional<?> intercepted = interceptors.interceptBefore(type);
         if (intercepted.isPresent()) {
@@ -183,16 +159,7 @@ public final class InjectMaid {
         return interceptors.interceptAfter(type, instance);
     }
 
-    public boolean canInstantiate(final Class<?> type) {
-        final GenericType<?> genericType = genericType(type);
-        return canInstantiate(genericType);
-    }
-
-    public boolean canInstantiate(final GenericType<?> type) {
-        final ResolvedType resolvedType = type.toResolvedType();
-        return canInstantiate(resolvedType);
-    }
-
+    @Override
     public boolean canInstantiate(final ResolvedType resolvedType) {
         return definitions.hasDefinitionFor(resolvedType, scope);
     }

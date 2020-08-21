@@ -37,11 +37,11 @@ To enter a scope, you need to create an instance of the scope type:
 <!---[CodeSnippet](scopes)-->
 ```java
 final Request request1 = new Request("elsa");
-final InjectMaid request1Injector = injectMaid.enterScope(Request.class, request1);
+final Injector request1Injector = injectMaid.enterScope(Request.class, request1);
 final BookFlightService bookFlightService1 = request1Injector.getInstance(BookFlightService.class);
 
 final Request request2 = new Request("olaf");
-final InjectMaid request2Injector = injectMaid.enterScope(Request.class, request2);
+final Injector request2Injector = injectMaid.enterScope(Request.class, request2);
 final BookFlightService bookFlightService2 = request2Injector.getInstance(BookFlightService.class);
 ```
 
@@ -87,12 +87,12 @@ final InjectMaid injectMaid = InjectMaid.anInjectMaid()
         .build();
 
 final Request request1 = new Request("elsa");
-final InjectMaid request1Injector = injectMaid.enterScope(Request.class, request1);
+final Injector request1Injector = injectMaid.enterScope(Request.class, request1);
 final UuidService uuidService1 = request1Injector.getInstance(UuidService.class);
 final BookingPolicies bookingPolicies1 = request1Injector.getInstance(BookingPolicies.class);
 
 final Request request2 = new Request("olaf");
-final InjectMaid request2Injector = injectMaid.enterScope(Request.class, request2);
+final Injector request2Injector = injectMaid.enterScope(Request.class, request2);
 final UuidService uuidService2 = request1Injector.getInstance(UuidService.class);
 final BookingPolicies bookingPolicies2 = request2Injector.getInstance(BookingPolicies.class);
 

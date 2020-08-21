@@ -22,6 +22,7 @@
 package de.quantummaid.injectmaid.documentation;
 
 import de.quantummaid.injectmaid.InjectMaid;
+import de.quantummaid.injectmaid.Injector;
 import de.quantummaid.injectmaid.ReusePolicy;
 import de.quantummaid.injectmaid.documentation.domain.*;
 import org.junit.jupiter.api.Test;
@@ -44,11 +45,11 @@ public final class ScopeDocumentationSpecs {
 
         //Showcase start scopes
         final Request request1 = new Request("elsa");
-        final InjectMaid request1Injector = injectMaid.enterScope(Request.class, request1);
+        final Injector request1Injector = injectMaid.enterScope(Request.class, request1);
         final BookFlightService bookFlightService1 = request1Injector.getInstance(BookFlightService.class);
 
         final Request request2 = new Request("olaf");
-        final InjectMaid request2Injector = injectMaid.enterScope(Request.class, request2);
+        final Injector request2Injector = injectMaid.enterScope(Request.class, request2);
         final BookFlightService bookFlightService2 = request2Injector.getInstance(BookFlightService.class);
         //Showcase end scopes
         assertThat(bookFlightService1, notNullValue());
@@ -70,12 +71,12 @@ public final class ScopeDocumentationSpecs {
                 .build();
 
         final Request request1 = new Request("elsa");
-        final InjectMaid request1Injector = injectMaid.enterScope(Request.class, request1);
+        final Injector request1Injector = injectMaid.enterScope(Request.class, request1);
         final UuidService uuidService1 = request1Injector.getInstance(UuidService.class);
         final BookingPolicies bookingPolicies1 = request1Injector.getInstance(BookingPolicies.class);
 
         final Request request2 = new Request("olaf");
-        final InjectMaid request2Injector = injectMaid.enterScope(Request.class, request2);
+        final Injector request2Injector = injectMaid.enterScope(Request.class, request2);
         final UuidService uuidService2 = request1Injector.getInstance(UuidService.class);
         final BookingPolicies bookingPolicies2 = request2Injector.getInstance(BookingPolicies.class);
 
