@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.21](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.21/jar) - 2020-08-21
 ### Changed
-- Decoupled module system.
+- Decoupled module system
 
 ## [0.0.20](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.20/jar) - 2020-08-21
 ### Changed
