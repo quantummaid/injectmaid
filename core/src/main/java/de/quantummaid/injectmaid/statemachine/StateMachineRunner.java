@@ -22,9 +22,9 @@
 package de.quantummaid.injectmaid.statemachine;
 
 import de.quantummaid.injectmaid.Definition;
+import de.quantummaid.injectmaid.InjectMaidException;
 import de.quantummaid.injectmaid.ReusePolicy;
 import de.quantummaid.injectmaid.Scope;
-import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.statemachine.states.State;
 import de.quantummaid.reflectmaid.ResolvedType;
 
@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import static de.quantummaid.injectmaid.Definition.definition;
+import static java.lang.String.join;
 
 public final class StateMachineRunner {
 
@@ -46,21 +47,27 @@ public final class StateMachineRunner {
             states.update(State::resolvedDependencies);
         }
         final Map<ResolvedType, List<Definition>> definitionsMap = new HashMap<>();
+        final List<String> errors = new ArrayList<>();
         states.collect(State::context)
-                .map(context -> {
+                .forEach(context -> {
                     final ResolvedType type = context.type();
                     final Scope scopeOfType = context.scope();
-                    final Instantiator instantiator = context.instantiator().orElseThrow();
-                    final ReusePolicy reusePolicy = context.reusePolicy();
-                    return definition(type, scopeOfType, instantiator, reusePolicy);
-                })
-                .forEach(definition -> {
-                    final ResolvedType type = definition.type();
-                    if (!definitionsMap.containsKey(type)) {
-                        definitionsMap.put(type, new ArrayList<>(1));
-                    }
-                    definitionsMap.get(type).add(definition);
+                    context.instantiator().ifPresentOrElse(instantiator -> {
+                        final ReusePolicy reusePolicy = context.reusePolicy();
+                        final Definition definition = definition(type, scopeOfType, instantiator, reusePolicy);
+                        if (!definitionsMap.containsKey(type)) {
+                            definitionsMap.put(type, new ArrayList<>(1));
+                        }
+                        definitionsMap.get(type).add(definition);
+                    }, () -> {
+                        final String errorMessage = context.errorMessage();
+                        errors.add(errorMessage);
+                    });
                 });
+        if (!errors.isEmpty()) {
+            final String joinedErrors = join("\n\n", errors);
+            throw InjectMaidException.injectMaidException(joinedErrors);
+        }
         return definitionsMap;
     }
 }

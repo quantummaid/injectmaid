@@ -22,18 +22,16 @@
 package de.quantummaid.injectmaid.detection;
 
 import de.quantummaid.injectmaid.InjectMaid;
-import de.quantummaid.injectmaid.InjectMaidException;
 import de.quantummaid.injectmaid.detection.disambiguators.DisambiguationResult;
 import de.quantummaid.injectmaid.detection.disambiguators.Disambiguator;
 import de.quantummaid.injectmaid.detection.singleton.SingletonDetector;
-import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.reflectmaid.ClassType;
 import de.quantummaid.reflectmaid.ResolvedType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
+import static de.quantummaid.injectmaid.detection.DetectionResult.success;
 import static de.quantummaid.injectmaid.detection.InstantiationOptions.loadInstantiationOptions;
 import static de.quantummaid.injectmaid.detection.disambiguators.AnnotationDisambiguator.annotationDisambiguator;
 import static de.quantummaid.injectmaid.detection.disambiguators.SingleChoiceDisambiguator.singleChoiceDisambiguator;
@@ -62,19 +60,19 @@ public final class Detectors {
     private Detectors() {
     }
 
-    public static Instantiator detect(final ResolvedType typeToInstantiate,
+    public static DetectionResult detect(final ResolvedType typeToInstantiate,
                                       final SingletonSwitch singletonSwitch) {
         return detect(typeToInstantiate, typeToInstantiate, singletonSwitch);
     }
 
-    public static Instantiator detect(final ResolvedType typeToInstantiate,
-                                      final ResolvedType creatingType,
-                                      final SingletonSwitch singletonSwitch) {
+    public static DetectionResult detect(final ResolvedType typeToInstantiate,
+                                         final ResolvedType creatingType,
+                                         final SingletonSwitch singletonSwitch) {
         if (!(creatingType instanceof ClassType)) {
             throw new IllegalArgumentException();
         }
         if (typeToInstantiate.equals(INJECTMAID_TYPE)) {
-            return selfInstantiator();
+            return success(selfInstantiator());
         }
         final ClassType creatingClassType = (ClassType) creatingType;
 
@@ -87,22 +85,22 @@ public final class Detectors {
         for (final Disambiguator disambiguator : DISAMBIGUATORS) {
             final DisambiguationResult result = disambiguator.disambiguate(instantiationOptions);
             if (result.isSuccess()) {
-                return result.instantiator();
+                return success(result.instantiator());
             }
             if (result.isIgnore()) {
                 ignoreReasons.add(result.ignoreMessage());
             }
             if (result.isError()) {
-                throw fail(typeToInstantiate, creatingType, result.errorMessage());
+                return fail(typeToInstantiate, creatingType, result.errorMessage());
             }
         }
         final String combinedIgnoreReasons = join("\n", ignoreReasons);
-        throw fail(typeToInstantiate, creatingType, combinedIgnoreReasons);
+        return fail(typeToInstantiate, creatingType, combinedIgnoreReasons);
     }
 
-    private static InjectMaidException fail(final ResolvedType typeToInstantiate,
-                                            final ResolvedType creatingType,
-                                            final String message) {
+    private static DetectionResult fail(final ResolvedType typeToInstantiate,
+                                        final ResolvedType creatingType,
+                                        final String message) {
         final String factoryQualifier;
         if (typeToInstantiate.equals(creatingType)) {
             factoryQualifier = "";
@@ -111,6 +109,6 @@ public final class Detectors {
         }
         final String errorMessage = format("Cannot decide how to instantiate type '%s'%s:%n%s",
                 typeToInstantiate.description(), factoryQualifier, message);
-        return injectMaidException(errorMessage);
+        return DetectionResult.fail(errorMessage);
     }
 }

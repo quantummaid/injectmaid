@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class ExceptionSpecs {
 
     @Test
-    public void unregisterdTypeCannotBeInstantiated() {
+    public void unregisteredTypeCannotBeInstantiated() {
         final InjectMaid injectMaid = InjectMaid.anInjectMaid().build();
         final Exception exception = catchException(() -> injectMaid.getInstance(String.class));
         assertThat(exception, instanceOf(InjectMaidException.class));

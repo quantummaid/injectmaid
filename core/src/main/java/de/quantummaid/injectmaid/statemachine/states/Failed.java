@@ -26,11 +26,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Resolved implements State {
+public final class Failed implements State {
     private final Context context;
 
-    public static Resolved resolved(final Context context) {
-        return new Resolved(context);
+    public static Failed failed(final Context context) {
+        return new Failed(context);
     }
 
     @Override

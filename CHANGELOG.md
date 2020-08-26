@@ -4,29 +4,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.22](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.22/jar) - 2020-08-26
+### Added
+- Error aggregation for configuration.
+
 ## [0.0.21](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.21/jar) - 2020-08-21
 ### Changed
-- Decoupled module system
+- Decoupled module system.
 
 ## [0.0.20](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.20/jar) - 2020-08-21
 ### Changed
-- Update dependencies
+- Update dependencies.
 
 ## [0.0.19](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.19/jar) - 2020-08-19
 ### Changed
-- Update dependencies
+- Update dependencies.
 
 ## [0.0.18](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.18/jar) - 2020-08-17
 ### Changed
-- Update dependencies
+- Update dependencies.
 
 ## [0.0.17](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.17/jar) - 2020-08-16
 ### Changed
-- Update dependencies
+- Update dependencies.
 
 ## [0.0.16](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.16/jar) - 2020-08-13
 ### Changed
-- Update dependencies
+- Update dependencies.
 
 ## [0.0.15](https://search.maven.org/artifact/de.quantummaid.injectmaid/injectmaid/0.0.15/jar) - 2020-08-09
 ### Changed
