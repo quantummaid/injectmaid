@@ -41,12 +41,13 @@ public final class Context {
     private final States states;
     private ReusePolicy reusePolicy;
     private Instantiator instantiator;
+    private String errorMessage;
 
     public static Context context(final ResolvedType type,
                                   final Scope scope,
                                   final States states,
                                   final ReusePolicy reusePolicy) {
-        return new Context(type, scope, states, reusePolicy, null);
+        return new Context(type, scope, states, reusePolicy, null, null);
     }
 
     public ResolvedType type() {
@@ -75,5 +76,13 @@ public final class Context {
 
     public void setInstantiator(final Instantiator instantiator) {
         this.instantiator = instantiator;
+    }
+
+    public void setErrorMessage(final String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public String errorMessage() {
+        return errorMessage;
     }
 }

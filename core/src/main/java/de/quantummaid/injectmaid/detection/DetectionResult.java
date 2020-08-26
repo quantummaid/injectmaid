@@ -19,27 +19,38 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.statemachine.states;
+package de.quantummaid.injectmaid.detection;
 
-import de.quantummaid.injectmaid.statemachine.Context;
+import de.quantummaid.injectmaid.instantiator.Instantiator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import static de.quantummaid.reflectmaid.validators.NotNullValidator.validateNotNull;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Resolved implements State {
-    private final Context context;
+public final class DetectionResult {
+    private final Instantiator instantiator;
+    private final String errorMessage;
 
-    public static Resolved resolved(final Context context) {
-        return new Resolved(context);
+    public static DetectionResult success(final Instantiator instantiator) {
+        validateNotNull(instantiator, "instantiator");
+        return new DetectionResult(instantiator, null);
     }
 
-    @Override
-    public Context context() {
-        return context;
+    public static DetectionResult fail(final String errorMessage) {
+        validateNotNull(errorMessage, "errorMessage");
+        return new DetectionResult(null, errorMessage);
     }
 
-    @Override
-    public boolean isFinal() {
-        return true;
+    public Instantiator instantiator() {
+        return instantiator;
+    }
+
+    public boolean isFailure() {
+        return errorMessage != null;
+    }
+
+    public String errorMessage() {
+        return errorMessage;
     }
 }

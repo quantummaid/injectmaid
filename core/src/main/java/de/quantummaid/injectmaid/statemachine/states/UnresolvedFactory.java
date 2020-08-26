@@ -22,6 +22,7 @@
 package de.quantummaid.injectmaid.statemachine.states;
 
 import de.quantummaid.injectmaid.ReusePolicy;
+import de.quantummaid.injectmaid.detection.DetectionResult;
 import de.quantummaid.injectmaid.detection.SingletonSwitch;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.statemachine.Context;
@@ -33,6 +34,7 @@ import lombok.ToString;
 
 import static de.quantummaid.injectmaid.detection.Detectors.detect;
 import static de.quantummaid.injectmaid.detection.SingletonSwitch.singletonSwitch;
+import static de.quantummaid.injectmaid.statemachine.states.Failed.failed;
 import static de.quantummaid.injectmaid.statemachine.states.ResolvingDependencies.resolvingDependencies;
 import static de.quantummaid.reflectmaid.validators.NotNullValidator.validateNotNull;
 
@@ -59,7 +61,12 @@ public final class UnresolvedFactory implements State {
         final ResolvedType type = context.type();
         final ReusePolicy oldReusePolicy = context.reusePolicy();
         final SingletonSwitch singletonSwitch = singletonSwitch(oldReusePolicy);
-        final Instantiator instantiator = detect(type, factoryType, singletonSwitch);
+        final DetectionResult result = detect(type, factoryType, singletonSwitch);
+        if (result.isFailure()) {
+            context.setErrorMessage(result.errorMessage());
+            return failed(context);
+        }
+        final Instantiator instantiator = result.instantiator();
         context.setInstantiator(instantiator);
         final ReusePolicy newReusePolicy = singletonSwitch.getReusePolicy();
         context.setReusePolicy(newReusePolicy);
