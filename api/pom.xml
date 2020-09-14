@@ -33,7 +33,7 @@
         <dependency>
             <groupId>de.quantummaid.reflectmaid</groupId>
             <artifactId>reflectmaid-parent</artifactId>
-            <version>0.1.36</version>
+            <version>0.1.37</version>
         </dependency>
     </dependencies>
 </project>

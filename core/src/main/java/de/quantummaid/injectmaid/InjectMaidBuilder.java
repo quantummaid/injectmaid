@@ -28,6 +28,10 @@ import de.quantummaid.injectmaid.instantiator.BindInstantiator;
 import de.quantummaid.injectmaid.instantiator.ConstantInstantiator;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.instantiator.ScopeInstantiator;
+import de.quantummaid.injectmaid.lifecyclemanagement.LifecycleManager;
+import de.quantummaid.injectmaid.lifecyclemanagement.closer.CloseFunction;
+import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closer;
+import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closers;
 import de.quantummaid.injectmaid.statemachine.Context;
 import de.quantummaid.injectmaid.statemachine.States;
 import de.quantummaid.injectmaid.statemachine.states.ResolvingDependencies;
@@ -39,6 +43,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +57,9 @@ import static de.quantummaid.injectmaid.customtype.CustomTypeInstantiator.custom
 import static de.quantummaid.injectmaid.instantiator.BindInstantiator.bindInstantiator;
 import static de.quantummaid.injectmaid.instantiator.ConstantInstantiator.constantInstantiator;
 import static de.quantummaid.injectmaid.instantiator.ScopeInstantiator.scopeInstantiator;
+import static de.quantummaid.injectmaid.lifecyclemanagement.NoOpLifecycleManager.noOpLifecycleManager;
+import static de.quantummaid.injectmaid.lifecyclemanagement.RealLifecycleManager.realLifecycleManager;
+import static de.quantummaid.injectmaid.lifecyclemanagement.closer.Closer.closer;
 import static de.quantummaid.injectmaid.statemachine.Context.context;
 import static de.quantummaid.injectmaid.statemachine.StateMachineRunner.runStateMachine;
 import static de.quantummaid.injectmaid.statemachine.States.states;
@@ -67,6 +75,8 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     private final Scope scope;
     private final Scopes scopes;
     private SingletonType defaultSingletonType = SingletonType.LAZY;
+    private boolean lifecycleManagement = false;
+    private final List<Closer> closers = new ArrayList<>();
 
     static InjectMaidBuilder injectionMaidBuilder() {
         final States states = states();
@@ -87,12 +97,18 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         scopes.validateElementNotUsedSomewhereElse(scopeType, scope);
         final Scope subScope = this.scope.childScope(scopeType);
         final InjectMaidBuilder scopedBuilder = new InjectMaidBuilder(states, subScope, scopes);
+        scopedBuilder.lifecycleManagement = lifecycleManagement;
         if (!scopes.contains(subScope)) {
             final ScopeInstantiator scopeInstantiator = scopeInstantiator(scopeType);
             scopedBuilder.withInstantiator(scopeType, scopeInstantiator, PROTOTYPE);
         }
         scopes.add(subScope);
         configuration.apply(delegatingInjectorBuilder(scopedBuilder));
+        return this;
+    }
+
+    public InjectMaidBuilder withLifecycleManagement() {
+        this.lifecycleManagement = true;
         return this;
     }
 
@@ -166,9 +182,23 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         return this;
     }
 
+    public <T> InjectMaidBuilder closingInstancesOfType(final Class<T> type,
+                                                        final CloseFunction<T> closeFunction) {
+        closers.add(Closer.closer(type, closeFunction));
+        return this;
+    }
+
     public InjectMaid build() {
         final Map<ResolvedType, List<Definition>> definitionsMap = runStateMachine(states);
         final Definitions definitions = definitions(scopes.asList(), definitionsMap);
-        return injectMaid(definitions, defaultSingletonType);
+        final LifecycleManager lifecycleManager;
+        if (lifecycleManagement || !closers.isEmpty()) {
+            closers.add(closer(AutoCloseable.class, AutoCloseable::close));
+            final Closers closers = Closers.closers(this.closers);
+            lifecycleManager = realLifecycleManager(closers);
+        } else {
+            lifecycleManager = noOpLifecycleManager();
+        }
+        return injectMaid(definitions, defaultSingletonType, lifecycleManager);
     }
 }

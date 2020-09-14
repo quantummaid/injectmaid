@@ -34,4 +34,7 @@
     <suppress checks="LocalFinalVariableName|AbbreviationAsWordInName" files="DocumentationSpecs"/>
     <suppress checks="FileLength" files="CustomTypeSpecs"/>
     <suppress checks="ClassFanOutComplexity" files="InjectMaidBuilder"/>
+    <suppress checks="VisibilityModifier|ExplicitInitialization" files="AutoclosableType|NonAutoclosableType"/>
+    <suppress checks="IllegalCatch" files="RealLifecycleManager"/>
+    <suppress checks="ExplicitInitialization" files="InjectMaidBuilder"/>
 </suppressions>
