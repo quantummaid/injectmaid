@@ -27,7 +27,7 @@ import de.quantummaid.reflectmaid.ResolvedType;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
-public interface Injector {
+public interface Injector extends AutoCloseable {
 
     default <T> T getInstance(final Class<T> type) {
         final GenericType<T> genericType = genericType(type);
@@ -77,4 +77,7 @@ public interface Injector {
     }
 
     boolean canInstantiate(ResolvedType resolvedType);
+
+    @Override
+    void close();
 }

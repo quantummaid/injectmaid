@@ -19,16 +19,20 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.domain.closing;
 
-import de.quantummaid.injectmaid.builder.*;
+import lombok.ToString;
 
-public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<T>> extends
-        FactoryConfigurators<T>,
-        ScopeConfigurators<T>,
-        ImplementationConfigurators<T>,
-        TypeConfigurators<T>,
-        CustomTypeConfigurators<T>,
-        SingletonTypeConfigurator<T>,
-        ConfigurationConfigurators<T> {
+@ToString
+public final class AutoclosableType implements AutoCloseable {
+    public boolean closed = false;
+    public boolean fail = false;
+
+    @Override
+    public void close() {
+        closed = true;
+        if (fail) {
+            throw new UnsupportedOperationException("failed to close");
+        }
+    }
 }

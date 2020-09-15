@@ -19,45 +19,32 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.instantiator;
+package de.quantummaid.injectmaid.lifecyclemanagement;
 
-import de.quantummaid.injectmaid.InjectMaid;
-import de.quantummaid.injectmaid.ScopeManager;
-import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.List;
 
-import static java.lang.String.format;
-import static java.util.Collections.emptyList;
-
-@ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConstantInstantiator implements Instantiator {
-    private final Object constant;
+public final class NoOpLifecycleManager implements LifecycleManager {
 
-    public static ConstantInstantiator constantInstantiator(final Object constant) {
-        return new ConstantInstantiator(constant);
+    public static LifecycleManager noOpLifecycleManager() {
+        return new NoOpLifecycleManager();
     }
 
     @Override
-    public List<ResolvedType> dependencies() {
-        return emptyList();
+    public LifecycleManager newInstance() {
+        return new NoOpLifecycleManager();
     }
 
     @Override
-    public Object instantiate(final List<Object> dependencies,
-                              final ScopeManager scopeManager,
-                              final InjectMaid injectMaid) {
-        return constant;
+    public void registerInstance(final Object instance) {
+        // do nothing
     }
 
     @Override
-    public String description() {
-        return format("constant %s", constant);
+    public void closeAll(final List<ExceptionDuringClose> exceptions) {
+        // do nothing
     }
 }

@@ -19,16 +19,14 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.lifecyclemanagement;
 
-import de.quantummaid.injectmaid.builder.*;
+import java.util.List;
 
-public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<T>> extends
-        FactoryConfigurators<T>,
-        ScopeConfigurators<T>,
-        ImplementationConfigurators<T>,
-        TypeConfigurators<T>,
-        CustomTypeConfigurators<T>,
-        SingletonTypeConfigurator<T>,
-        ConfigurationConfigurators<T> {
+public interface LifecycleManager {
+    LifecycleManager newInstance();
+
+    void registerInstance(Object instance);
+
+    void closeAll(List<ExceptionDuringClose> exceptions);
 }

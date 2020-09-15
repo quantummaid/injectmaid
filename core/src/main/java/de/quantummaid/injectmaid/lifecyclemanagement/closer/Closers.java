@@ -19,16 +19,29 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.lifecyclemanagement.closer;
 
-import de.quantummaid.injectmaid.builder.*;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
-public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<T>> extends
-        FactoryConfigurators<T>,
-        ScopeConfigurators<T>,
-        ImplementationConfigurators<T>,
-        TypeConfigurators<T>,
-        CustomTypeConfigurators<T>,
-        SingletonTypeConfigurator<T>,
-        ConfigurationConfigurators<T> {
+import java.util.List;
+import java.util.Optional;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class Closers {
+    private final List<Closer> closers;
+
+    public static Closers closers(final List<Closer> closers) {
+        return new Closers(closers);
+    }
+
+    public Optional<Closeable> createCloseable(final Object instance) {
+        for (final Closer closer : closers) {
+            if (!closer.type().isInstance(instance)) {
+                continue;
+            }
+            return Optional.of(Closeable.closeable(instance, closer));
+        }
+        return Optional.empty();
+    }
 }

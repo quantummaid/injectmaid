@@ -19,25 +19,9 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.builder;
+package de.quantummaid.injectmaid.lifecyclemanagement.closer;
 
-import de.quantummaid.reflectmaid.GenericType;
-import de.quantummaid.reflectmaid.ResolvedType;
-
-import static de.quantummaid.reflectmaid.GenericType.genericType;
-
-@FunctionalInterface
-public interface ConstantConfigurators<T extends ConfigurationConfigurators<T>> {
-
-    default <X> T withConstant(final Class<X> type, final X instance) {
-        final GenericType<X> genericType = genericType(type);
-        return withConstant(genericType, instance);
-    }
-
-    default <X> T withConstant(final GenericType<X> genericType, final X instance) {
-        final ResolvedType resolvedType = genericType.toResolvedType();
-        return withConstant(resolvedType, instance);
-    }
-
-    T withConstant(ResolvedType resolvedType, Object instance);
+@SuppressWarnings("java:S112")
+public interface CloseFunction<T> {
+    void close(T instance) throws Exception;
 }

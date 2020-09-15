@@ -27,15 +27,6 @@ final InjectMaid injectMaid = InjectMaid.anInjectMaid()
 final BookingRepository bookingRepository = injectMaid.getInstance(BookingRepository.class);
 ```
 
-## Binding to a constant
-<!---[CodeSnippet](constants)-->
-```java
-final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-        .withConstant(BookingRepository.class, BOOKING_REPOSITORY)
-        .build();
-final BookingRepository bookingRepository = injectMaid.getInstance(BookingRepository.class);
-```
-
 ## Singletons
 You can turn any registered type into a singleton by adding `ReusePolicy.SINGLETON` as the last parameter:
 <!---[CodeSnippet](singletons)-->

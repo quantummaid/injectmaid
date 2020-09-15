@@ -19,16 +19,20 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.domain.closing;
 
-import de.quantummaid.injectmaid.builder.*;
+public final class AutoclosableWithDependency implements AutoCloseable {
+    public final AutoclosableType autoclosableType;
+    public boolean closed = false;
+    public boolean dependencyHasBeenClosedFirst = false;
 
-public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<T>> extends
-        FactoryConfigurators<T>,
-        ScopeConfigurators<T>,
-        ImplementationConfigurators<T>,
-        TypeConfigurators<T>,
-        CustomTypeConfigurators<T>,
-        SingletonTypeConfigurator<T>,
-        ConfigurationConfigurators<T> {
+    public AutoclosableWithDependency(final AutoclosableType autoclosableType) {
+        this.autoclosableType = autoclosableType;
+    }
+
+    @Override
+    public void close() {
+        dependencyHasBeenClosedFirst = autoclosableType.closed;
+        closed = true;
+    }
 }

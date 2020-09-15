@@ -19,16 +19,27 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.lifecyclemanagement.closer;
 
-import de.quantummaid.injectmaid.builder.*;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
-public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<T>> extends
-        FactoryConfigurators<T>,
-        ScopeConfigurators<T>,
-        ImplementationConfigurators<T>,
-        TypeConfigurators<T>,
-        CustomTypeConfigurators<T>,
-        SingletonTypeConfigurator<T>,
-        ConfigurationConfigurators<T> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class Closer {
+    private final Class<?> type;
+    private final CloseFunction<Object> closeFunction;
+
+    @SuppressWarnings("unchecked")
+    public static <T> Closer closer(final Class<T> type,
+                                    final CloseFunction<T> closeFunction) {
+        return new Closer(type, (CloseFunction<Object>) closeFunction);
+    }
+
+    public Class<?> type() {
+        return type;
+    }
+
+    public void close(final Object instance) throws Exception {
+        closeFunction.close(instance);
+    }
 }

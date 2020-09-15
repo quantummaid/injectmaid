@@ -59,7 +59,7 @@ public final class InterceptorSpecs {
     @Test
     public void anInjectMaidCanBeOverwrittenWithAnotherInjectMaid() {
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-                .withConstant(StringWrapper.class, new StringWrapper("original value"))
+                .withCustomType(StringWrapper.class, () -> new StringWrapper("original value"))
                 .build();
 
         final StringWrapper instance1 = injectMaid.getInstance(StringWrapper.class);
@@ -67,7 +67,7 @@ public final class InterceptorSpecs {
         assertThat(instance1.string, is("original value"));
 
         final InjectMaid overwrite = InjectMaid.anInjectMaid()
-                .withConstant(StringWrapper.class, new StringWrapper("overwritten value"))
+                .withCustomType(StringWrapper.class, () -> new StringWrapper("overwritten value"))
                 .build();
         injectMaid.overwriteWith(overwrite);
 
@@ -94,7 +94,7 @@ public final class InterceptorSpecs {
         assertThat(NumberedType.counter, is(2));
 
         final InjectMaid overwrite = InjectMaid.anInjectMaid()
-                .withConstant(NumberedType.class, constantUntrackedNumberedType)
+                .withCustomType(NumberedType.class, () -> constantUntrackedNumberedType)
                 .build();
         injectMaid.overwriteWith(overwrite);
 

@@ -19,16 +19,26 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.lifecyclemanagement;
 
-import de.quantummaid.injectmaid.builder.*;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
-public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<T>> extends
-        FactoryConfigurators<T>,
-        ScopeConfigurators<T>,
-        ImplementationConfigurators<T>,
-        TypeConfigurators<T>,
-        CustomTypeConfigurators<T>,
-        SingletonTypeConfigurator<T>,
-        ConfigurationConfigurators<T> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExceptionDuringClose {
+    private final Exception exception;
+    private final Object objectToClose;
+
+    public static ExceptionDuringClose exceptionDuringClose(final Exception exception,
+                                                            final Object objectToClose) {
+        return new ExceptionDuringClose(exception, objectToClose);
+    }
+
+    public String buildMessage() {
+        return String.format("%s: %s", objectToClose, exception.getMessage());
+    }
+
+    public Exception exception() {
+        return exception;
+    }
 }
