@@ -25,6 +25,7 @@ import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.interception.Interceptor;
 import de.quantummaid.injectmaid.interception.Interceptors;
 import de.quantummaid.injectmaid.interception.SimpleInterceptor;
+import de.quantummaid.injectmaid.lifecyclemanagement.ExceptionDuringClose;
 import de.quantummaid.injectmaid.lifecyclemanagement.LifecycleManager;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
@@ -35,6 +36,7 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.function.Supplier;
 
 import static de.quantummaid.injectmaid.InjectMaidBuilder.injectionMaidBuilder;
@@ -225,7 +227,15 @@ public final class InjectMaid implements Injector {
 
     @Override
     public void close() {
-        children.forEach(InjectMaid::close);
-        lifecycleManager.closeAll();
+        final List<ExceptionDuringClose> exceptions = new ArrayList<>();
+        children.forEach(injectMaid -> injectMaid.lifecycleManager.closeAll(exceptions));
+        lifecycleManager.closeAll(exceptions);
+        if (!exceptions.isEmpty()) {
+            final StringJoiner stringJoiner = new StringJoiner("\n", "exception(s) during close:\n", "");
+            exceptions.forEach(exceptionDuringClose -> stringJoiner.add(exceptionDuringClose.buildMessage()));
+            final InjectMaidException exception = injectMaidException(stringJoiner.toString());
+            exceptions.forEach(exceptionDuringClose -> exception.addSuppressed(exceptionDuringClose.exception()));
+            throw exception;
+        }
     }
 }

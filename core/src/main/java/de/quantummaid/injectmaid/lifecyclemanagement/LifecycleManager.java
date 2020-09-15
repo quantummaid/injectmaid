@@ -21,10 +21,12 @@
 
 package de.quantummaid.injectmaid.lifecyclemanagement;
 
+import java.util.List;
+
 public interface LifecycleManager {
     LifecycleManager newInstance();
 
     void registerInstance(Object instance);
 
-    void closeAll();
+    void closeAll(List<ExceptionDuringClose> exceptions);
 }

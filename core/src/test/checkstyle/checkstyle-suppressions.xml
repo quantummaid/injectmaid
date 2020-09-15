@@ -24,7 +24,7 @@
         "-//Puppy Crawl//DTD Suppressions 1.1//EN"
         "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
 <suppressions>
-    <suppress checks="IllegalCatch" files="InjectMaid"/>
+    <suppress checks="IllegalCatch" files="InjectMaid|Closeable"/>
     <suppress checks="VisibilityModifier" files="NumberedType|MyNumberedImplementation|StringWrapper"/>
     <suppress checks="MagicNumber|ParameterNumber" files="Factory[0-9]*"/>
     <suppress checks="ParameterNumber|FileLength|MethodCount" files="CustomTypeConfigurators"/>
@@ -34,7 +34,7 @@
     <suppress checks="LocalFinalVariableName|AbbreviationAsWordInName" files="DocumentationSpecs"/>
     <suppress checks="FileLength" files="CustomTypeSpecs"/>
     <suppress checks="ClassFanOutComplexity" files="InjectMaidBuilder"/>
-    <suppress checks="VisibilityModifier|ExplicitInitialization" files="AutoclosableType|NonAutoclosableType"/>
+    <suppress checks="VisibilityModifier|ExplicitInitialization" files="AutoclosableType|NonAutoclosableType|AutoclosableWithDependency"/>
     <suppress checks="IllegalCatch" files="RealLifecycleManager"/>
     <suppress checks="ExplicitInitialization" files="InjectMaidBuilder"/>
 </suppressions>

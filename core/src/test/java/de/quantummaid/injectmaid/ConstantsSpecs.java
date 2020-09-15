@@ -32,7 +32,7 @@ public final class ConstantsSpecs {
     @Test
     public void injectMaidSupportsConstants() {
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-                .withConstant(StringWrapper.class, new StringWrapper("foo"))
+                .withCustomType(StringWrapper.class, () -> new StringWrapper("foo"), ReusePolicy.SINGLETON)
                 .build();
         final StringWrapper instance = injectMaid.getInstance(StringWrapper.class);
         assertThat(instance, notNullValue());
@@ -43,7 +43,7 @@ public final class ConstantsSpecs {
     @Test
     public void aConstantCanBeNull() {
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-                .withConstant(StringWrapper.class, null)
+                .withCustomType(StringWrapper.class, () -> null, ReusePolicy.SINGLETON)
                 .build();
         final StringWrapper instance = injectMaid.getInstance(StringWrapper.class);
         assertThat(instance, nullValue());

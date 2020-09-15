@@ -24,6 +24,8 @@ package de.quantummaid.injectmaid.lifecyclemanagement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NoOpLifecycleManager implements LifecycleManager {
 
@@ -38,9 +40,11 @@ public final class NoOpLifecycleManager implements LifecycleManager {
 
     @Override
     public void registerInstance(final Object instance) {
+        // do nothing
     }
 
     @Override
-    public void closeAll() {
+    public void closeAll(final List<ExceptionDuringClose> exceptions) {
+        // do nothing
     }
 }

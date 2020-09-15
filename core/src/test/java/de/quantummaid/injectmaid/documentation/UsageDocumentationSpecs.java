@@ -119,19 +119,6 @@ public final class UsageDocumentationSpecs {
     }
 
     @Test
-    public void constants() {
-        final InMemoryBookingRepository BOOKING_REPOSITORY = new InMemoryBookingRepository();
-        //Showcase start constants
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-                .withConstant(BookingRepository.class, BOOKING_REPOSITORY)
-                .build();
-        final BookingRepository bookingRepository = injectMaid.getInstance(BookingRepository.class);
-        //Showcase end constants
-        assertThat(bookingRepository, notNullValue());
-        assertThat(bookingRepository, instanceOf(InMemoryBookingRepository.class));
-    }
-
-    @Test
     public void modules() {
         //Showcase start moduleUsage
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()

@@ -21,6 +21,9 @@
 
 package de.quantummaid.injectmaid.domain.closing;
 
+import lombok.ToString;
+
+@ToString
 public final class NonAutoclosableType {
     public boolean closed = false;
     public boolean fail = false;

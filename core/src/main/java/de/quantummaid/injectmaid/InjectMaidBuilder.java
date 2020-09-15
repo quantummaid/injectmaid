@@ -25,7 +25,6 @@ import de.quantummaid.injectmaid.customtype.CustomType;
 import de.quantummaid.injectmaid.customtype.CustomTypeData;
 import de.quantummaid.injectmaid.customtype.CustomTypeInstantiator;
 import de.quantummaid.injectmaid.instantiator.BindInstantiator;
-import de.quantummaid.injectmaid.instantiator.ConstantInstantiator;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.instantiator.ScopeInstantiator;
 import de.quantummaid.injectmaid.lifecyclemanagement.LifecycleManager;
@@ -55,7 +54,6 @@ import static de.quantummaid.injectmaid.Scope.rootScope;
 import static de.quantummaid.injectmaid.Scopes.scopes;
 import static de.quantummaid.injectmaid.customtype.CustomTypeInstantiator.customTypeInstantiator;
 import static de.quantummaid.injectmaid.instantiator.BindInstantiator.bindInstantiator;
-import static de.quantummaid.injectmaid.instantiator.ConstantInstantiator.constantInstantiator;
 import static de.quantummaid.injectmaid.instantiator.ScopeInstantiator.scopeInstantiator;
 import static de.quantummaid.injectmaid.lifecyclemanagement.NoOpLifecycleManager.noOpLifecycleManager;
 import static de.quantummaid.injectmaid.lifecyclemanagement.RealLifecycleManager.realLifecycleManager;
@@ -156,17 +154,6 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     }
 
     @Override
-    public InjectMaidBuilder withConstant(final ResolvedType resolvedType,
-                                          final Object instance) {
-        final Context context = context(resolvedType, scope, states, PROTOTYPE);
-        final ConstantInstantiator instantiator = constantInstantiator(instance);
-        context.setInstantiator(instantiator);
-        final ResolvingDependencies state = resolvingDependencies(context);
-        states.addOrFailIfAlreadyPresent(state);
-        return this;
-    }
-
-    @Override
     public InjectMaidBuilder usingDefaultSingletonType(final SingletonType singletonType) {
         defaultSingletonType = singletonType;
         return this;
@@ -194,8 +181,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         final LifecycleManager lifecycleManager;
         if (lifecycleManagement || !closers.isEmpty()) {
             closers.add(closer(AutoCloseable.class, AutoCloseable::close));
-            final Closers closers = Closers.closers(this.closers);
-            lifecycleManager = realLifecycleManager(closers);
+            lifecycleManager = realLifecycleManager(Closers.closers(this.closers));
         } else {
             lifecycleManager = noOpLifecycleManager();
         }

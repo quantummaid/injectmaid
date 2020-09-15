@@ -41,13 +41,6 @@ public final class DelegatingInjectorBuilder implements InjectorBuilder {
     }
 
     @Override
-    public InjectorBuilder withConstant(final ResolvedType resolvedType,
-                                        final Object instance) {
-        delegate.withConstant(resolvedType, instance);
-        return this;
-    }
-
-    @Override
     public InjectorBuilder withCustomType(final CustomType customType,
                                           final ReusePolicy reusePolicy) {
         delegate.withCustomType(customType, reusePolicy);

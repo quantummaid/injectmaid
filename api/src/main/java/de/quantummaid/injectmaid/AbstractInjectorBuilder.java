@@ -29,7 +29,6 @@ public interface AbstractInjectorBuilder<T extends AbstractInjectorBuilder<T>> e
         ImplementationConfigurators<T>,
         TypeConfigurators<T>,
         CustomTypeConfigurators<T>,
-        ConstantConfigurators<T>,
         SingletonTypeConfigurator<T>,
         ConfigurationConfigurators<T> {
 }

@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.lifecyclemanagement;
 
+import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closeable;
 import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closers;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
-import static java.lang.String.format;
-
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RealLifecycleManager implements LifecycleManager {
     private final Closers closers;
-    private final List<AutoCloseable> autoCloseables = new ArrayList<>();
+    private final List<Closeable> closeables = new ArrayList<>();
 
     public static LifecycleManager realLifecycleManager(final Closers closers) {
         return new RealLifecycleManager(closers);
@@ -48,17 +46,14 @@ public final class RealLifecycleManager implements LifecycleManager {
     @Override
     public void registerInstance(final Object instance) {
         closers.createCloseable(instance)
-                .ifPresent(autoCloseables::add);
+                .ifPresent(closeables::add);
     }
 
     @Override
-    public void closeAll() {
-        autoCloseables.forEach(autoCloseable -> {
-            try {
-                autoCloseable.close();
-            } catch (final Exception e) {
-                throw injectMaidException(format("exception during closing of object %s", autoCloseable), e);
-            }
-        });
+    public void closeAll(final List<ExceptionDuringClose> exceptions) {
+        closeables.forEach(autoCloseable ->
+                autoCloseable.close()
+                        .ifPresent(exceptions::add)
+        );
     }
 }

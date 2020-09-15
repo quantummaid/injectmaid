@@ -72,7 +72,7 @@ public final class SelfInjectionSpecs {
 
         final InjectMaid injectMaid = anInjectMaid()
                 .withType(WithDependencyToInjectMaid.class)
-                .withConstant(InjectMaid.class, otherInjectMaid)
+                .withCustomType(InjectMaid.class, () -> otherInjectMaid)
                 .build();
 
         final WithDependencyToInjectMaid instance = injectMaid.getInstance(WithDependencyToInjectMaid.class);

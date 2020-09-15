@@ -19,25 +19,26 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.builder;
+package de.quantummaid.injectmaid.lifecyclemanagement;
 
-import de.quantummaid.reflectmaid.GenericType;
-import de.quantummaid.reflectmaid.ResolvedType;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
-import static de.quantummaid.reflectmaid.GenericType.genericType;
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExceptionDuringClose {
+    private final Exception exception;
+    private final Object objectToClose;
 
-@FunctionalInterface
-public interface ConstantConfigurators<T extends ConfigurationConfigurators<T>> {
-
-    default <X> T withConstant(final Class<X> type, final X instance) {
-        final GenericType<X> genericType = genericType(type);
-        return withConstant(genericType, instance);
+    public static ExceptionDuringClose exceptionDuringClose(final Exception exception,
+                                                            final Object objectToClose) {
+        return new ExceptionDuringClose(exception, objectToClose);
     }
 
-    default <X> T withConstant(final GenericType<X> genericType, final X instance) {
-        final ResolvedType resolvedType = genericType.toResolvedType();
-        return withConstant(resolvedType, instance);
+    public String buildMessage() {
+        return String.format("%s: %s", objectToClose, exception.getMessage());
     }
 
-    T withConstant(ResolvedType resolvedType, Object instance);
+    public Exception exception() {
+        return exception;
+    }
 }

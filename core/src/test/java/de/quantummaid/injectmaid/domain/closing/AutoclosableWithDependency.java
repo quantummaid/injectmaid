@@ -19,9 +19,20 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.lifecyclemanagement.closer;
+package de.quantummaid.injectmaid.domain.closing;
 
-@SuppressWarnings("java:S112")
-public interface CloseFunction<T> {
-    void close(T instance) throws Exception;
+public final class AutoclosableWithDependency implements AutoCloseable {
+    public final AutoclosableType autoclosableType;
+    public boolean closed = false;
+    public boolean dependencyHasBeenClosedFirst = false;
+
+    public AutoclosableWithDependency(final AutoclosableType autoclosableType) {
+        this.autoclosableType = autoclosableType;
+    }
+
+    @Override
+    public void close() {
+        dependencyHasBeenClosedFirst = autoclosableType.closed;
+        closed = true;
+    }
 }

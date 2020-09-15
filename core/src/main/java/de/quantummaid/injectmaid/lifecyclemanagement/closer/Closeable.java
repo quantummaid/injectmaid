@@ -21,7 +21,30 @@
 
 package de.quantummaid.injectmaid.lifecyclemanagement.closer;
 
-@SuppressWarnings("java:S112")
-public interface CloseFunction<T> {
-    void close(T instance) throws Exception;
+import de.quantummaid.injectmaid.lifecyclemanagement.ExceptionDuringClose;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
+import static de.quantummaid.injectmaid.lifecyclemanagement.ExceptionDuringClose.exceptionDuringClose;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class Closeable {
+    private final Object instance;
+    private final Closer closer;
+
+    public static Closeable closeable(final Object instance,
+                                      final Closer closer) {
+        return new Closeable(instance, closer);
+    }
+
+    public Optional<ExceptionDuringClose> close() {
+        try {
+            closer.close(instance);
+            return Optional.empty();
+        } catch (Exception e) {
+            return Optional.of(exceptionDuringClose(e, instance));
+        }
+    }
 }

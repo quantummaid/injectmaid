@@ -35,12 +35,12 @@ public final class Closers {
         return new Closers(closers);
     }
 
-    public Optional<AutoCloseable> createCloseable(final Object instance) {
+    public Optional<Closeable> createCloseable(final Object instance) {
         for (final Closer closer : closers) {
             if (!closer.type().isInstance(instance)) {
                 continue;
             }
-            return Optional.of(() -> closer.close(instance));
+            return Optional.of(Closeable.closeable(instance, closer));
         }
         return Optional.empty();
     }
