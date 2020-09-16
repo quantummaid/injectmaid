@@ -23,13 +23,33 @@ package de.quantummaid.injectmaid.builder;
 
 import de.quantummaid.injectmaid.ReusePolicy;
 import de.quantummaid.injectmaid.customtype.*;
+import de.quantummaid.reflectmaid.GenericType;
 
 import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.injectmaid.customtype.CustomType.customType;
+import static de.quantummaid.reflectmaid.GenericType.genericType;
 
 @SuppressWarnings({"java:S107", "java:S1448", "java:S103", "java:S104"})
 @FunctionalInterface
 public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
+
+    @SuppressWarnings("unchecked")
+    default T withInstance(final Object instance) {
+        final Class<?> type = instance.getClass();
+        return withInstance((Class<Object>) type, instance);
+    }
+
+    default <X> T withInstance(final Class<X> type,
+                               final X instance) {
+        final GenericType<X> genericType = genericType(type);
+        return withInstance(genericType, instance);
+    }
+
+    default <X> T withInstance(final GenericType<X> type,
+                               final X instance) {
+        final CustomType customType = customType(type).usingFactory(() -> instance);
+        return withCustomType(customType, ReusePolicy.SINGLETON);
+    }
 
     T withCustomType(CustomType customType, ReusePolicy reusePolicy);
 
@@ -38,28 +58,28 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X> T withCustomType(final Class<X> type,
-                                                 final Factory00<X> factory) {
+                                 final Factory00<X> factory) {
         return withCustomType(type, factory, PROTOTYPE);
     }
 
     default <X> T withCustomType(final Class<X> type,
-                                                 final Factory00<X> factory,
-                                                 final ReusePolicy reusePolicy) {
+                                 final Factory00<X> factory,
+                                 final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .usingFactory(factory);
         return withCustomType(customType, reusePolicy);
     }
 
     default <X, A> T withCustomType(final Class<X> type,
-                                                    final Class<A> dependency00,
-                                                    final Factory01<X, A> factory) {
+                                    final Class<A> dependency00,
+                                    final Factory01<X, A> factory) {
         return withCustomType(type, dependency00, factory, PROTOTYPE);
     }
 
     default <X, A> T withCustomType(final Class<X> type,
-                                                    final Class<A> dependency00,
-                                                    final Factory01<X, A> factory,
-                                                    final ReusePolicy reusePolicy) {
+                                    final Class<A> dependency00,
+                                    final Factory01<X, A> factory,
+                                    final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .usingFactory(factory);
@@ -67,17 +87,17 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B> T withCustomType(final Class<X> type,
-                                                       final Class<A> dependency00,
-                                                       final Class<B> dependency01,
-                                                       final Factory02<X, A, B> factory) {
+                                       final Class<A> dependency00,
+                                       final Class<B> dependency01,
+                                       final Factory02<X, A, B> factory) {
         return withCustomType(type, dependency00, dependency01, factory, PROTOTYPE);
     }
 
     default <X, A, B> T withCustomType(final Class<X> type,
-                                                       final Class<A> dependency00,
-                                                       final Class<B> dependency01,
-                                                       final Factory02<X, A, B> factory,
-                                                       final ReusePolicy reusePolicy) {
+                                       final Class<A> dependency00,
+                                       final Class<B> dependency01,
+                                       final Factory02<X, A, B> factory,
+                                       final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -86,19 +106,19 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C> T withCustomType(final Class<X> type,
-                                                          final Class<A> dependency00,
-                                                          final Class<B> dependency01,
-                                                          final Class<C> dependency02,
-                                                          final Factory03<X, A, B, C> factory) {
+                                          final Class<A> dependency00,
+                                          final Class<B> dependency01,
+                                          final Class<C> dependency02,
+                                          final Factory03<X, A, B, C> factory) {
         return withCustomType(type, dependency00, dependency01, dependency02, factory, PROTOTYPE);
     }
 
     default <X, A, B, C> T withCustomType(final Class<X> type,
-                                                          final Class<A> dependency00,
-                                                          final Class<B> dependency01,
-                                                          final Class<C> dependency02,
-                                                          final Factory03<X, A, B, C> factory,
-                                                          final ReusePolicy reusePolicy) {
+                                          final Class<A> dependency00,
+                                          final Class<B> dependency01,
+                                          final Class<C> dependency02,
+                                          final Factory03<X, A, B, C> factory,
+                                          final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -108,11 +128,11 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D> T withCustomType(final Class<X> type,
-                                                             final Class<A> dependency00,
-                                                             final Class<B> dependency01,
-                                                             final Class<C> dependency02,
-                                                             final Class<D> dependency03,
-                                                             final Factory04<X, A, B, C, D> factory) {
+                                             final Class<A> dependency00,
+                                             final Class<B> dependency01,
+                                             final Class<C> dependency02,
+                                             final Class<D> dependency03,
+                                             final Factory04<X, A, B, C, D> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -125,12 +145,12 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D> T withCustomType(final Class<X> type,
-                                                             final Class<A> dependency00,
-                                                             final Class<B> dependency01,
-                                                             final Class<C> dependency02,
-                                                             final Class<D> dependency03,
-                                                             final Factory04<X, A, B, C, D> factory,
-                                                             final ReusePolicy reusePolicy) {
+                                             final Class<A> dependency00,
+                                             final Class<B> dependency01,
+                                             final Class<C> dependency02,
+                                             final Class<D> dependency03,
+                                             final Factory04<X, A, B, C, D> factory,
+                                             final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -141,12 +161,12 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E> T withCustomType(final Class<X> type,
-                                                                final Class<A> dependency00,
-                                                                final Class<B> dependency01,
-                                                                final Class<C> dependency02,
-                                                                final Class<D> dependency03,
-                                                                final Class<E> dependency04,
-                                                                final Factory05<X, A, B, C, D, E> factory) {
+                                                final Class<A> dependency00,
+                                                final Class<B> dependency01,
+                                                final Class<C> dependency02,
+                                                final Class<D> dependency03,
+                                                final Class<E> dependency04,
+                                                final Factory05<X, A, B, C, D, E> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -160,13 +180,13 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E> T withCustomType(final Class<X> type,
-                                                                final Class<A> dependency00,
-                                                                final Class<B> dependency01,
-                                                                final Class<C> dependency02,
-                                                                final Class<D> dependency03,
-                                                                final Class<E> dependency04,
-                                                                final Factory05<X, A, B, C, D, E> factory,
-                                                                final ReusePolicy reusePolicy) {
+                                                final Class<A> dependency00,
+                                                final Class<B> dependency01,
+                                                final Class<C> dependency02,
+                                                final Class<D> dependency03,
+                                                final Class<E> dependency04,
+                                                final Factory05<X, A, B, C, D, E> factory,
+                                                final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -178,13 +198,13 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F> T withCustomType(final Class<X> type,
-                                                                   final Class<A> dependency00,
-                                                                   final Class<B> dependency01,
-                                                                   final Class<C> dependency02,
-                                                                   final Class<D> dependency03,
-                                                                   final Class<E> dependency04,
-                                                                   final Class<F> dependency05,
-                                                                   final Factory06<X, A, B, C, D, E, F> factory) {
+                                                   final Class<A> dependency00,
+                                                   final Class<B> dependency01,
+                                                   final Class<C> dependency02,
+                                                   final Class<D> dependency03,
+                                                   final Class<E> dependency04,
+                                                   final Class<F> dependency05,
+                                                   final Factory06<X, A, B, C, D, E, F> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -199,14 +219,14 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F> T withCustomType(final Class<X> type,
-                                                                   final Class<A> dependency00,
-                                                                   final Class<B> dependency01,
-                                                                   final Class<C> dependency02,
-                                                                   final Class<D> dependency03,
-                                                                   final Class<E> dependency04,
-                                                                   final Class<F> dependency05,
-                                                                   final Factory06<X, A, B, C, D, E, F> factory,
-                                                                   final ReusePolicy reusePolicy) {
+                                                   final Class<A> dependency00,
+                                                   final Class<B> dependency01,
+                                                   final Class<C> dependency02,
+                                                   final Class<D> dependency03,
+                                                   final Class<E> dependency04,
+                                                   final Class<F> dependency05,
+                                                   final Factory06<X, A, B, C, D, E, F> factory,
+                                                   final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -219,14 +239,14 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G> T withCustomType(final Class<X> type,
-                                                                      final Class<A> dependency00,
-                                                                      final Class<B> dependency01,
-                                                                      final Class<C> dependency02,
-                                                                      final Class<D> dependency03,
-                                                                      final Class<E> dependency04,
-                                                                      final Class<F> dependency05,
-                                                                      final Class<G> dependency06,
-                                                                      final Factory07<X, A, B, C, D, E, F, G> factory) {
+                                                      final Class<A> dependency00,
+                                                      final Class<B> dependency01,
+                                                      final Class<C> dependency02,
+                                                      final Class<D> dependency03,
+                                                      final Class<E> dependency04,
+                                                      final Class<F> dependency05,
+                                                      final Class<G> dependency06,
+                                                      final Factory07<X, A, B, C, D, E, F, G> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -242,15 +262,15 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G> T withCustomType(final Class<X> type,
-                                                                      final Class<A> dependency00,
-                                                                      final Class<B> dependency01,
-                                                                      final Class<C> dependency02,
-                                                                      final Class<D> dependency03,
-                                                                      final Class<E> dependency04,
-                                                                      final Class<F> dependency05,
-                                                                      final Class<G> dependency06,
-                                                                      final Factory07<X, A, B, C, D, E, F, G> factory,
-                                                                      final ReusePolicy reusePolicy) {
+                                                      final Class<A> dependency00,
+                                                      final Class<B> dependency01,
+                                                      final Class<C> dependency02,
+                                                      final Class<D> dependency03,
+                                                      final Class<E> dependency04,
+                                                      final Class<F> dependency05,
+                                                      final Class<G> dependency06,
+                                                      final Factory07<X, A, B, C, D, E, F, G> factory,
+                                                      final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -264,15 +284,15 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H> T withCustomType(final Class<X> type,
-                                                                         final Class<A> dependency00,
-                                                                         final Class<B> dependency01,
-                                                                         final Class<C> dependency02,
-                                                                         final Class<D> dependency03,
-                                                                         final Class<E> dependency04,
-                                                                         final Class<F> dependency05,
-                                                                         final Class<G> dependency06,
-                                                                         final Class<H> dependency07,
-                                                                         final Factory08<X, A, B, C, D, E, F, G, H> factory) {
+                                                         final Class<A> dependency00,
+                                                         final Class<B> dependency01,
+                                                         final Class<C> dependency02,
+                                                         final Class<D> dependency03,
+                                                         final Class<E> dependency04,
+                                                         final Class<F> dependency05,
+                                                         final Class<G> dependency06,
+                                                         final Class<H> dependency07,
+                                                         final Factory08<X, A, B, C, D, E, F, G, H> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -289,16 +309,16 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H> T withCustomType(final Class<X> type,
-                                                                         final Class<A> dependency00,
-                                                                         final Class<B> dependency01,
-                                                                         final Class<C> dependency02,
-                                                                         final Class<D> dependency03,
-                                                                         final Class<E> dependency04,
-                                                                         final Class<F> dependency05,
-                                                                         final Class<G> dependency06,
-                                                                         final Class<H> dependency07,
-                                                                         final Factory08<X, A, B, C, D, E, F, G, H> factory,
-                                                                         final ReusePolicy reusePolicy) {
+                                                         final Class<A> dependency00,
+                                                         final Class<B> dependency01,
+                                                         final Class<C> dependency02,
+                                                         final Class<D> dependency03,
+                                                         final Class<E> dependency04,
+                                                         final Class<F> dependency05,
+                                                         final Class<G> dependency06,
+                                                         final Class<H> dependency07,
+                                                         final Factory08<X, A, B, C, D, E, F, G, H> factory,
+                                                         final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -313,16 +333,16 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I> T withCustomType(final Class<X> type,
-                                                                            final Class<A> dependency00,
-                                                                            final Class<B> dependency01,
-                                                                            final Class<C> dependency02,
-                                                                            final Class<D> dependency03,
-                                                                            final Class<E> dependency04,
-                                                                            final Class<F> dependency05,
-                                                                            final Class<G> dependency06,
-                                                                            final Class<H> dependency07,
-                                                                            final Class<I> dependency08,
-                                                                            final Factory09<X, A, B, C, D, E, F, G, H, I> factory) {
+                                                            final Class<A> dependency00,
+                                                            final Class<B> dependency01,
+                                                            final Class<C> dependency02,
+                                                            final Class<D> dependency03,
+                                                            final Class<E> dependency04,
+                                                            final Class<F> dependency05,
+                                                            final Class<G> dependency06,
+                                                            final Class<H> dependency07,
+                                                            final Class<I> dependency08,
+                                                            final Factory09<X, A, B, C, D, E, F, G, H, I> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -340,17 +360,17 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I> T withCustomType(final Class<X> type,
-                                                                            final Class<A> dependency00,
-                                                                            final Class<B> dependency01,
-                                                                            final Class<C> dependency02,
-                                                                            final Class<D> dependency03,
-                                                                            final Class<E> dependency04,
-                                                                            final Class<F> dependency05,
-                                                                            final Class<G> dependency06,
-                                                                            final Class<H> dependency07,
-                                                                            final Class<I> dependency08,
-                                                                            final Factory09<X, A, B, C, D, E, F, G, H, I> factory,
-                                                                            final ReusePolicy reusePolicy) {
+                                                            final Class<A> dependency00,
+                                                            final Class<B> dependency01,
+                                                            final Class<C> dependency02,
+                                                            final Class<D> dependency03,
+                                                            final Class<E> dependency04,
+                                                            final Class<F> dependency05,
+                                                            final Class<G> dependency06,
+                                                            final Class<H> dependency07,
+                                                            final Class<I> dependency08,
+                                                            final Factory09<X, A, B, C, D, E, F, G, H, I> factory,
+                                                            final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -366,17 +386,17 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J> T withCustomType(final Class<X> type,
-                                                                               final Class<A> dependency00,
-                                                                               final Class<B> dependency01,
-                                                                               final Class<C> dependency02,
-                                                                               final Class<D> dependency03,
-                                                                               final Class<E> dependency04,
-                                                                               final Class<F> dependency05,
-                                                                               final Class<G> dependency06,
-                                                                               final Class<H> dependency07,
-                                                                               final Class<I> dependency08,
-                                                                               final Class<J> dependency09,
-                                                                               final Factory10<X, A, B, C, D, E, F, G, H, I, J> factory) {
+                                                               final Class<A> dependency00,
+                                                               final Class<B> dependency01,
+                                                               final Class<C> dependency02,
+                                                               final Class<D> dependency03,
+                                                               final Class<E> dependency04,
+                                                               final Class<F> dependency05,
+                                                               final Class<G> dependency06,
+                                                               final Class<H> dependency07,
+                                                               final Class<I> dependency08,
+                                                               final Class<J> dependency09,
+                                                               final Factory10<X, A, B, C, D, E, F, G, H, I, J> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -395,18 +415,18 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J> T withCustomType(final Class<X> type,
-                                                                               final Class<A> dependency00,
-                                                                               final Class<B> dependency01,
-                                                                               final Class<C> dependency02,
-                                                                               final Class<D> dependency03,
-                                                                               final Class<E> dependency04,
-                                                                               final Class<F> dependency05,
-                                                                               final Class<G> dependency06,
-                                                                               final Class<H> dependency07,
-                                                                               final Class<I> dependency08,
-                                                                               final Class<J> dependency09,
-                                                                               final Factory10<X, A, B, C, D, E, F, G, H, I, J> factory,
-                                                                               final ReusePolicy reusePolicy) {
+                                                               final Class<A> dependency00,
+                                                               final Class<B> dependency01,
+                                                               final Class<C> dependency02,
+                                                               final Class<D> dependency03,
+                                                               final Class<E> dependency04,
+                                                               final Class<F> dependency05,
+                                                               final Class<G> dependency06,
+                                                               final Class<H> dependency07,
+                                                               final Class<I> dependency08,
+                                                               final Class<J> dependency09,
+                                                               final Factory10<X, A, B, C, D, E, F, G, H, I, J> factory,
+                                                               final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -423,18 +443,18 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K> T withCustomType(final Class<X> type,
-                                                                                  final Class<A> dependency00,
-                                                                                  final Class<B> dependency01,
-                                                                                  final Class<C> dependency02,
-                                                                                  final Class<D> dependency03,
-                                                                                  final Class<E> dependency04,
-                                                                                  final Class<F> dependency05,
-                                                                                  final Class<G> dependency06,
-                                                                                  final Class<H> dependency07,
-                                                                                  final Class<I> dependency08,
-                                                                                  final Class<J> dependency09,
-                                                                                  final Class<K> dependency10,
-                                                                                  final Factory11<X, A, B, C, D, E, F, G, H, I, J, K> factory) {
+                                                                  final Class<A> dependency00,
+                                                                  final Class<B> dependency01,
+                                                                  final Class<C> dependency02,
+                                                                  final Class<D> dependency03,
+                                                                  final Class<E> dependency04,
+                                                                  final Class<F> dependency05,
+                                                                  final Class<G> dependency06,
+                                                                  final Class<H> dependency07,
+                                                                  final Class<I> dependency08,
+                                                                  final Class<J> dependency09,
+                                                                  final Class<K> dependency10,
+                                                                  final Factory11<X, A, B, C, D, E, F, G, H, I, J, K> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -454,19 +474,19 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K> T withCustomType(final Class<X> type,
-                                                                                  final Class<A> dependency00,
-                                                                                  final Class<B> dependency01,
-                                                                                  final Class<C> dependency02,
-                                                                                  final Class<D> dependency03,
-                                                                                  final Class<E> dependency04,
-                                                                                  final Class<F> dependency05,
-                                                                                  final Class<G> dependency06,
-                                                                                  final Class<H> dependency07,
-                                                                                  final Class<I> dependency08,
-                                                                                  final Class<J> dependency09,
-                                                                                  final Class<K> dependency10,
-                                                                                  final Factory11<X, A, B, C, D, E, F, G, H, I, J, K> factory,
-                                                                                  final ReusePolicy reusePolicy) {
+                                                                  final Class<A> dependency00,
+                                                                  final Class<B> dependency01,
+                                                                  final Class<C> dependency02,
+                                                                  final Class<D> dependency03,
+                                                                  final Class<E> dependency04,
+                                                                  final Class<F> dependency05,
+                                                                  final Class<G> dependency06,
+                                                                  final Class<H> dependency07,
+                                                                  final Class<I> dependency08,
+                                                                  final Class<J> dependency09,
+                                                                  final Class<K> dependency10,
+                                                                  final Factory11<X, A, B, C, D, E, F, G, H, I, J, K> factory,
+                                                                  final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -484,19 +504,19 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L> T withCustomType(final Class<X> type,
-                                                                                     final Class<A> dependency00,
-                                                                                     final Class<B> dependency01,
-                                                                                     final Class<C> dependency02,
-                                                                                     final Class<D> dependency03,
-                                                                                     final Class<E> dependency04,
-                                                                                     final Class<F> dependency05,
-                                                                                     final Class<G> dependency06,
-                                                                                     final Class<H> dependency07,
-                                                                                     final Class<I> dependency08,
-                                                                                     final Class<J> dependency09,
-                                                                                     final Class<K> dependency10,
-                                                                                     final Class<L> dependency11,
-                                                                                     final Factory12<X, A, B, C, D, E, F, G, H, I, J, K, L> factory) {
+                                                                     final Class<A> dependency00,
+                                                                     final Class<B> dependency01,
+                                                                     final Class<C> dependency02,
+                                                                     final Class<D> dependency03,
+                                                                     final Class<E> dependency04,
+                                                                     final Class<F> dependency05,
+                                                                     final Class<G> dependency06,
+                                                                     final Class<H> dependency07,
+                                                                     final Class<I> dependency08,
+                                                                     final Class<J> dependency09,
+                                                                     final Class<K> dependency10,
+                                                                     final Class<L> dependency11,
+                                                                     final Factory12<X, A, B, C, D, E, F, G, H, I, J, K, L> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -517,20 +537,20 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L> T withCustomType(final Class<X> type,
-                                                                                     final Class<A> dependency00,
-                                                                                     final Class<B> dependency01,
-                                                                                     final Class<C> dependency02,
-                                                                                     final Class<D> dependency03,
-                                                                                     final Class<E> dependency04,
-                                                                                     final Class<F> dependency05,
-                                                                                     final Class<G> dependency06,
-                                                                                     final Class<H> dependency07,
-                                                                                     final Class<I> dependency08,
-                                                                                     final Class<J> dependency09,
-                                                                                     final Class<K> dependency10,
-                                                                                     final Class<L> dependency11,
-                                                                                     final Factory12<X, A, B, C, D, E, F, G, H, I, J, K, L> factory,
-                                                                                     final ReusePolicy reusePolicy) {
+                                                                     final Class<A> dependency00,
+                                                                     final Class<B> dependency01,
+                                                                     final Class<C> dependency02,
+                                                                     final Class<D> dependency03,
+                                                                     final Class<E> dependency04,
+                                                                     final Class<F> dependency05,
+                                                                     final Class<G> dependency06,
+                                                                     final Class<H> dependency07,
+                                                                     final Class<I> dependency08,
+                                                                     final Class<J> dependency09,
+                                                                     final Class<K> dependency10,
+                                                                     final Class<L> dependency11,
+                                                                     final Factory12<X, A, B, C, D, E, F, G, H, I, J, K, L> factory,
+                                                                     final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -549,20 +569,20 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L, M> T withCustomType(final Class<X> type,
-                                                                                        final Class<A> dependency00,
-                                                                                        final Class<B> dependency01,
-                                                                                        final Class<C> dependency02,
-                                                                                        final Class<D> dependency03,
-                                                                                        final Class<E> dependency04,
-                                                                                        final Class<F> dependency05,
-                                                                                        final Class<G> dependency06,
-                                                                                        final Class<H> dependency07,
-                                                                                        final Class<I> dependency08,
-                                                                                        final Class<J> dependency09,
-                                                                                        final Class<K> dependency10,
-                                                                                        final Class<L> dependency11,
-                                                                                        final Class<M> dependency12,
-                                                                                        final Factory13<X, A, B, C, D, E, F, G, H, I, J, K, L, M> factory) {
+                                                                        final Class<A> dependency00,
+                                                                        final Class<B> dependency01,
+                                                                        final Class<C> dependency02,
+                                                                        final Class<D> dependency03,
+                                                                        final Class<E> dependency04,
+                                                                        final Class<F> dependency05,
+                                                                        final Class<G> dependency06,
+                                                                        final Class<H> dependency07,
+                                                                        final Class<I> dependency08,
+                                                                        final Class<J> dependency09,
+                                                                        final Class<K> dependency10,
+                                                                        final Class<L> dependency11,
+                                                                        final Class<M> dependency12,
+                                                                        final Factory13<X, A, B, C, D, E, F, G, H, I, J, K, L, M> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -584,21 +604,21 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L, M> T withCustomType(final Class<X> type,
-                                                                                        final Class<A> dependency00,
-                                                                                        final Class<B> dependency01,
-                                                                                        final Class<C> dependency02,
-                                                                                        final Class<D> dependency03,
-                                                                                        final Class<E> dependency04,
-                                                                                        final Class<F> dependency05,
-                                                                                        final Class<G> dependency06,
-                                                                                        final Class<H> dependency07,
-                                                                                        final Class<I> dependency08,
-                                                                                        final Class<J> dependency09,
-                                                                                        final Class<K> dependency10,
-                                                                                        final Class<L> dependency11,
-                                                                                        final Class<M> dependency12,
-                                                                                        final Factory13<X, A, B, C, D, E, F, G, H, I, J, K, L, M> factory,
-                                                                                        final ReusePolicy reusePolicy) {
+                                                                        final Class<A> dependency00,
+                                                                        final Class<B> dependency01,
+                                                                        final Class<C> dependency02,
+                                                                        final Class<D> dependency03,
+                                                                        final Class<E> dependency04,
+                                                                        final Class<F> dependency05,
+                                                                        final Class<G> dependency06,
+                                                                        final Class<H> dependency07,
+                                                                        final Class<I> dependency08,
+                                                                        final Class<J> dependency09,
+                                                                        final Class<K> dependency10,
+                                                                        final Class<L> dependency11,
+                                                                        final Class<M> dependency12,
+                                                                        final Factory13<X, A, B, C, D, E, F, G, H, I, J, K, L, M> factory,
+                                                                        final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -618,21 +638,21 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> T withCustomType(final Class<X> type,
-                                                                                           final Class<A> dependency00,
-                                                                                           final Class<B> dependency01,
-                                                                                           final Class<C> dependency02,
-                                                                                           final Class<D> dependency03,
-                                                                                           final Class<E> dependency04,
-                                                                                           final Class<F> dependency05,
-                                                                                           final Class<G> dependency06,
-                                                                                           final Class<H> dependency07,
-                                                                                           final Class<I> dependency08,
-                                                                                           final Class<J> dependency09,
-                                                                                           final Class<K> dependency10,
-                                                                                           final Class<L> dependency11,
-                                                                                           final Class<M> dependency12,
-                                                                                           final Class<N> dependency13,
-                                                                                           final Factory14<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> factory) {
+                                                                           final Class<A> dependency00,
+                                                                           final Class<B> dependency01,
+                                                                           final Class<C> dependency02,
+                                                                           final Class<D> dependency03,
+                                                                           final Class<E> dependency04,
+                                                                           final Class<F> dependency05,
+                                                                           final Class<G> dependency06,
+                                                                           final Class<H> dependency07,
+                                                                           final Class<I> dependency08,
+                                                                           final Class<J> dependency09,
+                                                                           final Class<K> dependency10,
+                                                                           final Class<L> dependency11,
+                                                                           final Class<M> dependency12,
+                                                                           final Class<N> dependency13,
+                                                                           final Factory14<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -655,22 +675,22 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> T withCustomType(final Class<X> type,
-                                                                                           final Class<A> dependency00,
-                                                                                           final Class<B> dependency01,
-                                                                                           final Class<C> dependency02,
-                                                                                           final Class<D> dependency03,
-                                                                                           final Class<E> dependency04,
-                                                                                           final Class<F> dependency05,
-                                                                                           final Class<G> dependency06,
-                                                                                           final Class<H> dependency07,
-                                                                                           final Class<I> dependency08,
-                                                                                           final Class<J> dependency09,
-                                                                                           final Class<K> dependency10,
-                                                                                           final Class<L> dependency11,
-                                                                                           final Class<M> dependency12,
-                                                                                           final Class<N> dependency13,
-                                                                                           final Factory14<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> factory,
-                                                                                           final ReusePolicy reusePolicy) {
+                                                                           final Class<A> dependency00,
+                                                                           final Class<B> dependency01,
+                                                                           final Class<C> dependency02,
+                                                                           final Class<D> dependency03,
+                                                                           final Class<E> dependency04,
+                                                                           final Class<F> dependency05,
+                                                                           final Class<G> dependency06,
+                                                                           final Class<H> dependency07,
+                                                                           final Class<I> dependency08,
+                                                                           final Class<J> dependency09,
+                                                                           final Class<K> dependency10,
+                                                                           final Class<L> dependency11,
+                                                                           final Class<M> dependency12,
+                                                                           final Class<N> dependency13,
+                                                                           final Factory14<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N> factory,
+                                                                           final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -691,22 +711,22 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> T withCustomType(final Class<X> type,
-                                                                                              final Class<A> dependency00,
-                                                                                              final Class<B> dependency01,
-                                                                                              final Class<C> dependency02,
-                                                                                              final Class<D> dependency03,
-                                                                                              final Class<E> dependency04,
-                                                                                              final Class<F> dependency05,
-                                                                                              final Class<G> dependency06,
-                                                                                              final Class<H> dependency07,
-                                                                                              final Class<I> dependency08,
-                                                                                              final Class<J> dependency09,
-                                                                                              final Class<K> dependency10,
-                                                                                              final Class<L> dependency11,
-                                                                                              final Class<M> dependency12,
-                                                                                              final Class<N> dependency13,
-                                                                                              final Class<O> dependency14,
-                                                                                              final Factory15<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> factory) {
+                                                                              final Class<A> dependency00,
+                                                                              final Class<B> dependency01,
+                                                                              final Class<C> dependency02,
+                                                                              final Class<D> dependency03,
+                                                                              final Class<E> dependency04,
+                                                                              final Class<F> dependency05,
+                                                                              final Class<G> dependency06,
+                                                                              final Class<H> dependency07,
+                                                                              final Class<I> dependency08,
+                                                                              final Class<J> dependency09,
+                                                                              final Class<K> dependency10,
+                                                                              final Class<L> dependency11,
+                                                                              final Class<M> dependency12,
+                                                                              final Class<N> dependency13,
+                                                                              final Class<O> dependency14,
+                                                                              final Factory15<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -730,23 +750,23 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> T withCustomType(final Class<X> type,
-                                                                                              final Class<A> dependency00,
-                                                                                              final Class<B> dependency01,
-                                                                                              final Class<C> dependency02,
-                                                                                              final Class<D> dependency03,
-                                                                                              final Class<E> dependency04,
-                                                                                              final Class<F> dependency05,
-                                                                                              final Class<G> dependency06,
-                                                                                              final Class<H> dependency07,
-                                                                                              final Class<I> dependency08,
-                                                                                              final Class<J> dependency09,
-                                                                                              final Class<K> dependency10,
-                                                                                              final Class<L> dependency11,
-                                                                                              final Class<M> dependency12,
-                                                                                              final Class<N> dependency13,
-                                                                                              final Class<O> dependency14,
-                                                                                              final Factory15<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> factory,
-                                                                                              final ReusePolicy reusePolicy) {
+                                                                              final Class<A> dependency00,
+                                                                              final Class<B> dependency01,
+                                                                              final Class<C> dependency02,
+                                                                              final Class<D> dependency03,
+                                                                              final Class<E> dependency04,
+                                                                              final Class<F> dependency05,
+                                                                              final Class<G> dependency06,
+                                                                              final Class<H> dependency07,
+                                                                              final Class<I> dependency08,
+                                                                              final Class<J> dependency09,
+                                                                              final Class<K> dependency10,
+                                                                              final Class<L> dependency11,
+                                                                              final Class<M> dependency12,
+                                                                              final Class<N> dependency13,
+                                                                              final Class<O> dependency14,
+                                                                              final Factory15<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> factory,
+                                                                              final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)
@@ -768,23 +788,23 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> T withCustomType(final Class<X> type,
-                                                                                                 final Class<A> dependency00,
-                                                                                                 final Class<B> dependency01,
-                                                                                                 final Class<C> dependency02,
-                                                                                                 final Class<D> dependency03,
-                                                                                                 final Class<E> dependency04,
-                                                                                                 final Class<F> dependency05,
-                                                                                                 final Class<G> dependency06,
-                                                                                                 final Class<H> dependency07,
-                                                                                                 final Class<I> dependency08,
-                                                                                                 final Class<J> dependency09,
-                                                                                                 final Class<K> dependency10,
-                                                                                                 final Class<L> dependency11,
-                                                                                                 final Class<M> dependency12,
-                                                                                                 final Class<N> dependency13,
-                                                                                                 final Class<O> dependency14,
-                                                                                                 final Class<P> dependency15,
-                                                                                                 final Factory16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> factory) {
+                                                                                 final Class<A> dependency00,
+                                                                                 final Class<B> dependency01,
+                                                                                 final Class<C> dependency02,
+                                                                                 final Class<D> dependency03,
+                                                                                 final Class<E> dependency04,
+                                                                                 final Class<F> dependency05,
+                                                                                 final Class<G> dependency06,
+                                                                                 final Class<H> dependency07,
+                                                                                 final Class<I> dependency08,
+                                                                                 final Class<J> dependency09,
+                                                                                 final Class<K> dependency10,
+                                                                                 final Class<L> dependency11,
+                                                                                 final Class<M> dependency12,
+                                                                                 final Class<N> dependency13,
+                                                                                 final Class<O> dependency14,
+                                                                                 final Class<P> dependency15,
+                                                                                 final Factory16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> factory) {
         return withCustomType(
                 type,
                 dependency00,
@@ -809,24 +829,24 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     }
 
     default <X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> T withCustomType(final Class<X> type,
-                                                                                                 final Class<A> dependency00,
-                                                                                                 final Class<B> dependency01,
-                                                                                                 final Class<C> dependency02,
-                                                                                                 final Class<D> dependency03,
-                                                                                                 final Class<E> dependency04,
-                                                                                                 final Class<F> dependency05,
-                                                                                                 final Class<G> dependency06,
-                                                                                                 final Class<H> dependency07,
-                                                                                                 final Class<I> dependency08,
-                                                                                                 final Class<J> dependency09,
-                                                                                                 final Class<K> dependency10,
-                                                                                                 final Class<L> dependency11,
-                                                                                                 final Class<M> dependency12,
-                                                                                                 final Class<N> dependency13,
-                                                                                                 final Class<O> dependency14,
-                                                                                                 final Class<P> dependency15,
-                                                                                                 final Factory16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> factory,
-                                                                                                 final ReusePolicy reusePolicy) {
+                                                                                 final Class<A> dependency00,
+                                                                                 final Class<B> dependency01,
+                                                                                 final Class<C> dependency02,
+                                                                                 final Class<D> dependency03,
+                                                                                 final Class<E> dependency04,
+                                                                                 final Class<F> dependency05,
+                                                                                 final Class<G> dependency06,
+                                                                                 final Class<H> dependency07,
+                                                                                 final Class<I> dependency08,
+                                                                                 final Class<J> dependency09,
+                                                                                 final Class<K> dependency10,
+                                                                                 final Class<L> dependency11,
+                                                                                 final Class<M> dependency12,
+                                                                                 final Class<N> dependency13,
+                                                                                 final Class<O> dependency14,
+                                                                                 final Class<P> dependency15,
+                                                                                 final Factory16<X, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> factory,
+                                                                                 final ReusePolicy reusePolicy) {
         final CustomType customType = customType(type)
                 .withDependency(dependency00)
                 .withDependency(dependency01)

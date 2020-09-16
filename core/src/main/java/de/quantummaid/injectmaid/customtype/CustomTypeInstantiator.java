@@ -60,6 +60,6 @@ public final class CustomTypeInstantiator implements Instantiator {
 
     @Override
     public String description() {
-        return format("custom instantiation via '%s'", invocableFactory.toString());
+        return format("custom instantiation via '%s'", invocableFactory);
     }
 }
