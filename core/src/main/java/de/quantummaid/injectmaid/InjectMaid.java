@@ -228,8 +228,7 @@ public final class InjectMaid implements Injector {
     @Override
     public void close() {
         final List<ExceptionDuringClose> exceptions = new ArrayList<>();
-        children.forEach(injectMaid -> injectMaid.lifecycleManager.closeAll(exceptions));
-        lifecycleManager.closeAll(exceptions);
+        close(exceptions);
         if (!exceptions.isEmpty()) {
             final StringJoiner stringJoiner = new StringJoiner("\n", "exception(s) during close:\n", "");
             exceptions.forEach(exceptionDuringClose -> stringJoiner.add(exceptionDuringClose.buildMessage()));
@@ -237,5 +236,10 @@ public final class InjectMaid implements Injector {
             exceptions.forEach(exceptionDuringClose -> exception.addSuppressed(exceptionDuringClose.exception()));
             throw exception;
         }
+    }
+
+    private void close(final List<ExceptionDuringClose> exceptions) {
+        children.forEach(injectMaid -> injectMaid.close(exceptions));
+        lifecycleManager.closeAll(exceptions);
     }
 }

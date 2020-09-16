@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.statemachine;
 
+import de.quantummaid.injectmaid.ReusePolicy;
 import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.statemachine.states.State;
 import de.quantummaid.reflectmaid.ResolvedType;
@@ -37,6 +38,7 @@ import java.util.stream.Stream;
 
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 @ToString
 @EqualsAndHashCode
@@ -56,11 +58,12 @@ public final class States {
         }
     }
 
-    public void addOrFailIfAlreadyPresent(final State state) {
+    public void addOrFailIfAlreadyPresent(final State state, final boolean allowDuplicatesIfSame) {
         final Context context = state.context();
         final ResolvedType type = context.type();
         final Scope scope = context.scope();
-        if (containsExactly(type, scope)) {
+        final ReusePolicy reusePolicy = context.reusePolicy();
+        if (containsExactly(type, scope, reusePolicy, allowDuplicatesIfSame)) {
             throw injectMaidException(format("Type '%s' has already been registered in scope '%s'",
                     type.description(), scope.render()));
         }
@@ -89,20 +92,30 @@ public final class States {
     }
 
     private boolean containsExactly(final ResolvedType type,
-                                    final Scope scope) {
+                                    final Scope scope,
+                                    final ReusePolicy reusePolicy,
+                                    final boolean allowDuplicatesIfSame) {
+        /*
         final boolean contains = states.stream()
                 .map(State::context)
                 .filter(context -> context.type().equals(type))
                 .map(Context::scope)
-                .anyMatch(scope::equals);
+                .anyMatch(o -> allowDuplicatesIfSame && scope.equals(o));
         if (contains) {
             return true;
         }
-        return newStates.stream()
+         */
+        final List<Context> matchingTypes = newStates.stream()
                 .map(State::context)
                 .filter(context -> context.type().equals(type))
-                .map(Context::scope)
-                .anyMatch(scope::equals);
+                .filter(context -> context.scope().equals(scope))
+                .collect(toList());
+        if (allowDuplicatesIfSame) {
+            return matchingTypes.stream()
+                    .anyMatch(context -> context.reusePolicy() != reusePolicy);
+        } else {
+            return !matchingTypes.isEmpty();
+        }
     }
 
     private boolean contains(final ResolvedType type,

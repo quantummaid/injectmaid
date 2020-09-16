@@ -23,25 +23,30 @@ package de.quantummaid.injectmaid.lifecyclemanagement.closer;
 
 import de.quantummaid.injectmaid.lifecyclemanagement.ExceptionDuringClose;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.util.Optional;
 
 import static de.quantummaid.injectmaid.lifecyclemanagement.ExceptionDuringClose.exceptionDuringClose;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Closeable {
     private final Object instance;
     private final Closer closer;
+    private boolean closed;
 
     public static Closeable closeable(final Object instance,
                                       final Closer closer) {
-        return new Closeable(instance, closer);
+        return new Closeable(instance, closer, false);
     }
 
     public Optional<ExceptionDuringClose> close() {
+        if (closed) {
+            return Optional.empty();
+        }
         try {
             closer.close(instance);
+            closed = true;
             return Optional.empty();
         } catch (Exception e) {
             return Optional.of(exceptionDuringClose(e, instance));

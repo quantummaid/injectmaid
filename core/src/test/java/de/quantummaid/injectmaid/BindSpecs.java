@@ -89,8 +89,7 @@ public final class BindSpecs {
     public void theImplementationOfAnInterfaceCanBeASingleton() {
         MyNumberedImplementation.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
-                .withImplementation(MyInterface.class, MyNumberedImplementation.class)
-                .withType(MyNumberedImplementation.class, SINGLETON)
+                .withImplementation(MyInterface.class, MyNumberedImplementation.class, SINGLETON)
                 .build();
 
         final MyInterface instance1 = injectMaid.getInstance(MyInterface.class);
@@ -129,15 +128,14 @@ public final class BindSpecs {
         final MyNumberedImplementation instance3 = injectMaid.getInstance(MyNumberedImplementation.class);
         assertThat(instance3, notNullValue());
         assertThat(instance3, instanceOf(MyNumberedImplementation.class));
-        assertThat(instance3.perform(), is("the numbered implementation nr. 1"));
+        assertThat(instance3.perform(), is("the numbered implementation nr. 0"));
     }
 
     @Test
     public void singletonBoundToInterfaceAndAbstractClassIsTheSameInBothCases() {
         final InjectMaid injectMaid = anInjectMaid()
-                .withImplementation(MyInterface.class, MyImplementation.class)
-                .withImplementation(MyAbstractClass.class, MyImplementation.class)
-                .withType(MyImplementation.class, SINGLETON)
+                .withImplementation(MyInterface.class, MyImplementation.class, SINGLETON)
+                .withImplementation(MyAbstractClass.class, MyImplementation.class, SINGLETON)
                 .build();
 
         final MyInterface myInterface = injectMaid.getInstance(MyInterface.class);

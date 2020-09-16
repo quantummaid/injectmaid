@@ -23,17 +23,19 @@ package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.domain.closing.AutoclosableType;
 import de.quantummaid.injectmaid.domain.closing.AutoclosableWithDependency;
+import de.quantummaid.injectmaid.domain.closing.CountingClosable;
 import de.quantummaid.injectmaid.domain.closing.NonAutoclosableType;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class CloseSpecs {
 
     @Test
-    public void autoclosablesAreNotClosedByDefault() {
+    public void autocloseablesAreNotClosedByDefault() {
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
                 .withType(AutoclosableType.class)
                 .build();
@@ -91,13 +93,14 @@ public final class CloseSpecs {
     @Test
     public void autoclosablesInScopeAreClosedWhenParentIsClosed() {
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-                .withScope(String.class, builder -> builder.withType(AutoclosableType.class))
+                .withScope(String.class, builder -> builder.withScope(Integer.class,
+                        innerBuilder -> builder.withType(AutoclosableType.class)))
                 .withLifecycleManagement()
                 .build();
+        final Injector outerScopedInjector = injectMaid.enterScope("foo");
+        final Injector innerScopedInjector = outerScopedInjector.enterScope(1);
 
-        final Injector scopedInjector = injectMaid.enterScope("foo");
-
-        final AutoclosableType instance = scopedInjector.getInstance(AutoclosableType.class);
+        final AutoclosableType instance = innerScopedInjector.getInstance(AutoclosableType.class);
         assertThat(instance.closed, is(false));
 
         injectMaid.close();
@@ -187,5 +190,19 @@ public final class CloseSpecs {
 
         assertThat(instance1.closed, is(true));
         assertThat(instance2.closed, is(true));
+    }
+
+    @Test
+    public void resourcesAreNotClosedTwice() {
+        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+                .withType(CountingClosable.class)
+                .withLifecycleManagement()
+                .build();
+        final CountingClosable instance = injectMaid.getInstance(CountingClosable.class);
+        assertThat(instance.count, is(0));
+        injectMaid.close();
+        assertThat(instance.count, is(1));
+        injectMaid.close();
+        assertThat(instance.count, is(1));
     }
 }
