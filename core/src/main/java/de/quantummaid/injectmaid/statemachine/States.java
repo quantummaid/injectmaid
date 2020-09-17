@@ -95,16 +95,6 @@ public final class States {
                                     final Scope scope,
                                     final ReusePolicy reusePolicy,
                                     final boolean allowDuplicatesIfSame) {
-        /*
-        final boolean contains = states.stream()
-                .map(State::context)
-                .filter(context -> context.type().equals(type))
-                .map(Context::scope)
-                .anyMatch(o -> allowDuplicatesIfSame && scope.equals(o));
-        if (contains) {
-            return true;
-        }
-         */
         final List<Context> matchingTypes = newStates.stream()
                 .map(State::context)
                 .filter(context -> context.type().equals(type))
