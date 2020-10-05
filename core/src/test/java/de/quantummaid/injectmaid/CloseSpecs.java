@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid;
 
+import de.quantummaid.injectmaid.api.Injector;
 import de.quantummaid.injectmaid.domain.closing.AutoclosableType;
 import de.quantummaid.injectmaid.domain.closing.AutoclosableWithDependency;
 import de.quantummaid.injectmaid.domain.closing.CountingClosable;

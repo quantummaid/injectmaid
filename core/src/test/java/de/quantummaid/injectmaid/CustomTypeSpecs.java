@@ -21,13 +21,14 @@
 
 package de.quantummaid.injectmaid;
 
+import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static de.quantummaid.injectmaid.customtype.CustomType.customType;
+import static de.quantummaid.injectmaid.api.customtype.api.CustomType.customType;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;

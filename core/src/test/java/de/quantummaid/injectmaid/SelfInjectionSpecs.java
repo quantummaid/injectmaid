@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid;
 
+import de.quantummaid.injectmaid.api.Injector;
 import de.quantummaid.injectmaid.domain.WithDependencyToInjectMaid;
 import org.junit.jupiter.api.Test;
 

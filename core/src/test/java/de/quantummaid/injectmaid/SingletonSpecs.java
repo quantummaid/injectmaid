@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid;
 
+import de.quantummaid.injectmaid.api.SingletonType;
 import de.quantummaid.injectmaid.domain.NumberedType;
 import de.quantummaid.injectmaid.domain.TwoNumberedTypes;
 import de.quantummaid.injectmaid.failing.FailingInConstructorType;
@@ -30,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static de.quantummaid.injectmaid.ReusePolicy.*;
+import static de.quantummaid.injectmaid.api.ReusePolicy.*;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;

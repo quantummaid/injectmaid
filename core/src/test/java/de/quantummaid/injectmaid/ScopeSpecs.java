@@ -21,7 +21,8 @@
 
 package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.customtype.CustomType;
+import de.quantummaid.injectmaid.api.Injector;
+import de.quantummaid.injectmaid.api.customtype.api.CustomType;
 import de.quantummaid.injectmaid.domain.NumberedType;
 import de.quantummaid.injectmaid.domain.Request;
 import de.quantummaid.injectmaid.domain.StringWrapper;
@@ -33,7 +34,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static de.quantummaid.injectmaid.ReusePolicy.SINGLETON;
+import static de.quantummaid.injectmaid.api.ReusePolicy.SINGLETON;
 import static de.quantummaid.injectmaid.domain.Request.request;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
 import static org.hamcrest.CoreMatchers.*;

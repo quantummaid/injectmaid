@@ -21,10 +21,13 @@
 
 package de.quantummaid.injectmaid;
 
+import de.quantummaid.injectmaid.api.Injector;
+import de.quantummaid.injectmaid.api.ReusePolicy;
+import de.quantummaid.injectmaid.api.SingletonType;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
-import de.quantummaid.injectmaid.interception.Interceptor;
-import de.quantummaid.injectmaid.interception.Interceptors;
-import de.quantummaid.injectmaid.interception.SimpleInterceptor;
+import de.quantummaid.injectmaid.api.interception.Interceptor;
+import de.quantummaid.injectmaid.api.interception.Interceptors;
+import de.quantummaid.injectmaid.api.interception.SimpleInterceptor;
 import de.quantummaid.injectmaid.lifecyclemanagement.ExceptionDuringClose;
 import de.quantummaid.injectmaid.lifecyclemanagement.LifecycleManager;
 import de.quantummaid.reflectmaid.ResolvedType;
@@ -45,8 +48,8 @@ import static de.quantummaid.injectmaid.Scope.rootScope;
 import static de.quantummaid.injectmaid.ScopeManager.scopeManager;
 import static de.quantummaid.injectmaid.SingletonStore.singletonStore;
 import static de.quantummaid.injectmaid.circledetector.CircularDependencyDetector.validateNoCircularDependencies;
-import static de.quantummaid.injectmaid.interception.Interceptors.interceptors;
-import static de.quantummaid.injectmaid.interception.overwrite.OverwritingInterceptor.overwritingInterceptor;
+import static de.quantummaid.injectmaid.api.interception.Interceptors.interceptors;
+import static de.quantummaid.injectmaid.api.interception.overwrite.OverwritingInterceptor.overwritingInterceptor;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;

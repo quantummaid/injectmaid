@@ -30,7 +30,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
+import static de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.injectmaid.statemachine.states.Resolved.resolved;
 
 @ToString

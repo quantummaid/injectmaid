@@ -82,7 +82,7 @@ You can group common configuration options into a module:
 public final class BookingModule implements InjectorConfiguration {
 
     @Override
-    public void apply(final InjectorBuilder builder) {
+    public void apply(final InjectMaidBuilder builder) {
         builder
                 .withType(BookFlightService.class)
                 .withImplementation(BookingRepository.class, InMemoryBookingRepository.class)

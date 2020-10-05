@@ -23,7 +23,7 @@ package de.quantummaid.injectmaid.statemachine;
 
 import de.quantummaid.injectmaid.Definition;
 import de.quantummaid.injectmaid.InjectMaidException;
-import de.quantummaid.injectmaid.ReusePolicy;
+import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.statemachine.states.State;
 import de.quantummaid.reflectmaid.ResolvedType;
