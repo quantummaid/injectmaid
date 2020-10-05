@@ -25,7 +25,7 @@ import de.quantummaid.injectmaid.domain.NumberedType;
 import de.quantummaid.injectmaid.domain.StringWrapper;
 import org.junit.jupiter.api.Test;
 
-import static de.quantummaid.injectmaid.customtype.CustomType.customType;
+import static de.quantummaid.injectmaid.api.customtype.api.CustomType.customType;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;

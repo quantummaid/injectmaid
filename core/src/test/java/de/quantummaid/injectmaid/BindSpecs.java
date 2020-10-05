@@ -28,7 +28,7 @@ import de.quantummaid.injectmaid.domain.factory.StaticFactory;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static de.quantummaid.injectmaid.ReusePolicy.SINGLETON;
+import static de.quantummaid.injectmaid.api.ReusePolicy.SINGLETON;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 

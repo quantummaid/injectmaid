@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.statemachine.states;
 
-import de.quantummaid.injectmaid.ReusePolicy;
+import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.detection.DetectionResult;
 import de.quantummaid.injectmaid.detection.SingletonSwitch;
 import de.quantummaid.injectmaid.instantiator.Instantiator;

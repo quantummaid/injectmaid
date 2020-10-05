@@ -21,8 +21,8 @@
 
 package de.quantummaid.injectmaid.modules;
 
-import de.quantummaid.injectmaid.InjectorBuilder;
-import de.quantummaid.injectmaid.InjectorConfiguration;
+import de.quantummaid.injectmaid.InjectMaidBuilder;
+import de.quantummaid.injectmaid.api.InjectorConfiguration;
 import de.quantummaid.injectmaid.domain.ZeroArgumentsConstructorType;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -39,7 +39,7 @@ public final class MyModule implements InjectorConfiguration {
     }
 
     @Override
-    public void apply(final InjectorBuilder builder) {
+    public void apply(final InjectMaidBuilder builder) {
         builder.withType(ZeroArgumentsConstructorType.class);
     }
 }

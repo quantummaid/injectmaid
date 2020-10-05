@@ -22,8 +22,8 @@
 package de.quantummaid.injectmaid.documentation;
 
 import de.quantummaid.injectmaid.InjectMaid;
-import de.quantummaid.injectmaid.Injector;
-import de.quantummaid.injectmaid.ReusePolicy;
+import de.quantummaid.injectmaid.api.Injector;
+import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.documentation.domain.*;
 import org.junit.jupiter.api.Test;
 

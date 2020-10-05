@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.detection;
 
-import de.quantummaid.injectmaid.ReusePolicy;
+import de.quantummaid.injectmaid.api.ReusePolicy;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

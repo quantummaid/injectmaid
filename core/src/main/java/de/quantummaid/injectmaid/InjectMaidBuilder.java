@@ -21,9 +21,13 @@
 
 package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.customtype.CustomType;
-import de.quantummaid.injectmaid.customtype.CustomTypeData;
-import de.quantummaid.injectmaid.customtype.CustomTypeInstantiator;
+import de.quantummaid.injectmaid.api.AbstractInjectorBuilder;
+import de.quantummaid.injectmaid.api.InjectorConfiguration;
+import de.quantummaid.injectmaid.api.ReusePolicy;
+import de.quantummaid.injectmaid.api.SingletonType;
+import de.quantummaid.injectmaid.api.customtype.CustomTypeInstantiator;
+import de.quantummaid.injectmaid.api.customtype.api.CustomType;
+import de.quantummaid.injectmaid.api.customtype.api.CustomTypeData;
 import de.quantummaid.injectmaid.instantiator.BindInstantiator;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.instantiator.ScopeInstantiator;
@@ -47,12 +51,11 @@ import java.util.List;
 import java.util.Map;
 
 import static de.quantummaid.injectmaid.Definitions.definitions;
-import static de.quantummaid.injectmaid.DelegatingInjectorBuilder.delegatingInjectorBuilder;
 import static de.quantummaid.injectmaid.InjectMaid.injectMaid;
-import static de.quantummaid.injectmaid.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.injectmaid.Scope.rootScope;
 import static de.quantummaid.injectmaid.Scopes.scopes;
-import static de.quantummaid.injectmaid.customtype.CustomTypeInstantiator.customTypeInstantiator;
+import static de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE;
+import static de.quantummaid.injectmaid.api.customtype.CustomTypeInstantiator.customTypeInstantiator;
 import static de.quantummaid.injectmaid.instantiator.BindInstantiator.bindInstantiator;
 import static de.quantummaid.injectmaid.instantiator.ScopeInstantiator.scopeInstantiator;
 import static de.quantummaid.injectmaid.lifecyclemanagement.NoOpLifecycleManager.noOpLifecycleManager;
@@ -87,7 +90,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     }
 
     public InjectMaidBuilder withConfiguration(final InjectorConfiguration configuration) {
-        configuration.apply(delegatingInjectorBuilder(this));
+        configuration.apply(this);
         return this;
     }
 
@@ -103,7 +106,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
             scopedBuilder.withInstantiator(scopeType, scopeInstantiator, DEFAULT_REUSE_POLICY);
         }
         scopes.add(subScope);
-        configuration.apply(delegatingInjectorBuilder(scopedBuilder));
+        configuration.apply(scopedBuilder);
         return this;
     }
 
