@@ -206,4 +206,34 @@ public final class CloseSpecs {
         injectMaid.close();
         assertThat(instance.count, is(1));
     }
+
+    @Test
+    public void nonClosableResourcesAreNotTracked() {
+        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+                .withScope(String.class, builder ->
+                        builder.withCustomType(byte[].class, () -> new byte[1024 * 1024]))
+                .build();
+
+        for (int i = 0; i < 10_000; ++i) {
+            final Injector scope = injectMaid.enterScope("scope" + i);
+            scope.getInstance(byte[].class);
+        }
+    }
+
+    @Test
+    public void closedResourcesCanGetGarbageCollected() {
+        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+                .withScope(String.class, builder -> {
+                    builder.withCustomType(byte[].class, () -> new byte[1024 * 1024]);
+                    builder.closingInstancesOfType(byte[].class, instance -> {
+                    });
+                })
+                .build();
+
+        for (int i = 0; i < 10_000; ++i) {
+            try (Injector scope = injectMaid.enterScope("scope" + i)) {
+                scope.getInstance(byte[].class);
+            }
+        }
+    }
 }
