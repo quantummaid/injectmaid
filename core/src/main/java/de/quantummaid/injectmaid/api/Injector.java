@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.api;
 
+import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.injectmaid.api.interception.SimpleInterceptor;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ResolvedType;
@@ -35,12 +36,28 @@ public interface Injector extends AutoCloseable {
     }
 
     @SuppressWarnings("unchecked")
-    default <T> T getInstance(final GenericType<T> genericType) {
-        final ResolvedType resolvedType = genericType.toResolvedType();
+    default <T> T getInstance(final GenericType<T> type) {
+        final ResolvedType resolvedType = type.toResolvedType();
         return (T) getInstance(resolvedType);
     }
 
-    Object getInstance(ResolvedType type);
+    default Object getInstance(ResolvedType type) {
+        final TimedInstantiation<Object> instanceWithInitializationTime = getInstanceWithInitializationTime(type);
+        return instanceWithInitializationTime.instance();
+    }
+
+    default <T> TimedInstantiation<T> getInstanceWithInitializationTime(final Class<T> type) {
+        final GenericType<T> genericType = GenericType.genericType(type);
+        return getInstanceWithInitializationTime(genericType);
+    }
+
+    @SuppressWarnings("unchecked")
+    default <T> TimedInstantiation<T> getInstanceWithInitializationTime(final GenericType<T> type) {
+        final ResolvedType resolvedType = type.toResolvedType();
+        return (TimedInstantiation<T>) getInstanceWithInitializationTime(resolvedType);
+    }
+
+    TimedInstantiation<Object> getInstanceWithInitializationTime(ResolvedType type);
 
     void initializeAllSingletons();
 

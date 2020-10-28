@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.quantummaid.injectmaid</groupId>
         <artifactId>injectmaid-parent</artifactId>
-        <version>0.0.30</version>
+        <version>0.0.31</version>
     </parent>
 
     <artifactId>core</artifactId>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>de.quantummaid.reflectmaid</groupId>
             <artifactId>reflectmaid-parent</artifactId>
-            <version>0.1.44</version>
+            <version>0.1.45</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -44,13 +44,13 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>4.2.3</version>
+            <version>5.0.0-BETA-1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>5.2.9.RELEASE</version>
+            <version>5.3.0</version>
             <scope>test</scope>
         </dependency>
 

@@ -22,6 +22,7 @@
 package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.api.ReusePolicy;
+import de.quantummaid.injectmaid.api.SingletonType;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
@@ -43,6 +44,13 @@ public final class Definition {
                                         final Instantiator instantiator,
                                         final ReusePolicy reusePolicy) {
         return new Definition(type, scope, instantiator, reusePolicy);
+    }
+
+    public boolean isEagerSingleton(final SingletonType defaultSingletonType) {
+        if (reusePolicy == ReusePolicy.SINGLETON) {
+            return defaultSingletonType == SingletonType.EAGER;
+        }
+        return reusePolicy == ReusePolicy.EAGER_SINGLETON;
     }
 
     public ResolvedType type() {

@@ -69,7 +69,7 @@ public final class Detectors {
                                          final ResolvedType creatingType,
                                          final SingletonSwitch singletonSwitch) {
         if (!(creatingType instanceof ClassType)) {
-            throw new IllegalArgumentException();
+            return DetectionResult.fail(format("'%s' is not supported for automatic detection", creatingType.simpleDescription()));
         }
         if (typeToInstantiate.equals(INJECTMAID_TYPE)) {
             return success(selfInstantiator());
