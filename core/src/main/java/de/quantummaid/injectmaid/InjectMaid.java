@@ -22,14 +22,18 @@
 package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.api.Injector;
-import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.api.SingletonType;
 import de.quantummaid.injectmaid.api.interception.Interceptor;
 import de.quantummaid.injectmaid.api.interception.Interceptors;
 import de.quantummaid.injectmaid.api.interception.SimpleInterceptor;
+import de.quantummaid.injectmaid.closing.Closer;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.lifecyclemanagement.ExceptionDuringClose;
 import de.quantummaid.injectmaid.lifecyclemanagement.LifecycleManager;
+import de.quantummaid.injectmaid.timing.InitializationTimes;
+import de.quantummaid.injectmaid.timing.InstanceAndTimedDependencies;
+import de.quantummaid.injectmaid.timing.InstantiationTime;
+import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -39,8 +43,7 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.StringJoiner;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
 
 import static de.quantummaid.injectmaid.InjectMaidBuilder.injectionMaidBuilder;
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
@@ -50,6 +53,9 @@ import static de.quantummaid.injectmaid.SingletonStore.singletonStore;
 import static de.quantummaid.injectmaid.api.interception.Interceptors.interceptors;
 import static de.quantummaid.injectmaid.api.interception.overwrite.OverwritingInterceptor.overwritingInterceptor;
 import static de.quantummaid.injectmaid.circledetector.CircularDependencyDetector.validateNoCircularDependencies;
+import static de.quantummaid.injectmaid.timing.InstanceAndTimedDependencies.instanceWithNoDependencies;
+import static de.quantummaid.injectmaid.timing.TimedInstantiation.timeInstantiation;
+import static de.quantummaid.reflectmaid.GenericType.fromResolvedType;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -68,6 +74,7 @@ public final class InjectMaid implements Injector {
     private final List<InjectMaid> children = new ArrayList<>();
     private final LifecycleManager lifecycleManager;
     private final InjectMaid parent;
+    private final InitializationTimes initializationTimes = InitializationTimes.initializationTimes();
 
     public static InjectMaidBuilder anInjectMaid() {
         return injectionMaidBuilder();
@@ -115,23 +122,22 @@ public final class InjectMaid implements Injector {
 
     @Override
     public void initializeAllSingletons() {
-        this.definitions.definitionsOnScope(scope).stream()
-                .filter(Definition::isSingleton)
-                .forEach(this::internalGetInstance);
+        initializeDefinitionsThat(Definition::isSingleton);
     }
 
     private void loadEagerSingletons() {
-        this.definitions.definitionsOnScope(scope).stream()
-                .filter(this::isEagerSingleton)
-                .forEach(this::internalGetInstance);
+        initializeDefinitionsThat(definition -> definition.isEagerSingleton(defaultSingletonType));
     }
 
-    private boolean isEagerSingleton(final Definition definition) {
-        final ReusePolicy reusePolicy = definition.reusePolicy();
-        if (reusePolicy == ReusePolicy.SINGLETON) {
-            return defaultSingletonType == SingletonType.EAGER;
-        }
-        return reusePolicy == ReusePolicy.EAGER_SINGLETON;
+    private void initializeDefinitionsThat(final Predicate<Definition> predicate) {
+        this.definitions.definitionsOnScope(scope).stream()
+                .filter(predicate)
+                .forEach(definition -> {
+                    final TimedInstantiation<Object> timedInstantiation = internalGetInstance(definition);
+                    final InstantiationTime time = timedInstantiation.instantiationTime();
+                    final ResolvedType type = definition.type();
+                    initializationTimes.addInitializationTime(fromResolvedType(type), time);
+                });
     }
 
     @Override
@@ -176,16 +182,18 @@ public final class InjectMaid implements Injector {
     }
 
     @Override
-    public Object getInstance(final ResolvedType type) {
+    public TimedInstantiation<Object> getInstanceWithInitializationTime(final ResolvedType type) {
         final Optional<?> intercepted = interceptors.interceptBefore(type);
         if (intercepted.isPresent()) {
-            return intercepted.get();
+            return timeInstantiation(fromResolvedType(type), () -> instanceWithNoDependencies(intercepted.get()));
         }
         final Definition definition = definitions.definitionFor(type, scope);
-        final Object instance = internalGetInstance(definition);
-        final Object interceptedInstance = interceptors.interceptAfter(type, instance);
-        lifecycleManager.registerInstance(interceptedInstance);
-        return interceptedInstance;
+        final TimedInstantiation<Object> timedInstantiation = internalGetInstance(definition);
+        return timedInstantiation.modify(instance -> {
+            final Object interceptedInstance = interceptors.interceptAfter(type, instance);
+            lifecycleManager.registerInstance(interceptedInstance);
+            return interceptedInstance;
+        });
     }
 
     @Override
@@ -197,53 +205,58 @@ public final class InjectMaid implements Injector {
         return definitions.dump();
     }
 
-    private Object internalGetInstance(final Definition definition) {
-        return createAndRegister(definition, () -> instantiate(definition));
+    private TimedInstantiation<Object> internalGetInstance(final Definition definition) {
+        return createAndRegister(definition);
     }
 
-    private Object instantiate(final Definition definition) {
+    private TimedInstantiation<Object> instantiate(final Definition definition) {
         final Instantiator instantiator = definition.instantiator();
-        final List<Object> dependencies = instantiateDependencies(instantiator);
-        try {
-            return instantiator.instantiate(dependencies, scopeManager, this);
-        } catch (final Exception e) {
-            throw injectMaidException(format("Exception during instantiation of '%s' using %s",
-                    definition.type().simpleDescription(), instantiator.description()), e);
-        }
+        return timeInstantiation(fromResolvedType(definition.type()), () -> {
+            final List<TimedInstantiation<?>> timedDependencies = instantiateDependencies(instantiator);
+            final List<Object> dependencies = timedDependencies.stream()
+                    .map(TimedInstantiation::instance)
+                    .collect(toList());
+            final List<InstantiationTime> dependenciesInstantiationTimes = timedDependencies.stream()
+                    .map(TimedInstantiation::instantiationTime)
+                    .collect(toList());
+            try {
+                final Object instance = instantiator.instantiate(dependencies, scopeManager, this);
+                return InstanceAndTimedDependencies.instanceAndTimedDependencies(instance, dependenciesInstantiationTimes);
+            } catch (final Exception e) {
+                throw injectMaidException(format("Exception during instantiation of '%s' using %s",
+                        definition.type().simpleDescription(), instantiator.description()), e);
+            }
+        });
     }
 
-    private List<Object> instantiateDependencies(final Instantiator instantiator) {
+    private List<TimedInstantiation<?>> instantiateDependencies(final Instantiator instantiator) {
         return instantiator.dependencies().stream()
-                .map(this::getInstance)
+                .map(this::getInstanceWithInitializationTime)
                 .collect(toList());
     }
 
-    private Object createAndRegister(final Definition definition,
-                                     final Supplier<Object> instantiator) {
+    private TimedInstantiation<Object> createAndRegister(final Definition definition) {
         final boolean singleton = definition.isSingleton();
         final ResolvedType type = definition.type();
         final Scope definitionScope = definition.scope();
         if (singleton && singletonStore.contains(type, definitionScope)) {
-            return singletonStore.get(type, definitionScope);
+            return timeInstantiation(fromResolvedType(definition.type()),
+                    () -> instanceWithNoDependencies(singletonStore.get(type, definitionScope)));
         }
-        final Object instance = instantiator.get();
+        final TimedInstantiation<Object> instance = instantiate(definition);
         if (singleton) {
-            singletonStore.put(type, definitionScope, instance);
+            singletonStore.put(type, definitionScope, instance.instance());
         }
         return instance;
     }
 
+    public InitializationTimes initializationTimes() {
+        return initializationTimes;
+    }
+
     @Override
     public void close() {
-        final List<ExceptionDuringClose> exceptions = new ArrayList<>();
-        close(exceptions);
-        if (!exceptions.isEmpty()) {
-            final StringJoiner stringJoiner = new StringJoiner("\n", "exception(s) during close:\n", "");
-            exceptions.forEach(exceptionDuringClose -> stringJoiner.add(exceptionDuringClose.buildMessage()));
-            final InjectMaidException exception = injectMaidException(stringJoiner.toString());
-            exceptions.forEach(exceptionDuringClose -> exception.addSuppressed(exceptionDuringClose.exception()));
-            throw exception;
-        }
+        Closer.close(this::close);
     }
 
     private void close(final List<ExceptionDuringClose> exceptions) {
