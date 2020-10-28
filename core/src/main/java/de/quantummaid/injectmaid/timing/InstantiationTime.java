@@ -27,10 +27,13 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1452")
 public final class InstantiationTime {
+    private static final String INDENT = "\t";
+
     private final GenericType<?> type;
     private final long timeInMilliseconds;
     private final List<InstantiationTime> dependencies;
@@ -58,5 +61,19 @@ public final class InstantiationTime {
 
     public List<InstantiationTime> dependencies() {
         return dependencies;
+    }
+
+    public String render() {
+        final StringJoiner stringJoiner = new StringJoiner("\n");
+        render("", stringJoiner);
+        return stringJoiner.toString();
+    }
+
+    private void render(final String indentation,
+                        final StringJoiner stringJoiner) {
+        final String line = String.format("%s%dms %s", indentation, timeInMilliseconds, type.toResolvedType().simpleDescription());
+        stringJoiner.add(line);
+        final String childIndentation = indentation + INDENT;
+        dependencies.forEach(dependency -> dependency.render(childIndentation, stringJoiner));
     }
 }
