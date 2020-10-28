@@ -30,9 +30,9 @@ import de.quantummaid.injectmaid.closing.Closer;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.lifecyclemanagement.ExceptionDuringClose;
 import de.quantummaid.injectmaid.lifecyclemanagement.LifecycleManager;
-import de.quantummaid.injectmaid.timing.InitializationTimes;
 import de.quantummaid.injectmaid.timing.InstanceAndTimedDependencies;
 import de.quantummaid.injectmaid.timing.InstantiationTime;
+import de.quantummaid.injectmaid.timing.InstantiationTimes;
 import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
@@ -74,7 +74,7 @@ public final class InjectMaid implements Injector {
     private final List<InjectMaid> children = new ArrayList<>();
     private final LifecycleManager lifecycleManager;
     private final InjectMaid parent;
-    private final InitializationTimes initializationTimes = InitializationTimes.initializationTimes();
+    private final InstantiationTimes instantiationTimes = InstantiationTimes.instantiationTimes();
 
     public static InjectMaidBuilder anInjectMaid() {
         return injectionMaidBuilder();
@@ -136,7 +136,7 @@ public final class InjectMaid implements Injector {
                     final TimedInstantiation<Object> timedInstantiation = internalGetInstance(definition);
                     final InstantiationTime time = timedInstantiation.instantiationTime();
                     final ResolvedType type = definition.type();
-                    initializationTimes.addInitializationTime(fromResolvedType(type), time);
+                    instantiationTimes.addInitializationTime(fromResolvedType(type), time);
                 });
     }
 
@@ -250,8 +250,8 @@ public final class InjectMaid implements Injector {
         return instance;
     }
 
-    public InitializationTimes initializationTimes() {
-        return initializationTimes;
+    public InstantiationTimes instantiationTimes() {
+        return instantiationTimes;
     }
 
     @Override

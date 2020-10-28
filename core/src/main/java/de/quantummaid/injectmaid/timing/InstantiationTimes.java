@@ -23,22 +23,25 @@ package de.quantummaid.injectmaid.timing;
 
 import de.quantummaid.reflectmaid.GenericType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
 
-public final class InitializationTimes {
-    private final Map<GenericType<?>, InstantiationTime> initializationTimesInMilliseconds = new HashMap<>();
+public final class InstantiationTimes {
+    private final Map<GenericType<?>, InstantiationTime> instantiationTimes = new HashMap<>();
 
-    public static InitializationTimes initializationTimes() {
-        return new InitializationTimes();
+    public static InstantiationTimes instantiationTimes() {
+        return new InstantiationTimes();
     }
 
     public void addInitializationTime(final GenericType<?> type,
                                       final InstantiationTime time) {
-        initializationTimesInMilliseconds.put(type, time);
+        instantiationTimes.put(type, time);
     }
 
     public InstantiationTime initializationTimeFor(final Class<?> type) {
@@ -47,9 +50,20 @@ public final class InitializationTimes {
     }
 
     public InstantiationTime initializationTimeFor(final GenericType<?> genericType) {
-        if (!initializationTimesInMilliseconds.containsKey(genericType)) {
-            throw injectMaidException(format("no initialization time available for %s", genericType.toResolvedType().description()));
+        if (!instantiationTimes.containsKey(genericType)) {
+            throw injectMaidException(format("no instantiation time available for %s",
+                    genericType.toResolvedType().description()));
         }
-        return initializationTimesInMilliseconds.get(genericType);
+        return instantiationTimes.get(genericType);
+    }
+
+    public List<InstantiationTime> allInstantiationTimes() {
+        return new ArrayList<>(instantiationTimes.values());
+    }
+
+    public String render() {
+        return instantiationTimes.values().stream()
+                .map(InstantiationTime::render)
+                .collect(joining("\n"));
     }
 }

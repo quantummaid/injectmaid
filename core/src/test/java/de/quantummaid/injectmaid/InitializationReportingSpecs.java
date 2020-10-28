@@ -22,13 +22,14 @@
 package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.api.ReusePolicy;
-import de.quantummaid.injectmaid.timing.InitializationTimes;
+import de.quantummaid.injectmaid.timing.InstantiationTimes;
 import de.quantummaid.injectmaid.timing.InstantiationTime;
 import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
@@ -37,7 +38,7 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 public final class InitializationReportingSpecs {
 
     @Test
-    public void initializationTimeCanBeReportedOnAClassLevel() {
+    public void instantiationTimesCanBeReportedOnAClassLevel() {
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
                 .withCustomType(String.class, () -> {
                     sleep(1000);
@@ -45,13 +46,48 @@ public final class InitializationReportingSpecs {
                 }, ReusePolicy.EAGER_SINGLETON)
                 .build();
 
-        final InitializationTimes initializationTimes = injectMaid.initializationTimes();
-        final long time = initializationTimes.initializationTimeFor(String.class).timeInMilliseconds();
+        final InstantiationTimes instantiationTimes = injectMaid.instantiationTimes();
+        final InstantiationTime instantiationTime = instantiationTimes.initializationTimeFor(String.class);
+        final long time = instantiationTime.timeInMilliseconds();
         assertThat(time, is(greaterThan(900L)));
+
+        assertThat(instantiationTimes.render(), containsString("ms String"));
+        assertThat(instantiationTime.render(), containsString("ms String"));
     }
 
     @Test
-    public void initializationTimeCanBeReportedPerInstantiation() {
+    public void instantiationTimesCanBeIterated() {
+        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+                .withCustomType(Integer.class, () -> {
+                    sleep(250);
+                    return 42;
+                }, ReusePolicy.EAGER_SINGLETON)
+                .withCustomType(Boolean.class, () -> {
+                    sleep(250);
+                    return false;
+                }, ReusePolicy.EAGER_SINGLETON)
+                .withCustomType(Character.class, () -> {
+                    sleep(250);
+                    return 'Q';
+                }, ReusePolicy.EAGER_SINGLETON)
+                .withCustomType(Long.class, () -> {
+                    sleep(250);
+                    return 1337L;
+                }, ReusePolicy.EAGER_SINGLETON)
+                .build();
+
+        final InstantiationTimes instantiationTimes = injectMaid.instantiationTimes();
+        final List<InstantiationTime> allInstantiationTimes = instantiationTimes.allInstantiationTimes();
+        assertThat(allInstantiationTimes.size(), is(4));
+
+        assertThat(instantiationTimes.render(), containsString("ms Long\n"));
+        assertThat(instantiationTimes.render(), containsString("ms Character\n"));
+        assertThat(instantiationTimes.render(), containsString("ms Integer\n"));
+        assertThat(instantiationTimes.render(), containsString("ms Boolean"));
+    }
+
+    @Test
+    public void instantiationTimesCanBeReportedPerInstantiation() {
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
                 .withCustomType(String.class, () -> {
                     sleep(1000);
@@ -61,12 +97,15 @@ public final class InitializationReportingSpecs {
 
         final TimedInstantiation<String> instanceWithInitializationTime =
                 injectMaid.getInstanceWithInitializationTime(String.class);
-        final long time = instanceWithInitializationTime.instantiationTime().timeInMilliseconds();
+        final InstantiationTime instantiationTime = instanceWithInitializationTime.instantiationTime();
+        final long time = instantiationTime.timeInMilliseconds();
         assertThat(time, is(greaterThan(900L)));
+
+        assertThat(instantiationTime.render(), containsString("ms String"));
     }
 
     @Test
-    public void initializationTimeCanBeSplitUpIntoDependencies() {
+    public void instantiationTimesCanBeSplitUpIntoDependencies() {
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
                 .withCustomType(Integer.class, () -> {
                     sleep(250);
@@ -116,6 +155,12 @@ public final class InitializationReportingSpecs {
         final InstantiationTime fourthDependency = dependencies.get(3);
         assertThat(fourthDependency.type().toResolvedType().simpleDescription(), is("Long"));
         assertThat(fourthDependency.timeInMilliseconds(), is(greaterThan(200L)));
+
+        assertThat(instantiationTime.render(), containsString("ms String\n\t"));
+        assertThat(instantiationTime.render(), containsString("ms Integer\n\t"));
+        assertThat(instantiationTime.render(), containsString("ms Boolean\n\t"));
+        assertThat(instantiationTime.render(), containsString("ms Character\n\t"));
+        assertThat(instantiationTime.render(), containsString("ms Long"));
     }
 
     private static void sleep(final long milliseconds) {
