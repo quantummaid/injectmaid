@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 
+@SuppressWarnings("java:S2925")
 public final class InitializationReportingSpecs {
 
     @Test

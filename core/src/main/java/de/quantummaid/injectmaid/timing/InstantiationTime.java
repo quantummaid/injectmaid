@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("java:S1452")
 public final class InstantiationTime {
     private final GenericType<?> type;
     private final long timeInMilliseconds;
