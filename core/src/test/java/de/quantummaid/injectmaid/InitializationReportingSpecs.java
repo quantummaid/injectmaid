@@ -80,9 +80,9 @@ public final class InitializationReportingSpecs {
         final List<InstantiationTime> allInstantiationTimes = instantiationTimes.allInstantiationTimes();
         assertThat(allInstantiationTimes.size(), is(4));
 
-        assertThat(instantiationTimes.render(), containsString("ms Long\n"));
-        assertThat(instantiationTimes.render(), containsString("ms Character\n"));
-        assertThat(instantiationTimes.render(), containsString("ms Integer\n"));
+        assertThat(instantiationTimes.render(), containsString("ms Long"));
+        assertThat(instantiationTimes.render(), containsString("ms Character"));
+        assertThat(instantiationTimes.render(), containsString("ms Integer"));
         assertThat(instantiationTimes.render(), containsString("ms Boolean"));
     }
 
@@ -156,10 +156,10 @@ public final class InitializationReportingSpecs {
         assertThat(fourthDependency.type().toResolvedType().simpleDescription(), is("Long"));
         assertThat(fourthDependency.timeInMilliseconds(), is(greaterThan(200L)));
 
-        assertThat(instantiationTime.render(), containsString("ms String\n\t"));
-        assertThat(instantiationTime.render(), containsString("ms Integer\n\t"));
-        assertThat(instantiationTime.render(), containsString("ms Boolean\n\t"));
-        assertThat(instantiationTime.render(), containsString("ms Character\n\t"));
+        assertThat(instantiationTime.render(), containsString("ms String"));
+        assertThat(instantiationTime.render(), containsString("ms Integer"));
+        assertThat(instantiationTime.render(), containsString("ms Boolean"));
+        assertThat(instantiationTime.render(), containsString("ms Character"));
         assertThat(instantiationTime.render(), containsString("ms Long"));
     }
 
