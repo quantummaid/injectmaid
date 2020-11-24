@@ -28,7 +28,7 @@ final BookingRepository bookingRepository = injectMaid.getInstance(BookingReposi
 ```
 
 ## Singletons
-You can turn any registered type into a singleton by adding `ReusePolicy.SINGLETON` as the last parameter:
+You can turn any registered type into a singleton by adding `ReusePolicy.DEFAULT_SINGLETON` as the last parameter:
 <!---[CodeSnippet](singletons)-->
 ```java
 final InjectMaid injectMaid = InjectMaid.anInjectMaid()

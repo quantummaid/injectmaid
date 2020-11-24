@@ -47,7 +47,7 @@ public final class Definition {
     }
 
     public boolean isEagerSingleton(final SingletonType defaultSingletonType) {
-        if (reusePolicy == ReusePolicy.SINGLETON) {
+        if (reusePolicy == ReusePolicy.DEFAULT_SINGLETON) {
             return defaultSingletonType == SingletonType.EAGER;
         }
         return reusePolicy == ReusePolicy.EAGER_SINGLETON;

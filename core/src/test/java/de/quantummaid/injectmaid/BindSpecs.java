@@ -28,7 +28,7 @@ import de.quantummaid.injectmaid.domain.factory.StaticFactory;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static de.quantummaid.injectmaid.api.ReusePolicy.SINGLETON;
+import static de.quantummaid.injectmaid.api.ReusePolicy.DEFAULT_SINGLETON;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -89,7 +89,7 @@ public final class BindSpecs {
     public void theImplementationOfAnInterfaceCanBeASingleton() {
         MyNumberedImplementation.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
-                .withImplementation(MyInterface.class, MyNumberedImplementation.class, SINGLETON)
+                .withImplementation(MyInterface.class, MyNumberedImplementation.class, DEFAULT_SINGLETON)
                 .build();
 
         final MyInterface instance1 = injectMaid.getInstance(MyInterface.class);
@@ -112,7 +112,7 @@ public final class BindSpecs {
     public void aBoundInterfaceCanBeASingleton() {
         MyNumberedImplementation.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
-                .withImplementation(MyInterface.class, MyNumberedImplementation.class, SINGLETON)
+                .withImplementation(MyInterface.class, MyNumberedImplementation.class, DEFAULT_SINGLETON)
                 .build();
 
         final MyInterface instance1 = injectMaid.getInstance(MyInterface.class);
@@ -134,8 +134,8 @@ public final class BindSpecs {
     @Test
     public void singletonBoundToInterfaceAndAbstractClassIsTheSameInBothCases() {
         final InjectMaid injectMaid = anInjectMaid()
-                .withImplementation(MyInterface.class, MyImplementation.class, SINGLETON)
-                .withImplementation(MyAbstractClass.class, MyImplementation.class, SINGLETON)
+                .withImplementation(MyInterface.class, MyImplementation.class, DEFAULT_SINGLETON)
+                .withImplementation(MyAbstractClass.class, MyImplementation.class, DEFAULT_SINGLETON)
                 .build();
 
         final MyInterface myInterface = injectMaid.getInstance(MyInterface.class);

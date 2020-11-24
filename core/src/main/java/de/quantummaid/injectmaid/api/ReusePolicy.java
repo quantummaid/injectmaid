@@ -22,5 +22,5 @@
 package de.quantummaid.injectmaid.api;
 
 public enum ReusePolicy {
-    PROTOTYPE, SINGLETON, LAZY_SINGLETON, EAGER_SINGLETON
+    PROTOTYPE, DEFAULT_SINGLETON, LAZY_SINGLETON, EAGER_SINGLETON
 }

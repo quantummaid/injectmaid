@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static de.quantummaid.injectmaid.api.ReusePolicy.SINGLETON;
+import static de.quantummaid.injectmaid.api.ReusePolicy.DEFAULT_SINGLETON;
 import static de.quantummaid.injectmaid.domain.Request.request;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
 import static org.hamcrest.CoreMatchers.*;
@@ -122,7 +122,7 @@ public final class ScopeSpecs {
     public void singletonsInDifferentScopesAreDifferent() {
         NumberedType.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
-                .withScope(Request.class, injectMaidBuilder -> injectMaidBuilder.withType(NumberedType.class, SINGLETON))
+                .withScope(Request.class, injectMaidBuilder -> injectMaidBuilder.withType(NumberedType.class, DEFAULT_SINGLETON))
                 .build();
 
         final Injector requestScoped1 = injectMaid.enterScope(Request.class, request("foo"));
@@ -228,7 +228,7 @@ public final class ScopeSpecs {
         final InjectMaid injectMaid = anInjectMaid()
                 .withScope(Integer.class, builder -> builder.withType(DependentA.class))
                 .withType(DependentB.class)
-                .withType(Dependency.class, SINGLETON)
+                .withType(Dependency.class, DEFAULT_SINGLETON)
                 .build();
 
         final Dependency instance1 = injectMaid.enterScope(Integer.class, null).getInstance(Dependency.class);

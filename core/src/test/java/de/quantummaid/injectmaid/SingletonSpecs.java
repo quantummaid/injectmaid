@@ -73,7 +73,7 @@ public final class SingletonSpecs {
         NumberedType.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
                 .withType(TwoNumberedTypes.class)
-                .withType(NumberedType.class, SINGLETON)
+                .withType(NumberedType.class, DEFAULT_SINGLETON)
                 .usingDefaultSingletonType(SingletonType.EAGER)
                 .build();
         assertThat(NumberedType.counter, is(1));

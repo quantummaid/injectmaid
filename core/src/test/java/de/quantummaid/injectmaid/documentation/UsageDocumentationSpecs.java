@@ -61,7 +61,7 @@ public final class UsageDocumentationSpecs {
     public void singletons() {
         //Showcase start singletons
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-                .withType(BookingPolicies.class, ReusePolicy.SINGLETON)
+                .withType(BookingPolicies.class, ReusePolicy.DEFAULT_SINGLETON)
                 .build();
         final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
         //Showcase end singletons
@@ -97,7 +97,7 @@ public final class UsageDocumentationSpecs {
     public void defaultEagerSingletons() {
         //Showcase start defaultEagerSingletons
         final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-                .withType(BookingPolicies.class, ReusePolicy.SINGLETON)
+                .withType(BookingPolicies.class, ReusePolicy.DEFAULT_SINGLETON)
                 .usingDefaultSingletonType(SingletonType.EAGER)
                 .build();
         final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
