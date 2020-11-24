@@ -39,7 +39,7 @@ public final class SingletonSwitch {
 
     public void setSingleton() {
         if (reusePolicy == ReusePolicy.PROTOTYPE) {
-            this.reusePolicy = ReusePolicy.SINGLETON;
+            this.reusePolicy = ReusePolicy.DEFAULT_SINGLETON;
         }
     }
 

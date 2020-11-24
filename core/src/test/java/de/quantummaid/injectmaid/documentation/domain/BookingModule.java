@@ -33,7 +33,7 @@ public final class BookingModule implements InjectorConfiguration {
         builder
                 .withType(BookFlightService.class)
                 .withImplementation(BookingRepository.class, InMemoryBookingRepository.class)
-                .withType(BookingPolicies.class, ReusePolicy.SINGLETON);
+                .withType(BookingPolicies.class, ReusePolicy.DEFAULT_SINGLETON);
     }
 }
 //Showcase end module

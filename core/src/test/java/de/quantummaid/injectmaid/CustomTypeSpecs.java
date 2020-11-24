@@ -50,7 +50,7 @@ public final class CustomTypeSpecs {
     @Test
     public void aCustomTypeCanBeASingleton() {
         final InjectMaid injectMaid = anInjectMaid()
-                .withCustomType(String.class, () -> UUID.randomUUID().toString(), ReusePolicy.SINGLETON)
+                .withCustomType(String.class, () -> UUID.randomUUID().toString(), ReusePolicy.DEFAULT_SINGLETON)
                 .build();
         final String instance1 = injectMaid.getInstance(String.class);
         final String instance2 = injectMaid.getInstance(String.class);

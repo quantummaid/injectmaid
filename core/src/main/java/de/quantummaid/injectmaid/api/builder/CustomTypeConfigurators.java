@@ -48,7 +48,7 @@ public interface CustomTypeConfigurators<T extends CustomTypeConfigurators<T>> {
     default <X> T withInstance(final GenericType<X> type,
                                final X instance) {
         final CustomType customType = customType(type).usingFactory(() -> instance);
-        return withCustomType(customType, ReusePolicy.SINGLETON);
+        return withCustomType(customType, ReusePolicy.DEFAULT_SINGLETON);
     }
 
     T withCustomType(CustomType customType, ReusePolicy reusePolicy);
