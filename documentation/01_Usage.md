@@ -32,7 +32,7 @@ You can turn any registered type into a singleton by adding `ReusePolicy.DEFAULT
 <!---[CodeSnippet](singletons)-->
 ```java
 final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-        .withType(BookingPolicies.class, ReusePolicy.SINGLETON)
+        .withType(BookingPolicies.class, ReusePolicy.DEFAULT_SINGLETON)
         .build();
 final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
 ```
@@ -41,7 +41,7 @@ singletons like this:
 <!---[CodeSnippet](defaultEagerSingletons)-->
 ```java
 final InjectMaid injectMaid = InjectMaid.anInjectMaid()
-        .withType(BookingPolicies.class, ReusePolicy.SINGLETON)
+        .withType(BookingPolicies.class, ReusePolicy.DEFAULT_SINGLETON)
         .usingDefaultSingletonType(SingletonType.EAGER)
         .build();
 final BookingPolicies bookingPolicies = injectMaid.getInstance(BookingPolicies.class);
@@ -86,7 +86,7 @@ public final class BookingModule implements InjectorConfiguration {
         builder
                 .withType(BookFlightService.class)
                 .withImplementation(BookingRepository.class, InMemoryBookingRepository.class)
-                .withType(BookingPolicies.class, ReusePolicy.SINGLETON);
+                .withType(BookingPolicies.class, ReusePolicy.DEFAULT_SINGLETON);
     }
 }
 ```

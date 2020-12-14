@@ -38,7 +38,6 @@ public final class ErrorAggregationSpecs {
                 .withType(TooManyConstructorsType.class)
                 .withType(TooManyFactoriesType.class)
                 .build());
-        exception.printStackTrace();
         assertThat(exception, instanceOf(InjectMaidException.class));
         assertThat(exception.getMessage(), is("" +
                 "Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyConstructorsType':\n" +

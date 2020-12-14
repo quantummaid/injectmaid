@@ -49,6 +49,7 @@ import static de.quantummaid.injectmaid.InjectMaidBuilder.injectionMaidBuilder;
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
 import static de.quantummaid.injectmaid.Scope.rootScope;
 import static de.quantummaid.injectmaid.ScopeManager.scopeManager;
+import static de.quantummaid.injectmaid.ShutdownHook.shutdownHook;
 import static de.quantummaid.injectmaid.SingletonStore.singletonStore;
 import static de.quantummaid.injectmaid.api.interception.Interceptors.interceptors;
 import static de.quantummaid.injectmaid.api.interception.overwrite.OverwritingInterceptor.overwritingInterceptor;
@@ -56,6 +57,7 @@ import static de.quantummaid.injectmaid.circledetector.CircularDependencyDetecto
 import static de.quantummaid.injectmaid.timing.InstanceAndTimedDependencies.instanceWithNoDependencies;
 import static de.quantummaid.injectmaid.timing.TimedInstantiation.timeInstantiation;
 import static de.quantummaid.reflectmaid.GenericType.fromResolvedType;
+import static java.lang.Runtime.getRuntime;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -141,17 +143,25 @@ public final class InjectMaid implements Injector {
     }
 
     @Override
-    public InjectMaid enterScope(final ResolvedType resolvedType, final Object scopeObject) {
-        final Scope childScope = this.scope.childScope(resolvedType);
-        final List<Scope> scopes = definitions.allScopes();
-        if (!scopes.contains(childScope)) {
-            final String registeredScopes = scopes.stream()
+    public Injector enterScope(final ResolvedType resolvedType, final Object scopeObject) {
+        return enterScopeIfExists(resolvedType, scopeObject).orElseThrow(() -> {
+            final Scope childScope = this.scope.childScope(resolvedType);
+            final String registeredScopes = definitions.allScopes().stream()
                     .map(Scope::render)
                     .sorted()
                     .collect(joining(", ", "[", "]"));
             throw injectMaidException(format("Tried to enter unknown scope '%s' with object '%s'. " +
                             "Registered scopes: %s",
                     childScope.render(), scopeObject, registeredScopes));
+        });
+    }
+
+    @Override
+    public Optional<Injector> enterScopeIfExists(final ResolvedType resolvedType, final Object scopeObject) {
+        final Scope childScope = this.scope.childScope(resolvedType);
+        final List<Scope> scopes = definitions.allScopes();
+        if (!scopes.contains(childScope)) {
+            return Optional.empty();
         }
         final SingletonStore childSingletonStore = this.singletonStore.child(resolvedType);
         final ScopeManager childScopeManager = scopeManager.add(resolvedType, scopeObject);
@@ -167,7 +177,7 @@ public final class InjectMaid implements Injector {
                 this
         );
         children.add(scopedInjectMaid);
-        return scopedInjectMaid;
+        return Optional.of(scopedInjectMaid);
     }
 
     @Override
@@ -252,6 +262,12 @@ public final class InjectMaid implements Injector {
 
     public InstantiationTimes instantiationTimes() {
         return instantiationTimes;
+    }
+
+    void registerShutdownHook() {
+        final ShutdownHook shutdownHook = shutdownHook(this);
+        getRuntime().addShutdownHook(shutdownHook);
+        lifecycleManager.registerInstance(shutdownHook);
     }
 
     @Override

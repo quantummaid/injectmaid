@@ -52,6 +52,7 @@ import java.util.Map;
 
 import static de.quantummaid.injectmaid.Definitions.definitions;
 import static de.quantummaid.injectmaid.InjectMaid.injectMaid;
+import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
 import static de.quantummaid.injectmaid.Scope.rootScope;
 import static de.quantummaid.injectmaid.Scopes.scopes;
 import static de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE;
@@ -74,6 +75,7 @@ import static de.quantummaid.injectmaid.statemachine.states.Unresolved.unresolve
 public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMaidBuilder> {
     private static final ReusePolicy DEFAULT_REUSE_POLICY = PROTOTYPE;
 
+    private boolean registerShutdownHook = false;
     private final States states;
     private final Scope scope;
     private final Scopes scopes;
@@ -186,6 +188,11 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         return this;
     }
 
+    public InjectMaidBuilder closeOnJvmShutdown() {
+        registerShutdownHook = true;
+        return this;
+    }
+
     public InjectMaid build() {
         final Map<ResolvedType, List<Definition>> definitionsMap = runStateMachine(states);
         final Definitions definitions = definitions(scopes.asList(), definitionsMap);
@@ -196,6 +203,13 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         } else {
             lifecycleManager = noOpLifecycleManager();
         }
-        return injectMaid(definitions, defaultSingletonType, lifecycleManager);
+        final InjectMaid injectMaid = injectMaid(definitions, defaultSingletonType, lifecycleManager);
+        if (registerShutdownHook) {
+            if (!lifecycleManagement) {
+                throw injectMaidException("can only close on JVM shutdown if lifecycle management is activated");
+            }
+            injectMaid.registerShutdownHook();
+        }
+        return injectMaid;
     }
 }

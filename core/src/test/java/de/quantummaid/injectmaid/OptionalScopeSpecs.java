@@ -19,33 +19,28 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.lifecyclemanagement.closer;
+package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.InjectMaid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import de.quantummaid.injectmaid.api.Injector;
+import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Closers {
-    private final List<Closer> closers;
+import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-    public static Closers closers(final List<Closer> closers) {
-        return new Closers(closers);
-    }
+public final class OptionalScopeSpecs {
 
-    public Optional<Closeable> createCloseable(final Object instance) {
-        if (instance instanceof InjectMaid) {
-            return Optional.empty();
-        }
-        for (final Closer closer : closers) {
-            if (!closer.type().isInstance(instance)) {
-                continue;
-            }
-            return Optional.of(Closeable.closeable(instance, closer));
-        }
-        return Optional.empty();
+    @Test
+    public void scopeCanBeEnteredOptionally() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withScope(String.class, builder -> {
+                })
+                .build();
+        final Optional<Injector> scope1 = injectMaid.enterScopeIfExists(1);
+        assertThat(scope1.isPresent(), is(false));
+        final Optional<Injector> scope2 = injectMaid.enterScopeIfExists("1");
+        assertThat(scope2.isPresent(), is(true));
     }
 }

@@ -28,6 +28,7 @@ import de.quantummaid.injectmaid.domain.closing.CountingClosable;
 import de.quantummaid.injectmaid.domain.closing.NonAutoclosableType;
 import org.junit.jupiter.api.Test;
 
+import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -37,7 +38,7 @@ public final class CloseSpecs {
 
     @Test
     public void autocloseablesAreNotClosedByDefault() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withType(AutoclosableType.class)
                 .build();
         final AutoclosableType instance = injectMaid.getInstance(AutoclosableType.class);
@@ -48,7 +49,7 @@ public final class CloseSpecs {
 
     @Test
     public void autoclosablesInScopesAreNotClosedByDefault() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withScope(String.class, builder -> builder.withType(AutoclosableType.class))
                 .build();
         final Injector scopedInjector = injectMaid.enterScope("foo");
@@ -65,7 +66,7 @@ public final class CloseSpecs {
 
     @Test
     public void autoclosablesAreClosedWithLifecycleManagment() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withType(AutoclosableType.class)
                 .withLifecycleManagement()
                 .build();
@@ -77,7 +78,7 @@ public final class CloseSpecs {
 
     @Test
     public void autoclosablesInScopeAreClosedWithLifecycleManagment() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withScope(String.class, builder -> builder.withType(AutoclosableType.class))
                 .withLifecycleManagement()
                 .build();
@@ -93,7 +94,7 @@ public final class CloseSpecs {
 
     @Test
     public void autoclosablesInScopeAreClosedWhenParentIsClosed() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withScope(String.class, builder -> builder.withScope(Integer.class,
                         innerBuilder -> builder.withType(AutoclosableType.class)))
                 .withLifecycleManagement()
@@ -110,7 +111,7 @@ public final class CloseSpecs {
 
     @Test
     public void customClosingsCanBeRegistered() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withType(NonAutoclosableType.class)
                 .closingInstancesOfType(NonAutoclosableType.class, NonAutoclosableType::close)
                 .build();
@@ -122,7 +123,7 @@ public final class CloseSpecs {
 
     @Test
     public void dependenciesAreClosedFirst() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withType(AutoclosableWithDependency.class)
                 .withLifecycleManagement()
                 .build();
@@ -134,7 +135,7 @@ public final class CloseSpecs {
 
     @Test
     public void exceptionsDuringCloseArePropagated() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withType(AutoclosableType.class)
                 .withLifecycleManagement()
                 .build();
@@ -151,7 +152,7 @@ public final class CloseSpecs {
 
     @Test
     public void exceptionsDoNotHinderFurtherClosings() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withType(AutoclosableWithDependency.class)
                 .withLifecycleManagement()
                 .build();
@@ -168,7 +169,7 @@ public final class CloseSpecs {
 
     @Test
     public void exceptionsOfClosingsAreAggregated() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withType(AutoclosableType.class)
                 .withType(NonAutoclosableType.class)
                 .closingInstancesOfType(NonAutoclosableType.class, NonAutoclosableType::close)
@@ -195,7 +196,7 @@ public final class CloseSpecs {
 
     @Test
     public void resourcesAreNotClosedTwice() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withType(CountingClosable.class)
                 .withLifecycleManagement()
                 .build();
@@ -209,7 +210,7 @@ public final class CloseSpecs {
 
     @Test
     public void nonClosableResourcesAreNotTracked() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withScope(String.class, builder ->
                         builder.withCustomType(byte[].class, () -> new byte[1024 * 1024]))
                 .build();
@@ -222,7 +223,7 @@ public final class CloseSpecs {
 
     @Test
     public void closedResourcesCanGetGarbageCollected() {
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid injectMaid = anInjectMaid()
                 .withScope(String.class, builder -> {
                     builder.withCustomType(byte[].class, () -> new byte[1024 * 1024]);
                     builder.closingInstancesOfType(byte[].class, instance -> {
@@ -235,5 +236,15 @@ public final class CloseSpecs {
                 scope.getInstance(byte[].class);
             }
         }
+    }
+
+    @Test
+    public void injectMaidDoesNotTryToCloseItselfAsAutoclosableWhichWouldLeadToStackoverflow() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withType(InjectMaid.class)
+                .withLifecycleManagement()
+                .build();
+        injectMaid.getInstance(InjectMaid.class);
+        injectMaid.close();
     }
 }
