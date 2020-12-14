@@ -21,10 +21,12 @@
 
 package de.quantummaid.injectmaid.api;
 
-import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.injectmaid.api.interception.SimpleInterceptor;
+import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ResolvedType;
+
+import java.util.Optional;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
@@ -78,6 +80,24 @@ public interface Injector extends AutoCloseable {
     }
 
     Injector enterScope(ResolvedType resolvedType, Object scopeObject);
+
+    @SuppressWarnings("unchecked")
+    default Optional<Injector> enterScopeIfExists(final Object scopeObject) {
+        final Class<Object> scopeType = (Class<Object>) scopeObject.getClass();
+        return enterScopeIfExists(scopeType, scopeObject);
+    }
+
+    default <T> Optional<Injector> enterScopeIfExists(final Class<T> scopeType, final T scopeObject) {
+        final GenericType<T> genericType = genericType(scopeType);
+        return enterScopeIfExists(genericType, scopeObject);
+    }
+
+    default <T> Optional<Injector> enterScopeIfExists(final GenericType<T> scopeType, final T scopeObject) {
+        final ResolvedType resolvedType = scopeType.toResolvedType();
+        return enterScopeIfExists(resolvedType, scopeObject);
+    }
+
+    Optional<Injector> enterScopeIfExists(ResolvedType resolvedType, Object scopeObject);
 
     void addInterceptor(SimpleInterceptor interceptor);
 

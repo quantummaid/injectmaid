@@ -19,33 +19,31 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.lifecyclemanagement.closer;
+package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.InjectMaid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Optional;
+import static java.lang.Runtime.getRuntime;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Closers {
-    private final List<Closer> closers;
+public final class ShutdownHook extends Thread implements AutoCloseable {
+    private final InjectMaid injectMaid;
 
-    public static Closers closers(final List<Closer> closers) {
-        return new Closers(closers);
+    public static ShutdownHook shutdownHook(final InjectMaid injectMaid) {
+        return new ShutdownHook(injectMaid);
     }
 
-    public Optional<Closeable> createCloseable(final Object instance) {
-        if (instance instanceof InjectMaid) {
-            return Optional.empty();
+    @Override
+    public void run() {
+        injectMaid.close();
+    }
+
+    @Override
+    public void close() {
+        if (currentThread() != this) {
+            final Runtime runtime = getRuntime();
+            runtime.removeShutdownHook(this);
         }
-        for (final Closer closer : closers) {
-            if (!closer.type().isInstance(instance)) {
-                continue;
-            }
-            return Optional.of(Closeable.closeable(instance, closer));
-        }
-        return Optional.empty();
     }
 }

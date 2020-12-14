@@ -79,10 +79,10 @@ Example:
 ```java
 final InjectMaid injectMaid = InjectMaid.anInjectMaid()
         // global singleton:
-        .withType(UuidService.class, ReusePolicy.SINGLETON)
+        .withType(UuidService.class, ReusePolicy.DEFAULT_SINGLETON)
         .withScope(Request.class, scope -> {
             // request-scoped singleton:
-            scope.withType(BookingPolicies.class, ReusePolicy.SINGLETON);
+            scope.withType(BookingPolicies.class, ReusePolicy.DEFAULT_SINGLETON);
         })
         .build();
 
