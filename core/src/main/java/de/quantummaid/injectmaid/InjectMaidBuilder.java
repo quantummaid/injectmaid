@@ -42,9 +42,7 @@ import de.quantummaid.injectmaid.statemachine.states.State;
 import de.quantummaid.injectmaid.statemachine.states.UnresolvedFactory;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,8 +66,6 @@ import static de.quantummaid.injectmaid.statemachine.States.states;
 import static de.quantummaid.injectmaid.statemachine.states.ResolvingDependencies.resolvingDependencies;
 import static de.quantummaid.injectmaid.statemachine.states.Unresolved.unresolved;
 
-@ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1200")
 public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMaidBuilder> {

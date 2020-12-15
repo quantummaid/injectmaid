@@ -41,7 +41,8 @@ public final class ShutdownHook extends Thread implements AutoCloseable {
 
     @Override
     public void close() {
-        if (currentThread() != this) {
+        final boolean isInShutdownHookThread = currentThread() == this;
+        if (!isInShutdownHookThread) {
             final Runtime runtime = getRuntime();
             runtime.removeShutdownHook(this);
         }
