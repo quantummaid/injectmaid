@@ -36,9 +36,7 @@ import de.quantummaid.injectmaid.timing.InstantiationTimes;
 import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +60,6 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
-@ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1200")
 public final class InjectMaid implements Injector {
