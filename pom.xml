@@ -10,7 +10,7 @@
 
     <groupId>de.quantummaid.injectmaid</groupId>
     <artifactId>injectmaid-parent</artifactId>
-    <version>0.0.37</version>
+    <version>0.0.38</version>
     <packaging>pom</packaging>
 
     <name>InjectMaid</name>
@@ -38,6 +38,7 @@
     <modules>
         <module>core</module>
         <module>coverage</module>
+        <module>integrations</module>
     </modules>
 
     <properties>

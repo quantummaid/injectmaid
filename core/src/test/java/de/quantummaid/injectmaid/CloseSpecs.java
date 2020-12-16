@@ -247,4 +247,26 @@ public final class CloseSpecs {
         injectMaid.getInstance(InjectMaid.class);
         injectMaid.close();
     }
+
+    @Test
+    public void autoclosablesFromOuterScopeThatAreInstantiatedInInnerScopeAreNotClosedWhenClosingInnerScope() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withScope(String.class, builder -> {
+                    builder.withType(AutoclosableType.class);
+                    builder.withScope(Integer.class,
+                            innerBuilder -> {
+                                //builder.withType(AutoclosableType.class);
+                            });
+                })
+                .withLifecycleManagement()
+                .build();
+        final Injector outerScopedInjector = injectMaid.enterScope("foo");
+        final Injector innerScopedInjector = outerScopedInjector.enterScope(1);
+
+        final AutoclosableType instance = innerScopedInjector.getInstance(AutoclosableType.class);
+        assertThat(instance.closed, is(false));
+
+        innerScopedInjector.close();
+        assertThat(instance.closed, is(true));
+    }
 }
