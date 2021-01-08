@@ -5,12 +5,12 @@
     <parent>
         <groupId>de.quantummaid</groupId>
         <artifactId>quantummaid-opensource-parent</artifactId>
-        <version>0.9.69</version>
+        <version>0.9.71</version>
     </parent>
 
     <groupId>de.quantummaid.injectmaid</groupId>
     <artifactId>injectmaid-parent</artifactId>
-    <version>0.0.39</version>
+    <version>0.0.40</version>
     <packaging>pom</packaging>
 
     <name>InjectMaid</name>
@@ -39,12 +39,25 @@
         <module>core</module>
         <module>coverage</module>
         <module>integrations</module>
+        <module>bom</module>
     </modules>
 
     <properties>
         <aggregate.report.dir>tests/target/site/jacoco-aggregate/jacoco.xml</aggregate.report.dir>
         <plugin-update-file-checksum>915baffd77985e9da0d3cfee67e149eb</plugin-update-file-checksum>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>de.quantummaid.injectmaid</groupId>
+                <artifactId>injectmaid-bom</artifactId>
+                <version>0.0.40</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

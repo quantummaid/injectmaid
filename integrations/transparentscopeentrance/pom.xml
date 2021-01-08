@@ -26,10 +26,9 @@
     <parent>
         <groupId>de.quantummaid.injectmaid</groupId>
         <artifactId>integrations-parent</artifactId>
-        <version>0.0.39</version>
+        <version>0.0.40</version>
     </parent>
 
-    <groupId>de.quantummaid.injectmaid.integrations</groupId>
     <artifactId>injectmaid-transparentscopeentrance</artifactId>
 
     <name>MapMaid - Integrations - Transparent Scope Entrance</name>
@@ -37,7 +36,7 @@
     <properties>
         <sonar.coverage.jacoco.xmlReportPaths>../../coverage/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <dependency-update-file-checksum>a949b51c3f94b8f3e02a109cd954d9a5</dependency-update-file-checksum>
+        <dependency-update-file-checksum>1cafa5e60d63d48b6bf568155662f6fd</dependency-update-file-checksum>
         <plugin-update-file-checksum>d25694f9d0674135a9b37b909e84d640</plugin-update-file-checksum>
         <kotlin.version>1.4.30-M1</kotlin.version>
     </properties>
