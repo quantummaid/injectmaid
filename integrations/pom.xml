@@ -26,7 +26,7 @@
     <parent>
         <groupId>de.quantummaid.injectmaid</groupId>
         <artifactId>injectmaid-parent</artifactId>
-        <version>0.0.40</version>
+        <version>0.0.41</version>
     </parent>
 
     <groupId>de.quantummaid.injectmaid.integrations</groupId>
