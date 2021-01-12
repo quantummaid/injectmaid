@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.quantummaid.injectmaid</groupId>
         <artifactId>injectmaid-parent</artifactId>
-        <version>0.0.40</version>
+        <version>0.0.41</version>
     </parent>
 
     <artifactId>core</artifactId>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>de.quantummaid.reflectmaid</groupId>
             <artifactId>reflectmaid-parent</artifactId>
-            <version>0.1.50</version>
+            <version>0.1.51</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>5.3.2</version>
+            <version>5.3.3</version>
             <scope>test</scope>
         </dependency>
 
