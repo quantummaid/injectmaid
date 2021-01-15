@@ -21,12 +21,16 @@
 
 package de.quantummaid.injectmaid.lifecyclemanagement;
 
+import de.quantummaid.injectmaid.Scope;
+
 import java.util.List;
 
 public interface LifecycleManager {
-    LifecycleManager newInstance();
+    LifecycleManager newInstance(Scope scope);
 
-    void registerInstance(Object instance);
+    void registerInstance(Object instance, Scope scope);
 
     void closeAll(List<ExceptionDuringClose> exceptions);
+
+    LifecycleManager child();
 }

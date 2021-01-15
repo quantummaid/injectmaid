@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.lifecyclemanagement;
 
+import de.quantummaid.injectmaid.Scope;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -34,17 +35,22 @@ public final class NoOpLifecycleManager implements LifecycleManager {
     }
 
     @Override
-    public LifecycleManager newInstance() {
+    public LifecycleManager newInstance(final Scope scope) {
         return new NoOpLifecycleManager();
     }
 
     @Override
-    public void registerInstance(final Object instance) {
+    public void registerInstance(final Object instance, final Scope scope) {
         // do nothing
     }
 
     @Override
     public void closeAll(final List<ExceptionDuringClose> exceptions) {
         // do nothing
+    }
+
+    @Override
+    public LifecycleManager child() {
+        return this;
     }
 }
