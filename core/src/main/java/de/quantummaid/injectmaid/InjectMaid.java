@@ -85,34 +85,15 @@ public final class InjectMaid implements Injector {
         final Scope scope = rootScope();
         final ScopeManager scopeManager = scopeManager();
         final Interceptors interceptors = interceptors();
-        return initInScope(
+        final InjectMaid injectMaid = new InjectMaid(
                 definitions,
                 defaultSingletonType,
+                singletonStore(),
                 scope,
                 scopeManager,
                 interceptors,
                 lifecycleManager,
                 null
-        );
-    }
-
-    private static InjectMaid initInScope(final Definitions definitions,
-                                          final SingletonType defaultSingletonType,
-                                          final Scope scope,
-                                          final ScopeManager scopeManager,
-                                          final Interceptors interceptors,
-                                          final LifecycleManager lifecycleManager,
-                                          final InjectMaid parent) {
-        final SingletonStore singletonStore = singletonStore();
-        final InjectMaid injectMaid = new InjectMaid(
-                definitions,
-                defaultSingletonType,
-                singletonStore,
-                scope,
-                scopeManager,
-                interceptors,
-                lifecycleManager,
-                parent
         );
         injectMaid.loadEagerSingletons();
         return injectMaid;
@@ -169,7 +150,7 @@ public final class InjectMaid implements Injector {
                 childScope,
                 childScopeManager,
                 childInterceptors,
-                lifecycleManager.newInstance(),
+                lifecycleManager.newInstance(childScope),
                 this
         );
         children.add(scopedInjectMaid);
@@ -195,11 +176,7 @@ public final class InjectMaid implements Injector {
         }
         final Definition definition = definitions.definitionFor(type, scope);
         final TimedInstantiation<Object> timedInstantiation = internalGetInstance(definition);
-        return timedInstantiation.modify(instance -> {
-            final Object interceptedInstance = interceptors.interceptAfter(type, instance);
-            lifecycleManager.registerInstance(interceptedInstance);
-            return interceptedInstance;
-        });
+        return timedInstantiation.modify(instance -> interceptors.interceptAfter(type, instance));
     }
 
     @Override
@@ -250,6 +227,7 @@ public final class InjectMaid implements Injector {
                     () -> instanceWithNoDependencies(singletonStore.get(type, definitionScope)));
         }
         final TimedInstantiation<Object> instance = instantiate(definition);
+        lifecycleManager.registerInstance(instance.instance(), definitionScope);
         if (singleton) {
             singletonStore.put(type, definitionScope, instance.instance());
         }
@@ -263,7 +241,7 @@ public final class InjectMaid implements Injector {
     void registerShutdownHook() {
         final ShutdownHook shutdownHook = shutdownHook(this);
         getRuntime().addShutdownHook(shutdownHook);
-        lifecycleManager.registerInstance(shutdownHook);
+        lifecycleManager.registerInstance(shutdownHook, scope);
     }
 
     @Override

@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.lifecyclemanagement;
 
+import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closeable;
 import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closers;
 import lombok.AccessLevel;
@@ -29,24 +30,37 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RealLifecycleManager implements LifecycleManager {
     private final Closers closers;
     private final List<Closeable> closeables = new ArrayList<>();
+    private final Scope scope;
+    private final LifecycleManager parent;
 
-    public static LifecycleManager realLifecycleManager(final Closers closers) {
-        return new RealLifecycleManager(closers);
+    public static LifecycleManager realLifecycleManager(final Closers closers,
+                                                        final Scope scope) {
+        return new RealLifecycleManager(closers, scope, null);
     }
 
     @Override
-    public LifecycleManager newInstance() {
-        return new RealLifecycleManager(closers);
+    public LifecycleManager newInstance(final Scope scope) {
+        return new RealLifecycleManager(closers, scope, this);
     }
 
     @Override
-    public void registerInstance(final Object instance) {
-        closers.createCloseable(instance)
-                .ifPresent(closeables::add);
+    public void registerInstance(final Object instance, final Scope scope) {
+        if (!this.scope.equals(scope)) {
+            if (parent == null) {
+                throw injectMaidException(
+                        "unable to register autoclosable in scope '" + scope.render() + "' - this should never happen");
+            }
+            parent.registerInstance(instance, scope);
+        } else {
+            closers.createCloseable(instance)
+                    .ifPresent(closeables::add);
+        }
     }
 
     @Override
@@ -55,5 +69,10 @@ public final class RealLifecycleManager implements LifecycleManager {
                 autoCloseable.close()
                         .ifPresent(exceptions::add)
         );
+    }
+
+    @Override
+    public LifecycleManager child() {
+        return this;
     }
 }

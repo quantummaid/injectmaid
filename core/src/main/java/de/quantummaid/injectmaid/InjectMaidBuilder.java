@@ -195,7 +195,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         final LifecycleManager lifecycleManager;
         if (lifecycleManagement || !closers.isEmpty()) {
             closers.add(closer(AutoCloseable.class, AutoCloseable::close));
-            lifecycleManager = realLifecycleManager(Closers.closers(this.closers));
+            lifecycleManager = realLifecycleManager(Closers.closers(this.closers), scope);
         } else {
             lifecycleManager = noOpLifecycleManager();
         }

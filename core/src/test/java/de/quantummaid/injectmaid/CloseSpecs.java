@@ -29,6 +29,7 @@ import de.quantummaid.injectmaid.domain.closing.NonAutoclosableType;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
+import static de.quantummaid.injectmaid.api.ReusePolicy.EAGER_SINGLETON;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -119,18 +120,6 @@ public final class CloseSpecs {
         assertThat(instance.closed, is(false));
         injectMaid.close();
         assertThat(instance.closed, is(true));
-    }
-
-    @Test
-    public void dependenciesAreClosedFirst() {
-        final InjectMaid injectMaid = anInjectMaid()
-                .withType(AutoclosableWithDependency.class)
-                .withLifecycleManagement()
-                .build();
-        final AutoclosableWithDependency instance = injectMaid.getInstance(AutoclosableWithDependency.class);
-        injectMaid.close();
-        assertThat(instance.closed, is(true));
-        assertThat(instance.dependencyHasBeenClosedFirst, is(true));
     }
 
     @Test
@@ -255,7 +244,7 @@ public final class CloseSpecs {
                     builder.withType(AutoclosableType.class);
                     builder.withScope(Integer.class,
                             innerBuilder -> {
-                                //builder.withType(AutoclosableType.class);
+                                // do nothing
                             });
                 })
                 .withLifecycleManagement()
@@ -267,6 +256,49 @@ public final class CloseSpecs {
         assertThat(instance.closed, is(false));
 
         innerScopedInjector.close();
+        assertThat(instance.closed, is(false));
+    }
+
+    @Test
+    public void dependenciesAreClosedFirst() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withType(AutoclosableWithDependency.class)
+                .withLifecycleManagement()
+                .build();
+        final AutoclosableWithDependency instance = injectMaid.getInstance(AutoclosableWithDependency.class);
+        injectMaid.close();
         assertThat(instance.closed, is(true));
+        assertThat(instance.dependencyHasBeenClosedFirst, is(true));
+    }
+
+    @Test
+    public void dependenciesAreNotClosedIfTheyAreDefinedInOuterScope() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withType(AutoclosableType.class)
+                .withScope(String.class, builder -> builder.withType(AutoclosableWithDependency.class))
+                .withLifecycleManagement()
+                .build();
+        final Injector scope = injectMaid.enterScope("foo");
+        final AutoclosableWithDependency instance = scope.getInstance(AutoclosableWithDependency.class);
+        scope.close();
+        assertThat(instance.closed, is(true));
+        assertThat(instance.dependencyHasBeenClosedFirst, is(false));
+    }
+
+    @Test
+    public void dependenciesAreNotClosedIfTheyAreDefinedInOuterScopeAndInstantiatedBeforehand() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withType(AutoclosableType.class, EAGER_SINGLETON)
+                .withScope(String.class, builder -> builder.withType(AutoclosableWithDependency.class))
+                .withLifecycleManagement()
+                .build();
+        final AutoclosableType autoclosableType = injectMaid.getInstance(AutoclosableType.class);
+        assertThat(autoclosableType.closed, is(false));
+        final Injector scope = injectMaid.enterScope("foo");
+        final AutoclosableWithDependency instance = scope.getInstance(AutoclosableWithDependency.class);
+        scope.close();
+        assertThat(instance.closed, is(true));
+        assertThat(instance.dependencyHasBeenClosedFirst, is(false));
+        assertThat(autoclosableType.closed, is(false));
     }
 }
