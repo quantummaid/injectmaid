@@ -21,6 +21,8 @@
 
 package de.quantummaid.injectmaid.api;
 
+import de.quantummaid.injectmaid.InjectMaid;
+import de.quantummaid.injectmaid.InjectMaidBuilder;
 import de.quantummaid.injectmaid.api.interception.SimpleInterceptor;
 import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.reflectmaid.GenericType;
@@ -100,6 +102,13 @@ public interface Injector extends AutoCloseable {
     Optional<Injector> enterScopeIfExists(ResolvedType resolvedType, Object scopeObject);
 
     void addInterceptor(SimpleInterceptor interceptor);
+
+    default void overwriteWith(final InjectorConfiguration injectorConfiguration) {
+        final InjectMaidBuilder builder = InjectMaid.anInjectMaid();
+        injectorConfiguration.apply(builder);
+        final InjectMaid injectMaid = builder.build();
+        overwriteWith(injectMaid);
+    }
 
     void overwriteWith(Injector injector);
 

@@ -66,10 +66,8 @@ public final class InterceptorSpecs {
         assertThat(instance1, notNullValue());
         assertThat(instance1.string, is("original value"));
 
-        final InjectMaid overwrite = InjectMaid.anInjectMaid()
-                .withCustomType(StringWrapper.class, () -> new StringWrapper("overwritten value"))
-                .build();
-        injectMaid.overwriteWith(overwrite);
+        injectMaid.overwriteWith(builder ->
+                builder.withCustomType(StringWrapper.class, () -> new StringWrapper("overwritten value")));
 
         final StringWrapper instance2 = injectMaid.getInstance(StringWrapper.class);
         assertThat(instance2, notNullValue());
