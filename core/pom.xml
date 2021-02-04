@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.quantummaid.injectmaid</groupId>
         <artifactId>injectmaid-parent</artifactId>
-        <version>0.0.44</version>
+        <version>0.0.45</version>
     </parent>
 
     <artifactId>core</artifactId>
@@ -28,13 +28,13 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.16</version>
+            <version>1.18.18</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>de.quantummaid.reflectmaid</groupId>
             <artifactId>reflectmaid-parent</artifactId>
-            <version>0.1.52</version>
+            <version>0.1.53</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
