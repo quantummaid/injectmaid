@@ -5,12 +5,12 @@
     <parent>
         <groupId>de.quantummaid</groupId>
         <artifactId>quantummaid-opensource-parent</artifactId>
-        <version>0.9.74</version>
+        <version>0.9.75</version>
     </parent>
 
     <groupId>de.quantummaid.injectmaid</groupId>
     <artifactId>injectmaid-bom</artifactId>
-    <version>0.0.45</version>
+    <version>0.0.46</version>
     <packaging>pom</packaging>
 
     <name>InjectMaid - BOM</name>
@@ -25,12 +25,12 @@
             <dependency>
                 <groupId>de.quantummaid.injectmaid</groupId>
                 <artifactId>core</artifactId>
-                <version>0.0.45</version>
+                <version>0.0.46</version>
             </dependency>
             <dependency>
                 <groupId>de.quantummaid.injectmaid.integrations</groupId>
                 <artifactId>injectmaid-transparentscopeentrance</artifactId>
-                <version>0.0.45</version>
+                <version>0.0.46</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
