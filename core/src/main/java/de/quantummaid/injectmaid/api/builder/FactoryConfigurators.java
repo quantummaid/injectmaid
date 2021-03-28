@@ -23,7 +23,6 @@ package de.quantummaid.injectmaid.api.builder;
 
 import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.reflectmaid.GenericType;
-import de.quantummaid.reflectmaid.ResolvedType;
 
 import static de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.reflectmaid.GenericType.genericType;
@@ -50,13 +49,5 @@ public interface FactoryConfigurators<T extends FactoryConfigurators<T>> {
         return withFactory(genericType, genericFactory, reusePolicy);
     }
 
-    default T withFactory(final GenericType<?> type,
-                          final GenericType<?> factory,
-                          final ReusePolicy reusePolicy) {
-        final ResolvedType resolvedType = type.toResolvedType();
-        final ResolvedType resolvedFactory = factory.toResolvedType();
-        return withFactory(resolvedType, resolvedFactory, reusePolicy);
-    }
-
-    T withFactory(ResolvedType type, ResolvedType factory, ReusePolicy reusePolicy);
+    T withFactory(GenericType<?> type, GenericType<?> factory, ReusePolicy reusePolicy);
 }

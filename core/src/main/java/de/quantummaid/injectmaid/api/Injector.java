@@ -25,8 +25,8 @@ import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.InjectMaidBuilder;
 import de.quantummaid.injectmaid.api.interception.SimpleInterceptor;
 import de.quantummaid.injectmaid.timing.TimedInstantiation;
-import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.GenericType;
 
 import java.util.Optional;
 
@@ -39,29 +39,19 @@ public interface Injector extends AutoCloseable {
         return getInstance(genericType);
     }
 
-    @SuppressWarnings("unchecked")
     default <T> T getInstance(final GenericType<T> type) {
-        final ResolvedType resolvedType = type.toResolvedType();
-        return (T) getInstance(resolvedType);
-    }
-
-    default Object getInstance(ResolvedType type) {
-        final TimedInstantiation<Object> instanceWithInitializationTime = getInstanceWithInitializationTime(type);
+        final TimedInstantiation<T> instanceWithInitializationTime = getInstanceWithInitializationTime(type);
         return instanceWithInitializationTime.instance();
     }
 
+    <T> T getInstance(ResolvedType type);
+
     default <T> TimedInstantiation<T> getInstanceWithInitializationTime(final Class<T> type) {
-        final GenericType<T> genericType = GenericType.genericType(type);
+        final GenericType<T> genericType = genericType(type);
         return getInstanceWithInitializationTime(genericType);
     }
 
-    @SuppressWarnings("unchecked")
-    default <T> TimedInstantiation<T> getInstanceWithInitializationTime(final GenericType<T> type) {
-        final ResolvedType resolvedType = type.toResolvedType();
-        return (TimedInstantiation<T>) getInstanceWithInitializationTime(resolvedType);
-    }
-
-    TimedInstantiation<Object> getInstanceWithInitializationTime(ResolvedType type);
+    <T> TimedInstantiation<T> getInstanceWithInitializationTime(GenericType<T> type);
 
     void initializeAllSingletons();
 
@@ -76,10 +66,7 @@ public interface Injector extends AutoCloseable {
         return enterScope(genericType, scopeObject);
     }
 
-    default <T> Injector enterScope(final GenericType<T> scopeType, final T scopeObject) {
-        final ResolvedType resolvedType = scopeType.toResolvedType();
-        return enterScope(resolvedType, scopeObject);
-    }
+    <T> Injector enterScope(GenericType<T> scopeType, T scopeObject);
 
     Injector enterScope(ResolvedType resolvedType, Object scopeObject);
 
@@ -94,10 +81,7 @@ public interface Injector extends AutoCloseable {
         return enterScopeIfExists(genericType, scopeObject);
     }
 
-    default <T> Optional<Injector> enterScopeIfExists(final GenericType<T> scopeType, final T scopeObject) {
-        final ResolvedType resolvedType = scopeType.toResolvedType();
-        return enterScopeIfExists(resolvedType, scopeObject);
-    }
+    <T> Optional<Injector> enterScopeIfExists(GenericType<T> scopeType, T scopeObject);
 
     Optional<Injector> enterScopeIfExists(ResolvedType resolvedType, Object scopeObject);
 
@@ -117,10 +101,7 @@ public interface Injector extends AutoCloseable {
         return canInstantiate(genericType);
     }
 
-    default boolean canInstantiate(final GenericType<?> type) {
-        final ResolvedType resolvedType = type.toResolvedType();
-        return canInstantiate(resolvedType);
-    }
+    boolean canInstantiate(GenericType<?> type);
 
     boolean canInstantiate(ResolvedType resolvedType);
 

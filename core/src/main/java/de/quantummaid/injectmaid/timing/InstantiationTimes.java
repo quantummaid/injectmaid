@@ -22,6 +22,10 @@
 package de.quantummaid.injectmaid.timing;
 
 import de.quantummaid.reflectmaid.GenericType;
+import de.quantummaid.reflectmaid.ReflectMaid;
+import de.quantummaid.reflectmaid.ResolvedType;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,32 +33,36 @@ import java.util.List;
 import java.util.Map;
 
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
+import static de.quantummaid.reflectmaid.GenericType.genericType;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InstantiationTimes {
-    private final Map<GenericType<?>, InstantiationTime> instantiationTimes = new HashMap<>();
+    private final ReflectMaid reflectMaid;
+    private final Map<ResolvedType, InstantiationTime> instantiationTimes = new HashMap<>();
 
-    public static InstantiationTimes instantiationTimes() {
-        return new InstantiationTimes();
+    public static InstantiationTimes instantiationTimes(final ReflectMaid reflectMaid) {
+        return new InstantiationTimes(reflectMaid);
     }
 
-    public void addInitializationTime(final GenericType<?> type,
+    public void addInitializationTime(final ResolvedType type,
                                       final InstantiationTime time) {
         instantiationTimes.put(type, time);
     }
 
     public InstantiationTime initializationTimeFor(final Class<?> type) {
-        final GenericType<?> genericType = GenericType.genericType(type);
+        final GenericType<?> genericType = genericType(type);
         return initializationTimeFor(genericType);
     }
 
     public InstantiationTime initializationTimeFor(final GenericType<?> genericType) {
-        if (!instantiationTimes.containsKey(genericType)) {
+        final ResolvedType resolvedType = reflectMaid.resolve(genericType);
+        if (!instantiationTimes.containsKey(resolvedType)) {
             throw injectMaidException(format("no instantiation time available for %s",
-                    genericType.toResolvedType().description()));
+                    resolvedType.description()));
         }
-        return instantiationTimes.get(genericType);
+        return instantiationTimes.get(resolvedType);
     }
 
     public List<InstantiationTime> allInstantiationTimes() {

@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.api.customtype.api;
 
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.GenericType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -30,15 +30,15 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1452")
 public final class CustomTypeData {
-    private final List<ResolvedType> dependencies;
+    private final List<GenericType<?>> dependencies;
     private final InvocableFactory<?> invocableFactory;
 
-    public static CustomTypeData customTypeInstantiator(final List<ResolvedType> dependencies,
+    public static CustomTypeData customTypeInstantiator(final List<GenericType<?>> dependencies,
                                                         final InvocableFactory<?> invocableFactory) {
         return new CustomTypeData(dependencies, invocableFactory);
     }
 
-    public List<ResolvedType> dependencies() {
+    public List<GenericType<?>> dependencies() {
         return dependencies;
     }
 

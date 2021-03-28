@@ -23,8 +23,9 @@ package de.quantummaid.injectmaid.transparentscopeentrance
 
 import de.quantummaid.injectmaid.InjectMaid
 import de.quantummaid.injectmaid.api.Injector
-import de.quantummaid.reflectmaid.GenericType
 import de.quantummaid.reflectmaid.ResolvedType
+import de.quantummaid.reflectmaid.GenericType
+import de.quantummaid.reflectmaid.GenericType.Companion.genericType
 import kotlin.reflect.KClass
 
 fun <T: Any> InjectMaid.enterOptionalScope(scopeObject: T): Injector {
@@ -39,13 +40,13 @@ fun <T : Any> InjectMaid.enterOptionalScope(type: KClass<out T>,
 
 fun <T> InjectMaid.enterOptionalScope(type: Class<out T>,
                                       scopeObject: T): Injector {
-    val genericType = GenericType.genericType(type)
+    val genericType = genericType(type)
     return enterOptionalScope(genericType, scopeObject)
 }
 
 fun <T> InjectMaid.enterOptionalScope(genericType: GenericType<out T>,
                                       scopeObject: T): Injector {
-    val resolvedType = genericType.toResolvedType()
+    val resolvedType = reflectMaid().resolve(genericType)
     return enterOptionalScope(resolvedType, scopeObject as Any)
 }
 

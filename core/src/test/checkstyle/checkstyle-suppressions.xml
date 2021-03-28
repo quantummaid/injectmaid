@@ -39,4 +39,5 @@
     <suppress checks="IllegalCatch" files="RealLifecycleManager"/>
     <suppress checks="ExplicitInitialization" files="InjectMaidBuilder"/>
     <suppress checks="MagicNumber|MethodLength|ExecutableStatementCount" files="CloseSpecs|InitializationReportingSpecs"/>
+    <suppress checks="ClassFanOutComplexity" files="InjectMaid"/>
 </suppressions>

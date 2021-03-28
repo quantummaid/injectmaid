@@ -40,6 +40,8 @@ import de.quantummaid.injectmaid.statemachine.States;
 import de.quantummaid.injectmaid.statemachine.states.ResolvingDependencies;
 import de.quantummaid.injectmaid.statemachine.states.State;
 import de.quantummaid.injectmaid.statemachine.states.UnresolvedFactory;
+import de.quantummaid.reflectmaid.GenericType;
+import de.quantummaid.reflectmaid.ReflectMaid;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +49,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static de.quantummaid.injectmaid.Definitions.definitions;
 import static de.quantummaid.injectmaid.InjectMaid.injectMaid;
@@ -71,6 +74,7 @@ import static de.quantummaid.injectmaid.statemachine.states.Unresolved.unresolve
 public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMaidBuilder> {
     private static final ReusePolicy DEFAULT_REUSE_POLICY = PROTOTYPE;
 
+    private final ReflectMaid reflectMaid;
     private boolean registerShutdownHook = false;
     private final States states;
     private final Scope scope;
@@ -79,12 +83,12 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     private boolean lifecycleManagement = false;
     private final List<Closer> closers = new ArrayList<>();
 
-    static InjectMaidBuilder injectionMaidBuilder() {
+    static InjectMaidBuilder injectMaidBuilder(final ReflectMaid reflectMaid) {
         final States states = states();
         final Scope scope = rootScope();
         final Scopes scopes = scopes();
         scopes.add(scope);
-        return new InjectMaidBuilder(states, scope, scopes);
+        return new InjectMaidBuilder(reflectMaid, states, scope, scopes);
     }
 
     public InjectMaidBuilder withConfiguration(final InjectorConfiguration configuration) {
@@ -93,15 +97,16 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     }
 
     @Override
-    public InjectMaidBuilder withScope(final ResolvedType scopeType,
+    public InjectMaidBuilder withScope(final GenericType<?> scopeType,
                                        final InjectorConfiguration configuration) {
-        scopes.validateElementNotUsedSomewhereElse(scopeType, scope);
-        final Scope subScope = this.scope.childScope(scopeType);
-        final InjectMaidBuilder scopedBuilder = new InjectMaidBuilder(states, subScope, scopes);
+        final ResolvedType resolvedScopeType = reflectMaid.resolve(scopeType);
+        scopes.validateElementNotUsedSomewhereElse(resolvedScopeType, scope);
+        final Scope subScope = this.scope.childScope(resolvedScopeType);
+        final InjectMaidBuilder scopedBuilder = new InjectMaidBuilder(reflectMaid, states, subScope, scopes);
         scopedBuilder.lifecycleManagement = lifecycleManagement;
         if (!scopes.contains(subScope)) {
-            final ScopeInstantiator scopeInstantiator = scopeInstantiator(scopeType);
-            scopedBuilder.withInstantiator(scopeType, scopeInstantiator, DEFAULT_REUSE_POLICY);
+            final ScopeInstantiator scopeInstantiator = scopeInstantiator(resolvedScopeType);
+            scopedBuilder.withInstantiator(resolvedScopeType, scopeInstantiator, DEFAULT_REUSE_POLICY);
         }
         scopes.add(subScope);
         configuration.apply(scopedBuilder);
@@ -114,30 +119,35 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     }
 
     @Override
-    public InjectMaidBuilder withFactory(final ResolvedType type,
-                                         final ResolvedType factory,
+    public InjectMaidBuilder withFactory(final GenericType<?> type,
+                                         final GenericType<?> factory,
                                          final ReusePolicy reusePolicy) {
-        final Context context = context(type, scope, states, reusePolicy);
-        final UnresolvedFactory state = UnresolvedFactory.unresolvedFactory(context, factory);
+        final ResolvedType resolvedType = reflectMaid.resolve(type);
+        final ResolvedType resolvedFactory = reflectMaid.resolve(factory);
+        final Context context = context(resolvedType, scope, states, reusePolicy);
+        final UnresolvedFactory state = UnresolvedFactory.unresolvedFactory(context, resolvedFactory);
         states.addOrFailIfAlreadyPresent(state, false);
         return this;
     }
 
     @Override
-    public InjectMaidBuilder withImplementation(final ResolvedType interfaceType,
-                                                final ResolvedType implementationType,
-                                                final ReusePolicy reusePolicy) {
-        final Context context = context(interfaceType, scope, states, DEFAULT_REUSE_POLICY);
-        final BindInstantiator instantiator = bindInstantiator(implementationType);
+    public <X> InjectMaidBuilder withImplementation(final GenericType<X> interfaceType,
+                                                    final GenericType<? extends X> implementationType,
+                                                    final ReusePolicy reusePolicy) {
+        final ResolvedType resolvedInterfaceType = reflectMaid.resolve(interfaceType);
+        final ResolvedType resolvedImplementationType = reflectMaid.resolve(implementationType);
+        final Context context = context(resolvedInterfaceType, scope, states, DEFAULT_REUSE_POLICY);
+        final BindInstantiator instantiator = bindInstantiator(resolvedImplementationType);
         context.setInstantiator(instantiator);
         final ResolvingDependencies state = resolvingDependencies(context);
         states.addOrFailIfAlreadyPresent(state, false);
-        return withType(implementationType, reusePolicy, true);
+        return withType(resolvedImplementationType, reusePolicy, true);
     }
 
     @Override
-    public InjectMaidBuilder withType(final ResolvedType resolvedType,
+    public InjectMaidBuilder withType(final GenericType<?> genericType,
                                       final ReusePolicy reusePolicy) {
+        final ResolvedType resolvedType = reflectMaid.resolve(genericType);
         return withType(resolvedType, reusePolicy, false);
     }
 
@@ -153,13 +163,17 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     @Override
     public InjectMaidBuilder withCustomType(final CustomType customType,
                                             final ReusePolicy reusePolicy) {
-        final ResolvedType type = customType.resolvedType();
+        final GenericType<?> type = customType.type();
         final CustomTypeData customTypeData = customType.instantiator();
+        final List<ResolvedType> dependencies = customTypeData.dependencies().stream()
+                .map(reflectMaid::resolve)
+                .collect(Collectors.toList());
         final CustomTypeInstantiator instantiator = customTypeInstantiator(
-                customTypeData.dependencies(),
+                dependencies,
                 customTypeData.invocableFactory()
         );
-        return withInstantiator(type, instantiator, reusePolicy);
+        final ResolvedType resolvedType = reflectMaid.resolve(type);
+        return withInstantiator(resolvedType, instantiator, reusePolicy);
     }
 
     @Override
@@ -199,7 +213,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         } else {
             lifecycleManager = noOpLifecycleManager();
         }
-        final InjectMaid injectMaid = injectMaid(definitions, defaultSingletonType, lifecycleManager);
+        final InjectMaid injectMaid = injectMaid(reflectMaid, definitions, defaultSingletonType, lifecycleManager);
         if (registerShutdownHook) {
             if (!lifecycleManagement) {
                 throw injectMaidException("can only close on JVM shutdown if lifecycle management is activated");

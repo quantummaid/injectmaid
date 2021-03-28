@@ -34,6 +34,8 @@ import de.quantummaid.injectmaid.timing.InstanceAndTimedDependencies;
 import de.quantummaid.injectmaid.timing.InstantiationTime;
 import de.quantummaid.injectmaid.timing.InstantiationTimes;
 import de.quantummaid.injectmaid.timing.TimedInstantiation;
+import de.quantummaid.reflectmaid.GenericType;
+import de.quantummaid.reflectmaid.ReflectMaid;
 import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +45,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static de.quantummaid.injectmaid.InjectMaidBuilder.injectionMaidBuilder;
+import static de.quantummaid.injectmaid.InjectMaidBuilder.injectMaidBuilder;
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
 import static de.quantummaid.injectmaid.Scope.rootScope;
 import static de.quantummaid.injectmaid.ScopeManager.scopeManager;
@@ -54,7 +56,6 @@ import static de.quantummaid.injectmaid.api.interception.overwrite.OverwritingIn
 import static de.quantummaid.injectmaid.circledetector.CircularDependencyDetector.validateNoCircularDependencies;
 import static de.quantummaid.injectmaid.timing.InstanceAndTimedDependencies.instanceWithNoDependencies;
 import static de.quantummaid.injectmaid.timing.TimedInstantiation.timeInstantiation;
-import static de.quantummaid.reflectmaid.GenericType.fromResolvedType;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
@@ -63,6 +64,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1200")
 public final class InjectMaid implements Injector {
+    private final ReflectMaid reflectMaid;
     private final Definitions definitions;
     private final SingletonType defaultSingletonType;
     private final SingletonStore singletonStore;
@@ -72,13 +74,19 @@ public final class InjectMaid implements Injector {
     private final List<InjectMaid> children = new ArrayList<>();
     private final LifecycleManager lifecycleManager;
     private final InjectMaid parent;
-    private final InstantiationTimes instantiationTimes = InstantiationTimes.instantiationTimes();
+    private final InstantiationTimes instantiationTimes;
 
     public static InjectMaidBuilder anInjectMaid() {
-        return injectionMaidBuilder();
+        final ReflectMaid reflectMaid = ReflectMaid.aReflectMaid();
+        return anInjectMaid(reflectMaid);
     }
 
-    static InjectMaid injectMaid(final Definitions definitions,
+    public static InjectMaidBuilder anInjectMaid(final ReflectMaid reflectMaid) {
+        return injectMaidBuilder(reflectMaid);
+    }
+
+    static InjectMaid injectMaid(final ReflectMaid reflectMaid,
+                                 final Definitions definitions,
                                  final SingletonType defaultSingletonType,
                                  final LifecycleManager lifecycleManager) {
         validateNoCircularDependencies(definitions);
@@ -86,6 +94,7 @@ public final class InjectMaid implements Injector {
         final ScopeManager scopeManager = scopeManager();
         final Interceptors interceptors = interceptors();
         final InjectMaid injectMaid = new InjectMaid(
+                reflectMaid,
                 definitions,
                 defaultSingletonType,
                 singletonStore(),
@@ -93,7 +102,8 @@ public final class InjectMaid implements Injector {
                 scopeManager,
                 interceptors,
                 lifecycleManager,
-                null
+                null,
+                InstantiationTimes.instantiationTimes(reflectMaid)
         );
         injectMaid.loadEagerSingletons();
         return injectMaid;
@@ -115,8 +125,14 @@ public final class InjectMaid implements Injector {
                     final TimedInstantiation<Object> timedInstantiation = internalGetInstance(definition);
                     final InstantiationTime time = timedInstantiation.instantiationTime();
                     final ResolvedType type = definition.type();
-                    instantiationTimes.addInitializationTime(fromResolvedType(type), time);
+                    instantiationTimes.addInitializationTime(type, time);
                 });
+    }
+
+    @Override
+    public <T> Injector enterScope(final GenericType<T> type, final T scopeObject) {
+        final ResolvedType resolvedType = reflectMaid.resolve(type);
+        return enterScope(resolvedType, scopeObject);
     }
 
     @Override
@@ -134,6 +150,12 @@ public final class InjectMaid implements Injector {
     }
 
     @Override
+    public <T> Optional<Injector> enterScopeIfExists(final GenericType<T> type, final T scopeObject) {
+        final ResolvedType resolvedType = reflectMaid.resolve(type);
+        return enterScopeIfExists(resolvedType, scopeObject);
+    }
+
+    @Override
     public Optional<Injector> enterScopeIfExists(final ResolvedType resolvedType, final Object scopeObject) {
         final Scope childScope = this.scope.childScope(resolvedType);
         final List<Scope> scopes = definitions.allScopes();
@@ -144,6 +166,7 @@ public final class InjectMaid implements Injector {
         final ScopeManager childScopeManager = scopeManager.add(resolvedType, scopeObject);
         final Interceptors childInterceptors = interceptors.enterScope(resolvedType, scopeObject);
         final InjectMaid scopedInjectMaid = new InjectMaid(
+                reflectMaid,
                 definitions,
                 defaultSingletonType,
                 childSingletonStore,
@@ -151,7 +174,8 @@ public final class InjectMaid implements Injector {
                 childScopeManager,
                 childInterceptors,
                 lifecycleManager.newInstance(childScope),
-                this
+                this,
+                InstantiationTimes.instantiationTimes(reflectMaid)
         );
         children.add(scopedInjectMaid);
         return Optional.of(scopedInjectMaid);
@@ -168,15 +192,34 @@ public final class InjectMaid implements Injector {
         interceptors.addInterceptor(interceptor);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TimedInstantiation<Object> getInstanceWithInitializationTime(final ResolvedType type) {
+    public <T> T getInstance(final ResolvedType type) {
+        final TimedInstantiation<Object> instanceWithInitializationTime = getInstanceWithInitializationTime(type);
+        return (T) instanceWithInitializationTime.instance();
+    }
+
+    @Override
+    public <T> TimedInstantiation<T> getInstanceWithInitializationTime(final GenericType<T> type) {
+        final ResolvedType resolvedType = reflectMaid.resolve(type);
+        return getInstanceWithInitializationTime(resolvedType);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> TimedInstantiation<T> getInstanceWithInitializationTime(final ResolvedType type) {
         final Optional<?> intercepted = interceptors.interceptBefore(type);
         if (intercepted.isPresent()) {
-            return timeInstantiation(fromResolvedType(type), () -> instanceWithNoDependencies(intercepted.get()));
+            return timeInstantiation(type, () -> (InstanceAndTimedDependencies<T>) instanceWithNoDependencies(intercepted.get()));
         }
         final Definition definition = definitions.definitionFor(type, scope);
         final TimedInstantiation<Object> timedInstantiation = internalGetInstance(definition);
-        return timedInstantiation.modify(instance -> interceptors.interceptAfter(type, instance));
+        return (TimedInstantiation<T>) timedInstantiation.modify(instance -> interceptors.interceptAfter(type, instance));
+    }
+
+    @Override
+    public boolean canInstantiate(final GenericType<?> type) {
+        final ResolvedType resolvedType = reflectMaid.resolve(type);
+        return canInstantiate(resolvedType);
     }
 
     @Override
@@ -194,7 +237,7 @@ public final class InjectMaid implements Injector {
 
     private TimedInstantiation<Object> instantiate(final Definition definition) {
         final Instantiator instantiator = definition.instantiator();
-        return timeInstantiation(fromResolvedType(definition.type()), () -> {
+        return timeInstantiation(definition.type(), () -> {
             final List<TimedInstantiation<?>> timedDependencies = instantiateDependencies(instantiator);
             final List<Object> dependencies = timedDependencies.stream()
                     .map(TimedInstantiation::instance)
@@ -223,7 +266,7 @@ public final class InjectMaid implements Injector {
         final ResolvedType type = definition.type();
         final Scope definitionScope = definition.scope();
         if (singleton && singletonStore.contains(type, definitionScope)) {
-            return timeInstantiation(fromResolvedType(definition.type()),
+            return timeInstantiation(definition.type(),
                     () -> instanceWithNoDependencies(singletonStore.get(type, definitionScope)));
         }
         final TimedInstantiation<Object> instance = instantiate(definition);
@@ -256,5 +299,9 @@ public final class InjectMaid implements Injector {
         if (parent != null) {
             parent.children.remove(this);
         }
+    }
+
+    public ReflectMaid reflectMaid() {
+        return reflectMaid;
     }
 }

@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.timing;
 
-import de.quantummaid.reflectmaid.GenericType;
+import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -34,11 +34,11 @@ import java.util.StringJoiner;
 public final class InstantiationTime {
     private static final String INDENT = "\t";
 
-    private final GenericType<?> type;
+    private final ResolvedType type;
     private final long timeInMilliseconds;
     private final List<InstantiationTime> dependencies;
 
-    public static InstantiationTime instantiationTime(final GenericType<?> type,
+    public static InstantiationTime instantiationTime(final ResolvedType type,
                                                       final long timeInMilliseconds) {
         return new InstantiationTime(type, timeInMilliseconds, new ArrayList<>());
     }
@@ -55,7 +55,7 @@ public final class InstantiationTime {
         return timeInMilliseconds;
     }
 
-    public GenericType<?> type() {
+    public ResolvedType type() {
         return type;
     }
 
@@ -71,7 +71,7 @@ public final class InstantiationTime {
 
     private void render(final String indentation,
                         final StringJoiner stringJoiner) {
-        final String line = String.format("%s%dms %s", indentation, timeInMilliseconds, type.toResolvedType().simpleDescription());
+        final String line = String.format("%s%dms %s", indentation, timeInMilliseconds, type.simpleDescription());
         stringJoiner.add(line);
         final String childIndentation = indentation + INDENT;
         dependencies.forEach(dependency -> dependency.render(childIndentation, stringJoiner));

@@ -23,7 +23,6 @@ package de.quantummaid.injectmaid.api.builder;
 
 import de.quantummaid.injectmaid.api.InjectorConfiguration;
 import de.quantummaid.reflectmaid.GenericType;
-import de.quantummaid.reflectmaid.ResolvedType;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
 
@@ -35,10 +34,5 @@ public interface ScopeConfigurators<T extends ScopeConfigurators<T>> {
         return withScope(genericType, configuration);
     }
 
-    default T withScope(final GenericType<?> scopeType, final InjectorConfiguration configuration) {
-        final ResolvedType resolvedType = scopeType.toResolvedType();
-        return withScope(resolvedType, configuration);
-    }
-
-    T withScope(ResolvedType scopeType, InjectorConfiguration configuration);
+    T withScope(GenericType<?> scopeType, InjectorConfiguration configuration);
 }
