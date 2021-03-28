@@ -22,7 +22,6 @@
 package de.quantummaid.injectmaid.api.customtype.api;
 
 import de.quantummaid.reflectmaid.GenericType;
-import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +34,10 @@ import static de.quantummaid.reflectmaid.GenericType.genericType;
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CustomType {
-    private final ResolvedType resolvedType;
+    private final GenericType<?> resolvedType;
     private final CustomTypeData customTypeData;
 
-    static CustomType customType(final ResolvedType resolvedType,
+    static CustomType customType(final GenericType<?> resolvedType,
                                  final CustomTypeData customTypeData) {
         return new CustomType(resolvedType, customTypeData);
     }
@@ -49,12 +48,11 @@ public final class CustomType {
     }
 
     public static <X> FactoryBuilder00<X> customType(final GenericType<X> genericType) {
-        final ResolvedType resolvedType = genericType.toResolvedType();
-        final Builder builder = builder(resolvedType);
+        final Builder builder = builder(genericType);
         return new FactoryBuilder00<>(builder);
     }
 
-    public ResolvedType resolvedType() {
+    public GenericType<?> type() {
         return resolvedType;
     }
 

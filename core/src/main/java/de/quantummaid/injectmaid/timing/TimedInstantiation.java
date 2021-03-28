@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.timing;
 
-import de.quantummaid.reflectmaid.GenericType;
+import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +34,7 @@ public final class TimedInstantiation<T> {
     private final T object;
     private final InstantiationTime instantiationTime;
 
-    public static <T> TimedInstantiation<T> timeInstantiation(final GenericType<?> type,
+    public static <T> TimedInstantiation<T> timeInstantiation(final ResolvedType type,
                                                               final TimedInstantiator<T> supplier) {
         final InstantiationTime instantiationTime = InstantiationTime.instantiationTime(type, 0);
         return timeInstantiation(supplier, instantiationTime);

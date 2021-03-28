@@ -22,7 +22,6 @@
 package de.quantummaid.injectmaid.api.customtype.api;
 
 import de.quantummaid.reflectmaid.GenericType;
-import de.quantummaid.reflectmaid.ResolvedType;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -38,17 +37,16 @@ import static de.quantummaid.injectmaid.api.customtype.api.CustomTypeData.custom
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Builder {
-    private final ResolvedType type;
-    private final List<ResolvedType> dependencies;
+    private final GenericType<?> type;
+    private final List<GenericType<?>> dependencies;
     private InvocableFactory<?> factory;
 
-    public static Builder builder(final ResolvedType type) {
+    public static Builder builder(final GenericType<?> type) {
         return new Builder(type, new ArrayList<>());
     }
 
     public void addParameter(final GenericType<?> parameter) {
-        final ResolvedType resolvedType = parameter.toResolvedType();
-        dependencies.add(resolvedType);
+        dependencies.add(parameter);
     }
 
     public void setFactory(final InvocableFactory<?> factory) {

@@ -23,7 +23,6 @@ package de.quantummaid.injectmaid.api.builder;
 
 import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.reflectmaid.GenericType;
-import de.quantummaid.reflectmaid.ResolvedType;
 
 import static de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.reflectmaid.GenericType.genericType;
@@ -51,13 +50,7 @@ public interface ImplementationConfigurators<T extends ImplementationConfigurato
         return withImplementation(genericType, genericImplementation, reusePolicy);
     }
 
-    default <X> T withImplementation(final GenericType<X> type,
-                                     final GenericType<? extends X> implementation,
-                                     final ReusePolicy reusePolicy) {
-        final ResolvedType resolvedType = type.toResolvedType();
-        final ResolvedType resolvedImplementation = implementation.toResolvedType();
-        return withImplementation(resolvedType, resolvedImplementation, reusePolicy);
-    }
-
-    T withImplementation(ResolvedType type, ResolvedType implementation, ReusePolicy reusePolicy);
+    <X> T withImplementation(GenericType<X> type,
+                             GenericType<? extends X> implementation,
+                             ReusePolicy reusePolicy);
 }

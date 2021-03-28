@@ -22,8 +22,8 @@
 package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.api.ReusePolicy;
-import de.quantummaid.injectmaid.timing.InstantiationTimes;
 import de.quantummaid.injectmaid.timing.InstantiationTime;
+import de.quantummaid.injectmaid.timing.InstantiationTimes;
 import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import org.junit.jupiter.api.Test;
 
@@ -141,19 +141,19 @@ public final class InitializationReportingSpecs {
         assertThat(dependencies.size(), is(4));
 
         final InstantiationTime firstDependency = dependencies.get(0);
-        assertThat(firstDependency.type().toResolvedType().simpleDescription(), is("Integer"));
+        assertThat(firstDependency.type().simpleDescription(), is("Integer"));
         assertThat(firstDependency.timeInMilliseconds(), is(greaterThan(200L)));
 
         final InstantiationTime secondDependency = dependencies.get(1);
-        assertThat(secondDependency.type().toResolvedType().simpleDescription(), is("Boolean"));
+        assertThat(secondDependency.type().simpleDescription(), is("Boolean"));
         assertThat(secondDependency.timeInMilliseconds(), is(greaterThan(200L)));
 
         final InstantiationTime thirdDependency = dependencies.get(2);
-        assertThat(thirdDependency.type().toResolvedType().simpleDescription(), is("Character"));
+        assertThat(thirdDependency.type().simpleDescription(), is("Character"));
         assertThat(thirdDependency.timeInMilliseconds(), is(greaterThan(200L)));
 
         final InstantiationTime fourthDependency = dependencies.get(3);
-        assertThat(fourthDependency.type().toResolvedType().simpleDescription(), is("Long"));
+        assertThat(fourthDependency.type().simpleDescription(), is("Long"));
         assertThat(fourthDependency.timeInMilliseconds(), is(greaterThan(200L)));
 
         assertThat(instantiationTime.render(), containsString("ms String"));
