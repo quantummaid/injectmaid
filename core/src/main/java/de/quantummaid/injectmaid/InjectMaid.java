@@ -36,7 +36,7 @@ import de.quantummaid.injectmaid.timing.InstantiationTimes;
 import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ReflectMaid;
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -301,6 +301,7 @@ public final class InjectMaid implements Injector {
         }
     }
 
+    @Override
     public ReflectMaid reflectMaid() {
         return reflectMaid;
     }

@@ -23,7 +23,7 @@ package de.quantummaid.injectmaid.api.interception.overwrite;
 
 import de.quantummaid.injectmaid.api.Injector;
 import de.quantummaid.injectmaid.api.interception.Interceptor;
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;

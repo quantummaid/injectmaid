@@ -23,9 +23,9 @@ package de.quantummaid.injectmaid.instantiator;
 
 import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
-import de.quantummaid.reflectmaid.ResolvedType;
-import de.quantummaid.reflectmaid.resolver.ResolvedConstructor;
-import de.quantummaid.reflectmaid.resolver.ResolvedParameter;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedConstructor;
+import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedParameter;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -52,8 +52,8 @@ public final class ConstructorInstantiator implements Instantiator {
 
     @Override
     public List<ResolvedType> dependencies() {
-        return constructor.parameters().stream()
-                .map(ResolvedParameter::type)
+        return constructor.getParameters().stream()
+                .map(ResolvedParameter::getType)
                 .collect(toList());
     }
 
@@ -61,7 +61,7 @@ public final class ConstructorInstantiator implements Instantiator {
     public Object instantiate(final List<Object> dependencies,
                               final ScopeManager scopeManager,
                               final InjectMaid injectMaid) throws Exception {
-        final Constructor<?> rawConstructor = constructor.constructor();
+        final Constructor<?> rawConstructor = constructor.getConstructor();
         final Object[] parameters = dependencies.toArray();
         return rawConstructor.newInstance(parameters);
     }

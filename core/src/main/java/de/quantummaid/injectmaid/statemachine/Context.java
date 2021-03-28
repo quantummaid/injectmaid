@@ -24,7 +24,7 @@ package de.quantummaid.injectmaid.statemachine;
 import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

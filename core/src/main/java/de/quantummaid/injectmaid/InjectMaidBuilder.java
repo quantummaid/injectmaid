@@ -42,7 +42,7 @@ import de.quantummaid.injectmaid.statemachine.states.State;
 import de.quantummaid.injectmaid.statemachine.states.UnresolvedFactory;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ReflectMaid;
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

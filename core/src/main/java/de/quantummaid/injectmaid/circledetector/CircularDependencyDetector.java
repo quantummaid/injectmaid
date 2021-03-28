@@ -25,7 +25,7 @@ import de.quantummaid.injectmaid.Definition;
 import de.quantummaid.injectmaid.Definitions;
 import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -25,8 +25,8 @@ import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.detection.disambiguators.DisambiguationResult;
 import de.quantummaid.injectmaid.detection.disambiguators.Disambiguator;
 import de.quantummaid.injectmaid.detection.singleton.SingletonDetector;
-import de.quantummaid.reflectmaid.ClassType;
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ClassType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +39,11 @@ import static de.quantummaid.injectmaid.detection.disambiguators.SingleConstruct
 import static de.quantummaid.injectmaid.detection.disambiguators.SingleStaticFactoryDisambiguator.singleStaticFactoryDisambiguator;
 import static de.quantummaid.injectmaid.detection.singleton.AnnotationSingletonDetector.annotationSingletonDetector;
 import static de.quantummaid.injectmaid.instantiator.SelfInstantiator.selfInstantiator;
-import static de.quantummaid.reflectmaid.ResolvedType.resolvedType;
 import static java.lang.String.format;
 import static java.lang.String.join;
 
 public final class Detectors {
-    private static final ResolvedType INJECTMAID_TYPE = resolvedType(InjectMaid.class);
+    private static final Class<?> INJECTMAID_TYPE = InjectMaid.class;
 
     private static final List<Disambiguator> DISAMBIGUATORS = List.of(
             singleChoiceDisambiguator(),
@@ -61,7 +60,7 @@ public final class Detectors {
     }
 
     public static DetectionResult detect(final ResolvedType typeToInstantiate,
-                                      final SingletonSwitch singletonSwitch) {
+                                         final SingletonSwitch singletonSwitch) {
         return detect(typeToInstantiate, typeToInstantiate, singletonSwitch);
     }
 
@@ -71,7 +70,7 @@ public final class Detectors {
         if (!(creatingType instanceof ClassType)) {
             return DetectionResult.fail(format("'%s' is not supported for automatic detection", creatingType.simpleDescription()));
         }
-        if (typeToInstantiate.equals(INJECTMAID_TYPE)) {
+        if (typeToInstantiate.assignableType().equals(INJECTMAID_TYPE)) {
             return success(selfInstantiator());
         }
         final ClassType creatingClassType = (ClassType) creatingType;

@@ -22,7 +22,7 @@
 package de.quantummaid.injectmaid.detection.singleton;
 
 import de.quantummaid.injectmaid.detection.SingletonSwitch;
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 
 @FunctionalInterface
 public interface SingletonDetector {

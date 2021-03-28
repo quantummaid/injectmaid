@@ -22,20 +22,18 @@
 package de.quantummaid.injectmaid.detection.singleton;
 
 import de.quantummaid.injectmaid.detection.SingletonSwitch;
-import de.quantummaid.reflectmaid.ResolvedType;
 import de.quantummaid.reflectmaid.ThirdPartyAnnotation;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import static de.quantummaid.reflectmaid.ThirdPartyAnnotation.thirdPartyAnnotation;
-
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AnnotationSingletonDetector implements SingletonDetector {
-    public static final ThirdPartyAnnotation SINGLETON = thirdPartyAnnotation(
+    public static final ThirdPartyAnnotation SINGLETON = ThirdPartyAnnotation.thirdPartyAnnotation(
             "javax.inject.Singleton",
             "com.google.inject.Singleton"
     );

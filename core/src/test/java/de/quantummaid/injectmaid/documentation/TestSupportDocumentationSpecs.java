@@ -26,6 +26,7 @@ import de.quantummaid.injectmaid.documentation.domain.BookingRepository;
 import de.quantummaid.injectmaid.documentation.domain.InMemoryBookingRepository;
 import de.quantummaid.injectmaid.documentation.domain.MockedBookingRepository;
 import de.quantummaid.injectmaid.documentation.domain.WrappedBookingRepository;
+import de.quantummaid.reflectmaid.ReflectMaid;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -37,13 +38,14 @@ public final class TestSupportDocumentationSpecs {
     @Test
     public void overwriting() {
         //Showcase start overwriting
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final ReflectMaid reflectMaid = ReflectMaid.aReflectMaid();
+        final InjectMaid injectMaid = InjectMaid.anInjectMaid(reflectMaid)
                 .withImplementation(BookingRepository.class, InMemoryBookingRepository.class)
                 .build();
 
         final BookingRepository notOverwritten = injectMaid.getInstance(BookingRepository.class);
 
-        final InjectMaid overwriteInjectMaid = InjectMaid.anInjectMaid()
+        final InjectMaid overwriteInjectMaid = InjectMaid.anInjectMaid(reflectMaid)
                 .withImplementation(BookingRepository.class, MockedBookingRepository.class)
                 .build();
         injectMaid.overwriteWith(overwriteInjectMaid);
