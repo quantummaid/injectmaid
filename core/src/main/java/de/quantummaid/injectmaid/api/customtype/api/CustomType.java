@@ -33,6 +33,7 @@ import static de.quantummaid.reflectmaid.GenericType.genericType;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("java:S1452")
 public final class CustomType {
     private final GenericType<?> resolvedType;
     private final CustomTypeData customTypeData;
