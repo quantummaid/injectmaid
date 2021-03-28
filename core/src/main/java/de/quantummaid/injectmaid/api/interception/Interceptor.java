@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 
 import java.util.Optional;
 

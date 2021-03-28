@@ -25,8 +25,9 @@ import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.InjectMaidBuilder;
 import de.quantummaid.injectmaid.api.interception.SimpleInterceptor;
 import de.quantummaid.injectmaid.timing.TimedInstantiation;
-import de.quantummaid.reflectmaid.ResolvedType;
 import de.quantummaid.reflectmaid.GenericType;
+import de.quantummaid.reflectmaid.ReflectMaid;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 
 import java.util.Optional;
 
@@ -88,7 +89,7 @@ public interface Injector extends AutoCloseable {
     void addInterceptor(SimpleInterceptor interceptor);
 
     default void overwriteWith(final InjectorConfiguration injectorConfiguration) {
-        final InjectMaidBuilder builder = InjectMaid.anInjectMaid();
+        final InjectMaidBuilder builder = InjectMaid.anInjectMaid(reflectMaid());
         injectorConfiguration.apply(builder);
         final InjectMaid injectMaid = builder.build();
         overwriteWith(injectMaid);
@@ -107,4 +108,6 @@ public interface Injector extends AutoCloseable {
 
     @Override
     void close();
+
+    ReflectMaid reflectMaid();
 }

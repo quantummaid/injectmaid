@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.timing;
 
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

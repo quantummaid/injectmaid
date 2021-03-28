@@ -23,9 +23,9 @@ package de.quantummaid.injectmaid.instantiator;
 
 import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
-import de.quantummaid.reflectmaid.ResolvedType;
-import de.quantummaid.reflectmaid.resolver.ResolvedMethod;
-import de.quantummaid.reflectmaid.resolver.ResolvedParameter;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedMethod;
+import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedParameter;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -55,8 +55,8 @@ public final class NonStaticFactoryInstantiator implements Instantiator {
     public List<ResolvedType> dependencies() {
         final List<ResolvedType> dependencies = new ArrayList<>();
         dependencies.add(type);
-        method.parameters().stream()
-                .map(ResolvedParameter::type)
+        method.getParameters().stream()
+                .map(ResolvedParameter::getType)
                 .forEach(dependencies::add);
         return dependencies;
     }
@@ -65,7 +65,7 @@ public final class NonStaticFactoryInstantiator implements Instantiator {
     public Object instantiate(final List<Object> dependencies,
                               final ScopeManager scopeManager,
                               final InjectMaid injectMaid) throws Exception {
-        final Method rawMethod = this.method.method();
+        final Method rawMethod = this.method.getMethod();
         final Object instance = dependencies.get(0);
         final Object[] parameters = dependencies.subList(1, dependencies.size()).toArray();
         return rawMethod.invoke(instance, parameters);

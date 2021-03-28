@@ -24,10 +24,10 @@ package de.quantummaid.injectmaid.detection;
 import de.quantummaid.injectmaid.instantiator.ConstructorInstantiator;
 import de.quantummaid.injectmaid.instantiator.NonStaticFactoryInstantiator;
 import de.quantummaid.injectmaid.instantiator.StaticFactoryInstantiator;
-import de.quantummaid.reflectmaid.ClassType;
-import de.quantummaid.reflectmaid.ResolvedType;
-import de.quantummaid.reflectmaid.resolver.ResolvedConstructor;
-import de.quantummaid.reflectmaid.resolver.ResolvedMethod;
+import de.quantummaid.reflectmaid.resolvedtype.ClassType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedConstructor;
+import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedMethod;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +61,7 @@ public final class InstantiationOptions {
         } else {
             constructors = emptyList();
             nonStaticFactoryMethods = creatingClassType.methods().stream()
-                    .filter(method -> !isStatic(method.method().getModifiers()))
+                    .filter(method -> !isStatic(method.getMethod().getModifiers()))
                     .filter(method -> method.returnType()
                             .map(typeToInstantiate::equals)
                             .orElse(false))
@@ -70,7 +70,7 @@ public final class InstantiationOptions {
         }
         final List<StaticFactoryInstantiator> factoryMethods = creatingClassType.methods().stream()
                 .filter(ResolvedMethod::isPublic)
-                .filter(method -> isStatic(method.method().getModifiers()))
+                .filter(method -> isStatic(method.getMethod().getModifiers()))
                 .filter(method -> method.returnType()
                         .map(typeToInstantiate::equals)
                         .orElse(false))

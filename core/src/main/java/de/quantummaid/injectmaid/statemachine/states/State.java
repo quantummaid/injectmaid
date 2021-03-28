@@ -23,7 +23,7 @@ package de.quantummaid.injectmaid.statemachine.states;
 
 import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.statemachine.Context;
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 
 @FunctionalInterface
 public interface State {

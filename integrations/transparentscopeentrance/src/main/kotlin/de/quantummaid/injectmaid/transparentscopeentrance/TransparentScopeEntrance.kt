@@ -23,7 +23,7 @@ package de.quantummaid.injectmaid.transparentscopeentrance
 
 import de.quantummaid.injectmaid.InjectMaid
 import de.quantummaid.injectmaid.api.Injector
-import de.quantummaid.reflectmaid.ResolvedType
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType
 import de.quantummaid.reflectmaid.GenericType
 import de.quantummaid.reflectmaid.GenericType.Companion.genericType
 import kotlin.reflect.KClass

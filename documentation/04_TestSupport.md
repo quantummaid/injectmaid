@@ -19,13 +19,14 @@ Example:
 
 <!---[CodeSnippet](overwriting)-->
 ```java
-final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+final ReflectMaid reflectMaid = ReflectMaid.aReflectMaid();
+final InjectMaid injectMaid = InjectMaid.anInjectMaid(reflectMaid)
         .withImplementation(BookingRepository.class, InMemoryBookingRepository.class)
         .build();
 
 final BookingRepository notOverwritten = injectMaid.getInstance(BookingRepository.class);
 
-final InjectMaid overwriteInjectMaid = InjectMaid.anInjectMaid()
+final InjectMaid overwriteInjectMaid = InjectMaid.anInjectMaid(reflectMaid)
         .withImplementation(BookingRepository.class, MockedBookingRepository.class)
         .build();
 injectMaid.overwriteWith(overwriteInjectMaid);

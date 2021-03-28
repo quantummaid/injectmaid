@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.quantummaid.injectmaid</groupId>
         <artifactId>injectmaid-parent</artifactId>
-        <version>0.1.1</version>
+        <version>0.1.2</version>
     </parent>
 
     <artifactId>core</artifactId>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>de.quantummaid.reflectmaid</groupId>
             <artifactId>reflectmaid-parent</artifactId>
-            <version>0.2.1</version>
+            <version>0.2.3</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>

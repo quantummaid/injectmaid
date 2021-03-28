@@ -23,6 +23,7 @@ package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.domain.NumberedType;
 import de.quantummaid.injectmaid.domain.StringWrapper;
+import de.quantummaid.reflectmaid.ReflectMaid;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.api.customtype.api.CustomType.customType;
@@ -82,7 +83,8 @@ public final class InterceptorSpecs {
         assertThat(constantUntrackedNumberedType.instanceNumber(), is(0));
         assertThat(NumberedType.counter, is(1));
 
-        final InjectMaid injectMaid = InjectMaid.anInjectMaid()
+        final ReflectMaid reflectMaid = ReflectMaid.aReflectMaid();
+        final InjectMaid injectMaid = InjectMaid.anInjectMaid(reflectMaid)
                 .withType(NumberedType.class)
                 .build();
 
@@ -91,7 +93,7 @@ public final class InterceptorSpecs {
         assertThat(instance1.instanceNumber(), is(1));
         assertThat(NumberedType.counter, is(2));
 
-        final InjectMaid overwrite = InjectMaid.anInjectMaid()
+        final InjectMaid overwrite = InjectMaid.anInjectMaid(reflectMaid)
                 .withCustomType(NumberedType.class, () -> constantUntrackedNumberedType)
                 .build();
         injectMaid.overwriteWith(overwrite);

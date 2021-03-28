@@ -26,7 +26,7 @@ import de.quantummaid.injectmaid.InjectMaidException;
 import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.statemachine.states.State;
-import de.quantummaid.reflectmaid.ResolvedType;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
