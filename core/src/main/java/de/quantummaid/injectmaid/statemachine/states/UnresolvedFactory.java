@@ -36,7 +36,7 @@ import static de.quantummaid.injectmaid.detection.Detectors.detect;
 import static de.quantummaid.injectmaid.detection.SingletonSwitch.singletonSwitch;
 import static de.quantummaid.injectmaid.statemachine.states.Failed.failed;
 import static de.quantummaid.injectmaid.statemachine.states.ResolvingDependencies.resolvingDependencies;
-import static de.quantummaid.reflectmaid.validators.NotNullValidator.validateNotNull;
+import static de.quantummaid.injectmaid.validators.NotNullValidator.validateNotNull;
 
 @ToString
 @EqualsAndHashCode

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.quantummaid.reflectmaid.validators.NotNullValidator.validateNotNull;
+import static de.quantummaid.injectmaid.validators.NotNullValidator.validateNotNull;
 import static java.util.Collections.emptyList;
 
 @ToString

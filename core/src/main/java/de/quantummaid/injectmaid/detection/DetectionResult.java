@@ -25,7 +25,7 @@ import de.quantummaid.injectmaid.instantiator.Instantiator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import static de.quantummaid.reflectmaid.validators.NotNullValidator.validateNotNull;
+import static de.quantummaid.injectmaid.validators.NotNullValidator.validateNotNull;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DetectionResult {
