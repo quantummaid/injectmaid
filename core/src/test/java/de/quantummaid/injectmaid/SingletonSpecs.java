@@ -122,6 +122,6 @@ public final class SingletonSpecs {
                 "'FailingInFactoryType' using static method" +
                 " ''FailingInFactoryType failingInFactoryType()' [public static de.quantummaid.injectmaid.failing.FailingInFactoryType " +
                 "de.quantummaid.injectmaid.failing.FailingInFactoryType.failingInFactoryType()]'"));
-        assertThat(exception.getCause(), instanceOf(InvocationTargetException.class));
+        assertThat(exception.getCause(), instanceOf(IllegalArgumentException.class));
     }
 }

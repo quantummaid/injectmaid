@@ -23,6 +23,7 @@ package de.quantummaid.injectmaid.instantiator;
 
 import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
+import de.quantummaid.reflectmaid.Executor;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedMethod;
 import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedParameter;
@@ -31,7 +32,6 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -42,9 +42,11 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StaticFactoryInstantiator implements Instantiator {
     private final ResolvedMethod method;
+    private final Executor executor;
 
     public static StaticFactoryInstantiator staticFactoryInstantiator(final ResolvedMethod method) {
-        return new StaticFactoryInstantiator(method);
+        final Executor executor = method.createExecutor();
+        return new StaticFactoryInstantiator(method, executor);
     }
 
     public ResolvedMethod method() {
@@ -62,9 +64,7 @@ public final class StaticFactoryInstantiator implements Instantiator {
     public Object instantiate(final List<Object> dependencies,
                               final ScopeManager scopeManager,
                               final InjectMaid injectMaid) throws Exception {
-        final Method rawMethod = this.method.getMethod();
-        final Object[] parameters = dependencies.toArray();
-        return rawMethod.invoke(null, parameters);
+        return executor.execute(null, dependencies);
     }
 
     @Override

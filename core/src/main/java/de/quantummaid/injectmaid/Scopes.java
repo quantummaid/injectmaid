@@ -30,7 +30,7 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.quantummaid.reflectmaid.validators.NotNullValidator.validateNotNull;
+import static de.quantummaid.injectmaid.validators.NotNullValidator.validateNotNull;
 import static java.lang.String.format;
 
 @ToString
