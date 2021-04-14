@@ -23,6 +23,7 @@ package de.quantummaid.injectmaid.instantiator;
 
 import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
+import de.quantummaid.reflectmaid.Executor;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedConstructor;
 import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedParameter;
@@ -31,7 +32,6 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.lang.reflect.Constructor;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -41,9 +41,11 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConstructorInstantiator implements Instantiator {
     private final ResolvedConstructor constructor;
+    private final Executor executor;
 
     public static ConstructorInstantiator constructorInstantiator(final ResolvedConstructor constructor) {
-        return new ConstructorInstantiator(constructor);
+        final Executor executor = constructor.createExecutor();
+        return new ConstructorInstantiator(constructor, executor);
     }
 
     public ResolvedConstructor constructor() {
@@ -61,9 +63,7 @@ public final class ConstructorInstantiator implements Instantiator {
     public Object instantiate(final List<Object> dependencies,
                               final ScopeManager scopeManager,
                               final InjectMaid injectMaid) throws Exception {
-        final Constructor<?> rawConstructor = constructor.getConstructor();
-        final Object[] parameters = dependencies.toArray();
-        return rawConstructor.newInstance(parameters);
+        return executor.execute(null, dependencies);
     }
 
     @Override

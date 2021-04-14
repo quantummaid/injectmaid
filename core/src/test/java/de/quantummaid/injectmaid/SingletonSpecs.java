@@ -109,7 +109,7 @@ public final class SingletonSpecs {
         assertThat(exception, instanceOf(InjectMaidException.class));
         assertThat(exception.getMessage(), is("Exception during instantiation of 'FailingInConstructorType' using constructor " +
                 "'public de.quantummaid.injectmaid.failing.FailingInConstructorType()'"));
-        assertThat(exception.getCause(), instanceOf(InvocationTargetException.class));
+        assertThat(exception.getCause(), instanceOf(IllegalArgumentException.class));
     }
 
     @Test
