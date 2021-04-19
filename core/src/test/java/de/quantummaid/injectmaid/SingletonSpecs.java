@@ -28,8 +28,6 @@ import de.quantummaid.injectmaid.failing.FailingInConstructorType;
 import de.quantummaid.injectmaid.failing.FailingInFactoryType;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.InvocationTargetException;
-
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
 import static de.quantummaid.injectmaid.api.ReusePolicy.*;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
