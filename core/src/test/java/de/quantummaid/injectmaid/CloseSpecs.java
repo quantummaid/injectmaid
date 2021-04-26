@@ -301,4 +301,16 @@ public final class CloseSpecs {
         assertThat(instance.dependencyHasBeenClosedFirst, is(false));
         assertThat(autoclosableType.closed, is(false));
     }
+
+    @Test
+    public void externalObjectsCanBeRegistered() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withLifecycleManagement()
+                .build();
+        final AutoclosableType autoclosableType = new AutoclosableType();
+        injectMaid.registerExternalObjectToLifecycleManagement(autoclosableType);
+        assertThat(autoclosableType.closed, is(false));
+        injectMaid.close();
+        assertThat(autoclosableType.closed, is(true));
+    }
 }

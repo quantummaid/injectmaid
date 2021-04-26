@@ -287,6 +287,10 @@ public final class InjectMaid implements Injector {
         lifecycleManager.registerInstance(shutdownHook, scope);
     }
 
+    public void registerExternalObjectToLifecycleManagement(final Object object) {
+        lifecycleManager.registerInstance(object, scope);
+    }
+
     @Override
     public void close() {
         Closer.close(this::close);

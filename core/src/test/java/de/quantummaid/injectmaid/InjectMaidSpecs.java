@@ -21,12 +21,17 @@
 
 package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.domain.*;
+import de.quantummaid.injectmaid.domain.NumberedType;
+import de.quantummaid.injectmaid.domain.OneArgumentConstructorType;
+import de.quantummaid.injectmaid.domain.TwoNumberedTypes;
+import de.quantummaid.injectmaid.domain.ZeroArgumentsConstructorType;
+import de.quantummaid.reflectmaid.ReflectMaid;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public final class InjectMaidSpecs {
 
@@ -61,5 +66,18 @@ public final class InjectMaidSpecs {
                 .build();
         assertThat(injectMaid.canInstantiate(ZeroArgumentsConstructorType.class), is(true));
         assertThat(injectMaid.canInstantiate(String.class), is(false));
+    }
+
+    @Test
+    public void reflectMaidCanBeQueriedInBuilder() {
+        final ReflectMaid reflectMaid = ReflectMaid.aReflectMaid();
+        final InjectMaid injectMaid = anInjectMaid(reflectMaid)
+                .withConfiguration(builder -> {
+                    final ReflectMaid internalReflectMaid = builder.reflectMaid();
+                    builder.withCustomType(ReflectMaid.class, () -> internalReflectMaid);
+                })
+                .build();
+        final ReflectMaid injectedReflectMaid = injectMaid.getInstance(ReflectMaid.class);
+        assertSame(reflectMaid, injectedReflectMaid);
     }
 }

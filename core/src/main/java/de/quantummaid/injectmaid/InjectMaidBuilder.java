@@ -203,6 +203,10 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         return this;
     }
 
+    public ReflectMaid reflectMaid() {
+        return reflectMaid;
+    }
+
     public InjectMaid build() {
         final Map<ResolvedType, List<Definition>> definitionsMap = runStateMachine(states);
         final Definitions definitions = definitions(scopes.asList(), definitionsMap);
