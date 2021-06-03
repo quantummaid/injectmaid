@@ -46,6 +46,11 @@
             <version>0.2.10</version>
         </dependency>
         <dependency>
+            <groupId>de.quantummaid.reflectmaid</groupId>
+            <artifactId>typescanner</artifactId>
+            <version>0.2.10</version>
+        </dependency>
+        <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
             <version>1</version>

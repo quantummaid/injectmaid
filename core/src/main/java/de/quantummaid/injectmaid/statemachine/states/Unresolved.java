@@ -22,11 +22,11 @@
 package de.quantummaid.injectmaid.statemachine.states;
 
 import de.quantummaid.injectmaid.api.ReusePolicy;
-import de.quantummaid.injectmaid.detection.DetectionResult;
 import de.quantummaid.injectmaid.detection.SingletonSwitch;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.statemachine.Context;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.states.DetectionResult;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -57,12 +57,12 @@ public final class Unresolved implements State {
         final ResolvedType type = context.type();
         final ReusePolicy oldReusePolicy = context.reusePolicy();
         final SingletonSwitch singletonSwitch = singletonSwitch(oldReusePolicy);
-        final DetectionResult result = detect(type, singletonSwitch);
+        final DetectionResult<Instantiator> result = detect(type, singletonSwitch);
         if (result.isFailure()) {
-            context.setErrorMessage(result.errorMessage());
+            context.setErrorMessage(result.reasonForFailure());
             return failed(context);
         }
-        final Instantiator instantiator = result.instantiator();
+        final Instantiator instantiator = result.result();
         context.setInstantiator(instantiator);
         final ReusePolicy newReusePolicy = singletonSwitch.getReusePolicy();
         context.setReusePolicy(newReusePolicy);

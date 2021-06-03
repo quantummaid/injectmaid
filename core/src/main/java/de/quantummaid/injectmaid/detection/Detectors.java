@@ -25,13 +25,14 @@ import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.detection.disambiguators.DisambiguationResult;
 import de.quantummaid.injectmaid.detection.disambiguators.Disambiguator;
 import de.quantummaid.injectmaid.detection.singleton.SingletonDetector;
+import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.reflectmaid.resolvedtype.ClassType;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.states.DetectionResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.quantummaid.injectmaid.detection.DetectionResult.success;
 import static de.quantummaid.injectmaid.detection.InstantiationOptions.loadInstantiationOptions;
 import static de.quantummaid.injectmaid.detection.disambiguators.AnnotationDisambiguator.annotationDisambiguator;
 import static de.quantummaid.injectmaid.detection.disambiguators.SingleChoiceDisambiguator.singleChoiceDisambiguator;
@@ -39,6 +40,8 @@ import static de.quantummaid.injectmaid.detection.disambiguators.SingleConstruct
 import static de.quantummaid.injectmaid.detection.disambiguators.SingleStaticFactoryDisambiguator.singleStaticFactoryDisambiguator;
 import static de.quantummaid.injectmaid.detection.singleton.AnnotationSingletonDetector.annotationSingletonDetector;
 import static de.quantummaid.injectmaid.instantiator.SelfInstantiator.selfInstantiator;
+import static de.quantummaid.reflectmaid.typescanner.states.DetectionResult.failure;
+import static de.quantummaid.reflectmaid.typescanner.states.DetectionResult.success;
 import static java.lang.String.format;
 import static java.lang.String.join;
 
@@ -59,16 +62,16 @@ public final class Detectors {
     private Detectors() {
     }
 
-    public static DetectionResult detect(final ResolvedType typeToInstantiate,
-                                         final SingletonSwitch singletonSwitch) {
+    public static DetectionResult<Instantiator> detect(final ResolvedType typeToInstantiate,
+                                                       final SingletonSwitch singletonSwitch) {
         return detect(typeToInstantiate, typeToInstantiate, singletonSwitch);
     }
 
-    public static DetectionResult detect(final ResolvedType typeToInstantiate,
-                                         final ResolvedType creatingType,
-                                         final SingletonSwitch singletonSwitch) {
+    public static DetectionResult<Instantiator> detect(final ResolvedType typeToInstantiate,
+                                                       final ResolvedType creatingType,
+                                                       final SingletonSwitch singletonSwitch) {
         if (!(creatingType instanceof ClassType)) {
-            return DetectionResult.fail(format("'%s' is not supported for automatic detection", creatingType.simpleDescription()));
+            return failure(format("'%s' is not supported for automatic detection", creatingType.simpleDescription()));
         }
         if (typeToInstantiate.assignableType().equals(INJECTMAID_TYPE)) {
             return success(selfInstantiator());
@@ -97,9 +100,9 @@ public final class Detectors {
         return fail(typeToInstantiate, creatingType, combinedIgnoreReasons);
     }
 
-    private static DetectionResult fail(final ResolvedType typeToInstantiate,
-                                        final ResolvedType creatingType,
-                                        final String message) {
+    private static DetectionResult<Instantiator> fail(final ResolvedType typeToInstantiate,
+                                                      final ResolvedType creatingType,
+                                                      final String message) {
         final String factoryQualifier;
         if (typeToInstantiate.equals(creatingType)) {
             factoryQualifier = "";
@@ -108,6 +111,6 @@ public final class Detectors {
         }
         final String errorMessage = format("Cannot decide how to instantiate type '%s'%s:%n%s",
                 typeToInstantiate.description(), factoryQualifier, message);
-        return DetectionResult.fail(errorMessage);
+        return DetectionResult.failure(errorMessage);
     }
 }

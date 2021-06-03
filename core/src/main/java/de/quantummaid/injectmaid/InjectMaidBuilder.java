@@ -43,10 +43,14 @@ import de.quantummaid.injectmaid.statemachine.states.UnresolvedFactory;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ReflectMaid;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.Processor;
+import de.quantummaid.reflectmaid.typescanner.factories.UndetectedFactory;
+import de.quantummaid.reflectmaid.typescanner.states.Detector;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -64,6 +68,7 @@ import static de.quantummaid.injectmaid.lifecyclemanagement.NoOpLifecycleManager
 import static de.quantummaid.injectmaid.lifecyclemanagement.RealLifecycleManager.realLifecycleManager;
 import static de.quantummaid.injectmaid.lifecyclemanagement.closer.Closer.closer;
 import static de.quantummaid.injectmaid.statemachine.Context.context;
+import static de.quantummaid.injectmaid.statemachine.InjectMaidDetector.injectMaidDetector;
 import static de.quantummaid.injectmaid.statemachine.StateMachineRunner.runStateMachine;
 import static de.quantummaid.injectmaid.statemachine.States.states;
 import static de.quantummaid.injectmaid.statemachine.states.ResolvingDependencies.resolvingDependencies;
@@ -208,6 +213,14 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     }
 
     public InjectMaid build() {
+        final Processor<Definition> processor = Processor.processor(
+                List.of(new UndetectedFactory<>()),
+                List.of(Requirements.REGISTERED),
+                Collections.emptyList()
+        );
+        final Detector<Definition> detector = injectMaidDetector();
+        //processor.collect()
+
         final Map<ResolvedType, List<Definition>> definitionsMap = runStateMachine(states);
         final Definitions definitions = definitions(scopes.asList(), definitionsMap);
         final LifecycleManager lifecycleManager;

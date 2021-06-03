@@ -40,16 +40,16 @@ public final class ErrorAggregationSpecs {
                 .build());
         assertThat(exception, instanceOf(InjectMaidException.class));
         assertThat(exception.getMessage(), is("" +
-                "Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyConstructorsType':\n" +
+                "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyConstructorsType':\n" +
                 "More than one public constructors or factory methods found\n" +
                 "No annotations have been detected\n" +
                 "More than one public constructors found\n" +
-                "Static factories are not considered because public constructors have been found\n" +
+                "Static factories are not considered because public constructors have been found]\n" +
                 "\n" +
-                "Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyFactoriesType':\n" +
+                "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyFactoriesType':\n" +
                 "More than one public constructors or factory methods found\n" +
                 "No annotations have been detected\n" +
                 "No public constructors found\n" +
-                "More than one factory method has been found"));
+                "More than one factory method has been found]"));
     }
 }
