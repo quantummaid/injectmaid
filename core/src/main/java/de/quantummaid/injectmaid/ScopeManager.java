@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid;
 
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -34,19 +34,19 @@ import java.util.Map;
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScopeManager {
-    private final Map<ResolvedType, Object> scopeObjects;
+    private final Map<TypeIdentifier, Object> scopeObjects;
 
     public static ScopeManager scopeManager() {
         return new ScopeManager(new HashMap<>());
     }
 
-    public ScopeManager add(final ResolvedType type, final Object object) {
-        final Map<ResolvedType, Object> newScopeObjects = new HashMap<>(scopeObjects);
+    public ScopeManager add(final TypeIdentifier type, final Object object) {
+        final Map<TypeIdentifier, Object> newScopeObjects = new HashMap<>(scopeObjects);
         newScopeObjects.put(type, object);
         return new ScopeManager(newScopeObjects);
     }
 
-    public Object getScopeObject(final ResolvedType type) {
+    public Object getScopeObject(final TypeIdentifier type) {
         return scopeObjects.get(type);
     }
 }

@@ -24,7 +24,7 @@ package de.quantummaid.injectmaid;
 import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.api.SingletonType;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +34,12 @@ import lombok.ToString;
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Definition {
-    private final ResolvedType type;
+    private final TypeIdentifier type;
     private final Scope scope;
     private final Instantiator instantiator;
     private final ReusePolicy reusePolicy;
 
-    public static Definition definition(final ResolvedType type,
+    public static Definition definition(final TypeIdentifier type,
                                         final Scope scope,
                                         final Instantiator instantiator,
                                         final ReusePolicy reusePolicy) {
@@ -53,7 +53,7 @@ public final class Definition {
         return reusePolicy == ReusePolicy.EAGER_SINGLETON;
     }
 
-    public ResolvedType type() {
+    public TypeIdentifier type() {
         return type;
     }
 

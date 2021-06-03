@@ -37,6 +37,7 @@ import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ReflectMaid;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -56,6 +57,7 @@ import static de.quantummaid.injectmaid.api.interception.overwrite.OverwritingIn
 import static de.quantummaid.injectmaid.circledetector.CircularDependencyDetector.validateNoCircularDependencies;
 import static de.quantummaid.injectmaid.timing.InstanceAndTimedDependencies.instanceWithNoDependencies;
 import static de.quantummaid.injectmaid.timing.TimedInstantiation.timeInstantiation;
+import static de.quantummaid.reflectmaid.typescanner.TypeIdentifier.typeIdentifierFor;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
@@ -124,7 +126,7 @@ public final class InjectMaid implements Injector {
                 .forEach(definition -> {
                     final TimedInstantiation<Object> timedInstantiation = internalGetInstance(definition);
                     final InstantiationTime time = timedInstantiation.instantiationTime();
-                    final ResolvedType type = definition.type();
+                    final TypeIdentifier type = definition.type();
                     instantiationTimes.addInitializationTime(type, time);
                 });
     }
@@ -137,8 +139,13 @@ public final class InjectMaid implements Injector {
 
     @Override
     public Injector enterScope(final ResolvedType resolvedType, final Object scopeObject) {
-        return enterScopeIfExists(resolvedType, scopeObject).orElseThrow(() -> {
-            final Scope childScope = this.scope.childScope(resolvedType);
+        final TypeIdentifier typeIdentifier = typeIdentifierFor(resolvedType);
+        return enterScope(typeIdentifier, scopeObject);
+    }
+
+    public Injector enterScope(final TypeIdentifier typeIdentifier, final Object scopeObject) {
+        return enterScopeIfExists(typeIdentifier, scopeObject).orElseThrow(() -> {
+            final Scope childScope = this.scope.childScope(typeIdentifier);
             final String registeredScopes = definitions.allScopes().stream()
                     .map(Scope::render)
                     .sorted()
@@ -157,14 +164,19 @@ public final class InjectMaid implements Injector {
 
     @Override
     public Optional<Injector> enterScopeIfExists(final ResolvedType resolvedType, final Object scopeObject) {
-        final Scope childScope = this.scope.childScope(resolvedType);
+        final TypeIdentifier typeIdentifier = TypeIdentifier.typeIdentifierFor(resolvedType);
+        return enterScopeIfExists(typeIdentifier, scopeObject);
+    }
+
+    public Optional<Injector> enterScopeIfExists(final TypeIdentifier typeIdentifier, final Object scopeObject) {
+        final Scope childScope = scope.childScope(typeIdentifier);
         final List<Scope> scopes = definitions.allScopes();
         if (!scopes.contains(childScope)) {
             return Optional.empty();
         }
-        final SingletonStore childSingletonStore = this.singletonStore.child(resolvedType);
-        final ScopeManager childScopeManager = scopeManager.add(resolvedType, scopeObject);
-        final Interceptors childInterceptors = interceptors.enterScope(resolvedType, scopeObject);
+        final SingletonStore childSingletonStore = singletonStore.child(typeIdentifier);
+        final ScopeManager childScopeManager = scopeManager.add(typeIdentifier, scopeObject);
+        final Interceptors childInterceptors = interceptors.enterScope(typeIdentifier, scopeObject);
         final InjectMaid scopedInjectMaid = new InjectMaid(
                 reflectMaid,
                 definitions,
@@ -194,7 +206,7 @@ public final class InjectMaid implements Injector {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getInstance(final ResolvedType type) {
+    public <T> T getInstance(final TypeIdentifier type) {
         final TimedInstantiation<Object> instanceWithInitializationTime = getInstanceWithInitializationTime(type);
         return (T) instanceWithInitializationTime.instance();
     }
@@ -205,8 +217,13 @@ public final class InjectMaid implements Injector {
         return getInstanceWithInitializationTime(resolvedType);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> TimedInstantiation<T> getInstanceWithInitializationTime(final ResolvedType type) {
+        final TypeIdentifier typeIdentifier = TypeIdentifier.typeIdentifierFor(type);
+        return getInstanceWithInitializationTime(typeIdentifier);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> TimedInstantiation<T> getInstanceWithInitializationTime(final TypeIdentifier type) {
         final Optional<?> intercepted = interceptors.interceptBefore(type);
         if (intercepted.isPresent()) {
             return timeInstantiation(type, () -> (InstanceAndTimedDependencies<T>) instanceWithNoDependencies(intercepted.get()));
@@ -223,8 +240,8 @@ public final class InjectMaid implements Injector {
     }
 
     @Override
-    public boolean canInstantiate(final ResolvedType resolvedType) {
-        return definitions.hasDefinitionFor(resolvedType, scope);
+    public boolean canInstantiate(final TypeIdentifier type) {
+        return definitions.hasDefinitionFor(type, scope);
     }
 
     public String debugInformation() {
@@ -263,7 +280,7 @@ public final class InjectMaid implements Injector {
 
     private TimedInstantiation<Object> createAndRegister(final Definition definition) {
         final boolean singleton = definition.isSingleton();
-        final ResolvedType type = definition.type();
+        final TypeIdentifier type = definition.type();
         final Scope definitionScope = definition.scope();
         if (singleton && singletonStore.contains(type, definitionScope)) {
             return timeInstantiation(definition.type(),

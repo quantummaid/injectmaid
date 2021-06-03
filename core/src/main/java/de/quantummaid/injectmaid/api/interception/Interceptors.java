@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -44,14 +44,14 @@ public final class Interceptors {
         return new Interceptors(new ArrayList<>());
     }
 
-    public Optional<?> interceptBefore(final ResolvedType type) {
+    public Optional<?> interceptBefore(final TypeIdentifier type) {
         return interceptors.stream()
                 .map(interceptor -> interceptor.interceptBeforeInstantiation(type))
                 .flatMap(Optional::stream)
                 .findFirst();
     }
 
-    public Object interceptAfter(final ResolvedType type,
+    public Object interceptAfter(final TypeIdentifier type,
                                  final Object object) {
         Object current = object;
         for (final Interceptor interceptor : interceptors) {
@@ -64,7 +64,7 @@ public final class Interceptors {
         this.interceptors.add(interceptor);
     }
 
-    public Interceptors enterScope(final ResolvedType scopeType,
+    public Interceptors enterScope(final TypeIdentifier scopeType,
                                    final Object scopeObject) {
         final List<Interceptor> scopedInterceptors = interceptors.stream()
                 .map(interceptor -> interceptor.enterScope(scopeType, scopeObject))

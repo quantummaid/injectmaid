@@ -28,6 +28,7 @@ import de.quantummaid.injectmaid.detection.singleton.SingletonDetector;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.reflectmaid.resolvedtype.ClassType;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import de.quantummaid.reflectmaid.typescanner.states.DetectionResult;
 
 import java.util.ArrayList;
@@ -62,16 +63,30 @@ public final class Detectors {
     private Detectors() {
     }
 
-    public static DetectionResult<Instantiator> detect(final ResolvedType typeToInstantiate,
+    public static DetectionResult<Instantiator> detect(final TypeIdentifier typeToInstantiate,
                                                        final SingletonSwitch singletonSwitch) {
-        return detect(typeToInstantiate, typeToInstantiate, singletonSwitch);
+        if (typeToInstantiate.isVirtual()) {
+            return failure("cannot detect virtual types");
+        }
+        final ResolvedType resolvedType = typeToInstantiate.realType();
+        return detect(resolvedType, resolvedType, singletonSwitch);
     }
 
-    public static DetectionResult<Instantiator> detect(final ResolvedType typeToInstantiate,
+    public static DetectionResult<Instantiator> detect(final TypeIdentifier typeToInstantiate,
                                                        final ResolvedType creatingType,
                                                        final SingletonSwitch singletonSwitch) {
+        if (typeToInstantiate.isVirtual()) {
+            return failure("cannot detect virtual types");
+        }
+        final ResolvedType resolvedTypeToInstantiate = typeToInstantiate.realType();
+        return detect(resolvedTypeToInstantiate, creatingType, singletonSwitch);
+    }
+
+    private static DetectionResult<Instantiator> detect(final ResolvedType typeToInstantiate,
+                                                        final ResolvedType creatingType,
+                                                        final SingletonSwitch singletonSwitch) {
         if (!(creatingType instanceof ClassType)) {
-            return failure(format("'%s' is not supported for automatic detection", creatingType.simpleDescription()));
+            return DetectionResult.failure(format("'%s' is not supported for automatic detection", creatingType.simpleDescription()));
         }
         if (typeToInstantiate.assignableType().equals(INJECTMAID_TYPE)) {
             return success(selfInstantiator());
@@ -111,6 +126,6 @@ public final class Detectors {
         }
         final String errorMessage = format("Cannot decide how to instantiate type '%s'%s:%n%s",
                 typeToInstantiate.description(), factoryQualifier, message);
-        return DetectionResult.failure(errorMessage);
+        return failure(errorMessage);
     }
 }

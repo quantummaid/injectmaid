@@ -25,7 +25,7 @@ import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.detection.SingletonSwitch;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.statemachine.Context;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import de.quantummaid.reflectmaid.typescanner.states.DetectionResult;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -54,7 +54,7 @@ public final class Unresolved implements State {
 
     @Override
     public State detectInstantiator() {
-        final ResolvedType type = context.type();
+        final TypeIdentifier type = context.type();
         final ReusePolicy oldReusePolicy = context.reusePolicy();
         final SingletonSwitch singletonSwitch = singletonSwitch(oldReusePolicy);
         final DetectionResult<Instantiator> result = detect(type, singletonSwitch);

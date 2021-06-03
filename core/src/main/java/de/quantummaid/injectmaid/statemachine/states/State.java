@@ -23,16 +23,16 @@ package de.quantummaid.injectmaid.statemachine.states;
 
 import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.statemachine.Context;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
 @FunctionalInterface
 public interface State {
 
     Context context();
 
-    default boolean matches(final ResolvedType otherType, final Scope otherScope) {
+    default boolean matches(final TypeIdentifier otherType, final Scope otherScope) {
         final Context context = context();
-        final ResolvedType type = context.type();
+        final TypeIdentifier type = context.type();
         if (!type.equals(otherType)) {
             return false;
         }

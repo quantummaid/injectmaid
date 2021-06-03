@@ -22,6 +22,7 @@
 package de.quantummaid.injectmaid;
 
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public final class Scopes {
         return new Scopes(new ArrayList<>());
     }
 
-    public void validateElementNotUsedSomewhereElse(final ResolvedType element,
+    public void validateElementNotUsedSomewhereElse(final TypeIdentifier element,
                                                     final Scope currentScope) {
         final Scope ignoredScope = currentScope.childScope(element);
         scopes.stream()

@@ -25,7 +25,7 @@ import de.quantummaid.injectmaid.Definition;
 import de.quantummaid.injectmaid.Definitions;
 import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,14 +60,14 @@ public final class CircularDependencyDetector {
             alreadyVisited.add(definition);
             final String circle = alreadyVisited.stream()
                     .map(Definition::type)
-                    .map(ResolvedType::simpleDescription)
+                    .map(TypeIdentifier::simpleDescription)
                     .collect(joining(" -> "));
             throw injectMaidException(format("Illegal circular dependency in scope '%s' detected: %s",
                     scope.render(), circle));
         } else {
             alreadyVisited.add(definition);
             final Instantiator instantiator = definition.instantiator();
-            for (final ResolvedType dependencyType : instantiator.dependencies()) {
+            for (final TypeIdentifier dependencyType : instantiator.dependencies()) {
                 final Definition dependency = definitions.definitionFor(dependencyType, scope);
                 detectCircle(dependency, new ArrayList<>(alreadyVisited), definitions, scope);
             }

@@ -23,7 +23,7 @@ package de.quantummaid.injectmaid.instantiator;
 
 import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -35,14 +35,14 @@ import java.util.List;
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScopeInstantiator implements Instantiator {
-    private final ResolvedType type;
+    private final TypeIdentifier type;
 
-    public static ScopeInstantiator scopeInstantiator(final ResolvedType type) {
+    public static ScopeInstantiator scopeInstantiator(final TypeIdentifier type) {
         return new ScopeInstantiator(type);
     }
 
     @Override
-    public List<ResolvedType> dependencies() {
+    public List<TypeIdentifier> dependencies() {
         return List.of();
     }
 

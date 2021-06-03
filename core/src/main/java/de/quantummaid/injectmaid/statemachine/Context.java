@@ -21,10 +21,10 @@
 
 package de.quantummaid.injectmaid.statemachine;
 
-import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.Scope;
+import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -36,21 +36,21 @@ import java.util.Optional;
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Context {
-    private final ResolvedType type;
+    private final TypeIdentifier type;
     private final Scope scope;
     private final States states;
     private ReusePolicy reusePolicy;
     private Instantiator instantiator;
     private String errorMessage;
 
-    public static Context context(final ResolvedType type,
+    public static Context context(final TypeIdentifier type,
                                   final Scope scope,
                                   final States states,
                                   final ReusePolicy reusePolicy) {
         return new Context(type, scope, states, reusePolicy, null, null);
     }
 
-    public ResolvedType type() {
+    public TypeIdentifier type() {
         return type;
     }
 

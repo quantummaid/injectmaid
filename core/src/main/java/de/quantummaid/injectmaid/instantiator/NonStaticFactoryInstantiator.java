@@ -27,6 +27,7 @@ import de.quantummaid.reflectmaid.Executor;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedMethod;
 import de.quantummaid.reflectmaid.resolvedtype.resolver.ResolvedParameter;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,8 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static de.quantummaid.reflectmaid.typescanner.TypeIdentifier.typeIdentifierFor;
 
 @ToString
 @EqualsAndHashCode
@@ -54,11 +57,12 @@ public final class NonStaticFactoryInstantiator implements Instantiator {
     }
 
     @Override
-    public List<ResolvedType> dependencies() {
-        final List<ResolvedType> dependencies = new ArrayList<>();
-        dependencies.add(type);
+    public List<TypeIdentifier> dependencies() {
+        final List<TypeIdentifier> dependencies = new ArrayList<>();
+        dependencies.add(typeIdentifierFor(type));
         method.getParameters().stream()
                 .map(ResolvedParameter::getType)
+                .map(TypeIdentifier::typeIdentifierFor)
                 .forEach(dependencies::add);
         return dependencies;
     }

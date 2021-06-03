@@ -21,10 +21,10 @@
 
 package de.quantummaid.injectmaid.statemachine;
 
-import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.Scope;
+import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.statemachine.states.State;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +60,7 @@ public final class States {
 
     public void addOrFailIfAlreadyPresent(final State state, final boolean allowDuplicatesIfSame) {
         final Context context = state.context();
-        final ResolvedType type = context.type();
+        final TypeIdentifier type = context.type();
         final Scope scope = context.scope();
         final ReusePolicy reusePolicy = context.reusePolicy();
         if (containsExactly(type, scope, reusePolicy, allowDuplicatesIfSame)) {
@@ -91,7 +91,7 @@ public final class States {
                 .map(mapper);
     }
 
-    private boolean containsExactly(final ResolvedType type,
+    private boolean containsExactly(final TypeIdentifier type,
                                     final Scope scope,
                                     final ReusePolicy reusePolicy,
                                     final boolean allowDuplicatesIfSame) {
@@ -108,7 +108,7 @@ public final class States {
         }
     }
 
-    private boolean contains(final ResolvedType type,
+    private boolean contains(final TypeIdentifier type,
                              final Scope scope) {
         final boolean contains = states.stream()
                 .anyMatch(state -> state.matches(type, scope));

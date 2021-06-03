@@ -28,7 +28,7 @@ public final class InjectMaidDetector implements Detector<Definition> {
     public DetectionResult<Definition> detect(@NotNull TypeIdentifier type, @NotNull DetectionRequirements detectionRequirements) {
         final ReusePolicy oldReusePolicy = extract(detectionRequirements);
         final SingletonSwitch singletonSwitch = singletonSwitch(oldReusePolicy);
-        //final DetectionResult<Instantiator> result = Detectors.detect(type, singletonSwitch);
+        final DetectionResult<Instantiator> result = Detectors.detect(type, singletonSwitch);
 
 
         return null;

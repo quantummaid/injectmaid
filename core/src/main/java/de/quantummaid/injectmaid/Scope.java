@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid;
 
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -38,22 +38,22 @@ import static java.util.Collections.emptyList;
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Scope {
-    private final List<ResolvedType> scope;
+    private final List<TypeIdentifier> scope;
 
     public static Scope rootScope() {
         return new Scope(emptyList());
     }
 
-    public Scope childScope(final ResolvedType subScope) {
+    public Scope childScope(final TypeIdentifier subScope) {
         validateNotNull(subScope, "subScope");
-        final ArrayList<ResolvedType> newScope = new ArrayList<>(scope);
+        final ArrayList<TypeIdentifier> newScope = new ArrayList<>(scope);
         newScope.add(subScope);
         return new Scope(newScope);
     }
 
     public String render() {
         return scope.stream()
-                .map(ResolvedType::simpleDescription)
+                .map(TypeIdentifier::simpleDescription)
                 .collect(Collectors.joining("/", "/", ""));
     }
 
@@ -61,7 +61,7 @@ public final class Scope {
         return scope.size();
     }
 
-    public boolean containsElement(final ResolvedType type) {
+    public boolean containsElement(final TypeIdentifier type) {
         return scope.contains(type);
     }
 
@@ -70,8 +70,8 @@ public final class Scope {
             return false;
         }
         for (int i = 0; i < scope.size(); ++i) {
-            final ResolvedType thisPart = scope.get(i);
-            final ResolvedType otherPart = other.scope.get(i);
+            final TypeIdentifier thisPart = scope.get(i);
+            final TypeIdentifier otherPart = other.scope.get(i);
             if (!thisPart.equals(otherPart)) {
                 return false;
             }

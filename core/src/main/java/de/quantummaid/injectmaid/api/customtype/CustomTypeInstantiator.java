@@ -25,7 +25,7 @@ import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
 import de.quantummaid.injectmaid.api.customtype.api.InvocableFactory;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -39,16 +39,16 @@ import static java.lang.String.format;
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CustomTypeInstantiator implements Instantiator {
-    private final List<ResolvedType> dependencies;
+    private final List<TypeIdentifier> dependencies;
     private final InvocableFactory<?> invocableFactory;
 
-    public static CustomTypeInstantiator customTypeInstantiator(final List<ResolvedType> dependencies,
+    public static CustomTypeInstantiator customTypeInstantiator(final List<TypeIdentifier> dependencies,
                                                                 final InvocableFactory<?> invocableFactory) {
         return new CustomTypeInstantiator(dependencies, invocableFactory);
     }
 
     @Override
-    public List<ResolvedType> dependencies() {
+    public List<TypeIdentifier> dependencies() {
         return dependencies;
     }
 

@@ -23,14 +23,14 @@ package de.quantummaid.injectmaid.instantiator;
 
 import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.injectmaid.ScopeManager;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
 import java.util.List;
 
 @SuppressWarnings("java:S112")
 public interface Instantiator {
 
-    List<ResolvedType> dependencies();
+    List<TypeIdentifier> dependencies();
 
     Object instantiate(List<Object> dependencies, ScopeManager scopeManager, InjectMaid injectMaid) throws Exception;
 

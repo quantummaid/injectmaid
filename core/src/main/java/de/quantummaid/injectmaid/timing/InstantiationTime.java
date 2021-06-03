@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.timing;
 
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -34,11 +34,11 @@ import java.util.StringJoiner;
 public final class InstantiationTime {
     private static final String INDENT = "\t";
 
-    private final ResolvedType type;
+    private final TypeIdentifier type;
     private final long timeInMilliseconds;
     private final List<InstantiationTime> dependencies;
 
-    public static InstantiationTime instantiationTime(final ResolvedType type,
+    public static InstantiationTime instantiationTime(final TypeIdentifier type,
                                                       final long timeInMilliseconds) {
         return new InstantiationTime(type, timeInMilliseconds, new ArrayList<>());
     }
@@ -55,7 +55,7 @@ public final class InstantiationTime {
         return timeInMilliseconds;
     }
 
-    public ResolvedType type() {
+    public TypeIdentifier type() {
         return type;
     }
 

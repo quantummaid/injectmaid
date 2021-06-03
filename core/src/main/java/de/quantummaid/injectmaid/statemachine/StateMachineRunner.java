@@ -23,10 +23,10 @@ package de.quantummaid.injectmaid.statemachine;
 
 import de.quantummaid.injectmaid.Definition;
 import de.quantummaid.injectmaid.InjectMaidException;
-import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.Scope;
+import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.statemachine.states.State;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,16 +41,16 @@ public final class StateMachineRunner {
     private StateMachineRunner() {
     }
 
-    public static Map<ResolvedType, List<Definition>> runStateMachine(final States states) {
+    public static Map<TypeIdentifier, List<Definition>> runStateMachine(final States states) {
         while (!states.allFinal()) {
             states.update(State::detectInstantiator);
             states.update(State::resolvedDependencies);
         }
-        final Map<ResolvedType, List<Definition>> definitionsMap = new HashMap<>();
+        final Map<TypeIdentifier, List<Definition>> definitionsMap = new HashMap<>();
         final List<String> errors = new ArrayList<>();
         states.collect(State::context)
                 .forEach(context -> {
-                    final ResolvedType type = context.type();
+                    final TypeIdentifier type = context.type();
                     final Scope scopeOfType = context.scope();
                     context.instantiator().ifPresentOrElse(instantiator -> {
                         final ReusePolicy reusePolicy = context.reusePolicy();
