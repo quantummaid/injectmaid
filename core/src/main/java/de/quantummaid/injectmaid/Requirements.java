@@ -1,28 +1,31 @@
+/*
+ * Copyright (c) 2020 Richard Hauswald - https://quantummaid.de/.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.api.ReusePolicy;
-import de.quantummaid.reflectmaid.typescanner.requirements.DetectionRequirements;
 import de.quantummaid.reflectmaid.typescanner.requirements.RequirementName;
-
-import static de.quantummaid.injectmaid.api.ReusePolicy.*;
 
 public final class Requirements {
     public static final RequirementName REGISTERED = new RequirementName("registered");
-    public static final RequirementName SINGLETON = new RequirementName("singleton");
-    public static final RequirementName EAGER = new RequirementName("eager");
-    public static final RequirementName LAZY = new RequirementName("lazy");
 
-    public static ReusePolicy extract(final DetectionRequirements requirements) {
-        if (requirements.requires(SINGLETON)) {
-            if (requirements.requires(LAZY)) {
-                return LAZY_SINGLETON;
-            } else if (requirements.requires(EAGER)) {
-                return EAGER_SINGLETON;
-            } else {
-                return DEFAULT_SINGLETON;
-            }
-        } else {
-            return ReusePolicy.PROTOTYPE;
-        }
+    private Requirements() {
     }
 }

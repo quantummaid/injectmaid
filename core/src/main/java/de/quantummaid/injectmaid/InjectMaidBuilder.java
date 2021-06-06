@@ -30,51 +30,55 @@ import de.quantummaid.injectmaid.api.customtype.api.CustomType;
 import de.quantummaid.injectmaid.api.customtype.api.CustomTypeData;
 import de.quantummaid.injectmaid.instantiator.BindInstantiator;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
-import de.quantummaid.injectmaid.instantiator.ScopeInstantiator;
 import de.quantummaid.injectmaid.lifecyclemanagement.LifecycleManager;
 import de.quantummaid.injectmaid.lifecyclemanagement.closer.CloseFunction;
 import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closer;
-import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closers;
-import de.quantummaid.injectmaid.statemachine.Context;
-import de.quantummaid.injectmaid.statemachine.States;
-import de.quantummaid.injectmaid.statemachine.states.ResolvingDependencies;
-import de.quantummaid.injectmaid.statemachine.states.State;
-import de.quantummaid.injectmaid.statemachine.states.UnresolvedFactory;
+import de.quantummaid.injectmaid.statemachine.*;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ReflectMaid;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.CollectionResult;
+import de.quantummaid.reflectmaid.typescanner.OnCollectionError;
 import de.quantummaid.reflectmaid.typescanner.Processor;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import de.quantummaid.reflectmaid.typescanner.factories.StateFactory;
 import de.quantummaid.reflectmaid.typescanner.factories.UndetectedFactory;
-import de.quantummaid.reflectmaid.typescanner.states.Detector;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
+import de.quantummaid.reflectmaid.typescanner.signals.Signal;
+import de.quantummaid.reflectmaid.typescanner.states.RequirementsDescriber;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static de.quantummaid.injectmaid.Definitions.definitions;
 import static de.quantummaid.injectmaid.InjectMaid.injectMaid;
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
-import static de.quantummaid.injectmaid.Scope.rootScope;
+import static de.quantummaid.injectmaid.Requirements.REGISTERED;
 import static de.quantummaid.injectmaid.Scopes.scopes;
 import static de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.injectmaid.api.customtype.CustomTypeInstantiator.customTypeInstantiator;
 import static de.quantummaid.injectmaid.instantiator.BindInstantiator.bindInstantiator;
+import static de.quantummaid.injectmaid.instantiator.CustomInstantiatorFactory.customInstantiatorFactory;
 import static de.quantummaid.injectmaid.instantiator.ScopeInstantiator.scopeInstantiator;
 import static de.quantummaid.injectmaid.lifecyclemanagement.NoOpLifecycleManager.noOpLifecycleManager;
 import static de.quantummaid.injectmaid.lifecyclemanagement.RealLifecycleManager.realLifecycleManager;
 import static de.quantummaid.injectmaid.lifecyclemanagement.closer.Closer.closer;
-import static de.quantummaid.injectmaid.statemachine.Context.context;
+import static de.quantummaid.injectmaid.lifecyclemanagement.closer.Closers.closers;
+import static de.quantummaid.injectmaid.statemachine.FactoryMapper.factoryMapper;
 import static de.quantummaid.injectmaid.statemachine.InjectMaidDetector.injectMaidDetector;
-import static de.quantummaid.injectmaid.statemachine.StateMachineRunner.runStateMachine;
-import static de.quantummaid.injectmaid.statemachine.States.states;
-import static de.quantummaid.injectmaid.statemachine.states.ResolvingDependencies.resolvingDependencies;
-import static de.quantummaid.injectmaid.statemachine.states.Unresolved.unresolved;
+import static de.quantummaid.injectmaid.statemachine.InjectMaidOnCollectionError.injectMaidOnCollectionError;
+import static de.quantummaid.injectmaid.statemachine.InjectMaidResolver.injectMaidResolver;
+import static de.quantummaid.injectmaid.statemachine.ReusePolicyMapper.reusePolicyMapper;
+import static de.quantummaid.reflectmaid.typescanner.Processor.processor;
+import static de.quantummaid.reflectmaid.typescanner.Reason.manuallyAdded;
 import static de.quantummaid.reflectmaid.typescanner.TypeIdentifier.typeIdentifierFor;
+import static de.quantummaid.reflectmaid.typescanner.scopes.Scope.rootScope;
+import static de.quantummaid.reflectmaid.typescanner.signals.AddReasonSignal.addReasonSignal;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1200")
@@ -83,7 +87,10 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
 
     private final ReflectMaid reflectMaid;
     private boolean registerShutdownHook = false;
-    private final States states;
+    private final List<Signal<InjectMaidTypeScannerResult>> signals;
+    private final List<StateFactory<InjectMaidTypeScannerResult>> stateFactories;
+    private final FactoryMapper factoryMapper;
+    private final ReusePolicyMapper reusePolicyMapper;
     private final Scope scope;
     private final Scopes scopes;
     private SingletonType defaultSingletonType = SingletonType.LAZY;
@@ -91,11 +98,14 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     private final List<Closer> closers = new ArrayList<>();
 
     static InjectMaidBuilder injectMaidBuilder(final ReflectMaid reflectMaid) {
-        final States states = states();
         final Scope scope = rootScope();
         final Scopes scopes = scopes();
         scopes.add(scope);
-        return new InjectMaidBuilder(reflectMaid, states, scope, scopes);
+        final List<StateFactory<InjectMaidTypeScannerResult>> stateFactories = new ArrayList<>();
+        final List<Signal<InjectMaidTypeScannerResult>> signals = new ArrayList<>();
+        final FactoryMapper factoryMapper = factoryMapper();
+        final ReusePolicyMapper reusePolicyMapper = reusePolicyMapper(DEFAULT_REUSE_POLICY);
+        return new InjectMaidBuilder(reflectMaid, signals, stateFactories, factoryMapper, reusePolicyMapper, scope, scopes);
     }
 
     public InjectMaidBuilder withConfiguration(final InjectorConfiguration configuration) {
@@ -114,12 +124,12 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     public InjectMaidBuilder withScope(final TypeIdentifier scopeType,
                                        final InjectorConfiguration configuration) {
         scopes.validateElementNotUsedSomewhereElse(scopeType, scope);
-        final Scope subScope = this.scope.childScope(scopeType);
-        final InjectMaidBuilder scopedBuilder = new InjectMaidBuilder(reflectMaid, states, subScope, scopes);
+        final Scope subScope = scope.childScope(scopeType);
+        final InjectMaidBuilder scopedBuilder = new InjectMaidBuilder(
+                reflectMaid, signals, stateFactories, factoryMapper, reusePolicyMapper, subScope, scopes);
         scopedBuilder.lifecycleManagement = lifecycleManagement;
         if (!scopes.contains(subScope)) {
-            final ScopeInstantiator scopeInstantiator = scopeInstantiator(scopeType);
-            scopedBuilder.withInstantiator(scopeType, scopeInstantiator, DEFAULT_REUSE_POLICY);
+            scopedBuilder.withInstantiator(scopeType, scopeInstantiator(scopeType), DEFAULT_REUSE_POLICY);
         }
         scopes.add(subScope);
         configuration.apply(scopedBuilder);
@@ -136,11 +146,10 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
                                          final GenericType<?> factory,
                                          final ReusePolicy reusePolicy) {
         final ResolvedType resolvedType = reflectMaid.resolve(type);
+        final TypeIdentifier typeIdentifier = typeIdentifierFor(resolvedType);
         final ResolvedType resolvedFactory = reflectMaid.resolve(factory);
-        final Context context = context(TypeIdentifier.typeIdentifierFor(resolvedType), scope, states, reusePolicy);
-        final UnresolvedFactory state = UnresolvedFactory.unresolvedFactory(context, resolvedFactory);
-        states.addOrFailIfAlreadyPresent(state, false);
-        return this;
+        factoryMapper.registerFactory(typeIdentifier, resolvedFactory);
+        return withType(resolvedType, reusePolicy);
     }
 
     @Override
@@ -149,27 +158,34 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
                                                     final ReusePolicy reusePolicy) {
         final ResolvedType resolvedInterfaceType = reflectMaid.resolve(interfaceType);
         final ResolvedType resolvedImplementationType = reflectMaid.resolve(implementationType);
-        final Context context = context(TypeIdentifier.typeIdentifierFor(resolvedInterfaceType), scope, states, DEFAULT_REUSE_POLICY);
-        final BindInstantiator instantiator = bindInstantiator(TypeIdentifier.typeIdentifierFor(resolvedImplementationType));
-        context.setInstantiator(instantiator);
-        final ResolvingDependencies state = resolvingDependencies(context);
-        states.addOrFailIfAlreadyPresent(state, false);
-        return withType(resolvedImplementationType, reusePolicy, true);
+        final BindInstantiator instantiator = bindInstantiator(typeIdentifierFor(resolvedImplementationType));
+        withInstantiator(typeIdentifierFor(resolvedInterfaceType), instantiator, DEFAULT_REUSE_POLICY);
+        return withType(typeIdentifierFor(resolvedImplementationType), reusePolicy, true);
     }
 
     @Override
-    public InjectMaidBuilder withType(final GenericType<?> genericType,
+    public InjectMaidBuilder withType(final GenericType<?> type,
                                       final ReusePolicy reusePolicy) {
-        final ResolvedType resolvedType = reflectMaid.resolve(genericType);
-        return withType(resolvedType, reusePolicy, false);
+        final ResolvedType resolvedType = reflectMaid.resolve(type);
+        return withType(resolvedType, reusePolicy);
     }
 
-    private InjectMaidBuilder withType(final ResolvedType resolvedType,
+    public InjectMaidBuilder withType(final ResolvedType type,
+                                      final ReusePolicy reusePolicy) {
+        final TypeIdentifier typeIdentifier = TypeIdentifier.typeIdentifierFor(type);
+        return withType(typeIdentifier, reusePolicy);
+    }
+
+    public InjectMaidBuilder withType(final TypeIdentifier type,
+                                      final ReusePolicy reusePolicy) {
+        return withType(type, reusePolicy, false);
+    }
+
+    private InjectMaidBuilder withType(final TypeIdentifier type,
                                        final ReusePolicy reusePolicy,
                                        final boolean allowDuplicatesIfSame) {
-        final Context context = context(TypeIdentifier.typeIdentifierFor(resolvedType), scope, states, reusePolicy);
-        final State state = unresolved(context);
-        states.addOrFailIfAlreadyPresent(state, allowDuplicatesIfSame);
+        reusePolicyMapper.registerReusePolicy(type, reusePolicy);
+        signals.add(addReasonSignal(type, scope, REGISTERED, manuallyAdded()));
         return this;
     }
 
@@ -181,7 +197,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         final List<TypeIdentifier> dependencies = customTypeData.dependencies().stream()
                 .map(reflectMaid::resolve)
                 .map(TypeIdentifier::typeIdentifierFor)
-                .collect(Collectors.toList());
+                .collect(toList());
         final CustomTypeInstantiator instantiator = customTypeInstantiator(
                 dependencies,
                 customTypeData.invocableFactory()
@@ -206,10 +222,12 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     public InjectMaidBuilder withInstantiator(final TypeIdentifier typeIdentifier,
                                               final Instantiator instantiator,
                                               final ReusePolicy reusePolicy) {
-        final Context context = context(typeIdentifier, scope, states, reusePolicy);
-        context.setInstantiator(instantiator);
-        final ResolvingDependencies state = resolvingDependencies(context);
-        states.addOrFailIfAlreadyPresent(state, false);
+        withStateFactory(customInstantiatorFactory(typeIdentifier, scope, instantiator, reusePolicyMapper));
+        return withType(typeIdentifier, reusePolicy);
+    }
+
+    public InjectMaidBuilder withStateFactory(final StateFactory<InjectMaidTypeScannerResult> stateFactory) {
+        stateFactories.add(stateFactory);
         return this;
     }
 
@@ -229,20 +247,25 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     }
 
     public InjectMaid build() {
-        final Processor<Definition> processor = Processor.processor(
-                List.of(new UndetectedFactory<>()),
-                List.of(Requirements.REGISTERED),
-                Collections.emptyList()
+        withStateFactory(new UndetectedFactory<>());
+        final Processor<InjectMaidTypeScannerResult> processor = processor(
+                stateFactories,
+                List.of(REGISTERED),
+                emptyList()
         );
-        final Detector<Definition> detector = injectMaidDetector();
-        //processor.collect()
+        final InjectMaidDetector detector = injectMaidDetector(factoryMapper, reusePolicyMapper);
+        final InjectMaidResolver resolver = injectMaidResolver();
+        final OnCollectionError<InjectMaidTypeScannerResult> onCollectionError = injectMaidOnCollectionError();
+        final RequirementsDescriber requirementsDescriber = detectionRequirements -> "registered";
+        signals.forEach(processor::dispatch);
+        final Map<TypeIdentifier, Map<Scope, CollectionResult<InjectMaidTypeScannerResult>>> definitionsMap =
+                processor.collect(detector, resolver, onCollectionError, requirementsDescriber);
 
-        final Map<TypeIdentifier, List<Definition>> definitionsMap = runStateMachine(states);
         final Definitions definitions = definitions(scopes.asList(), definitionsMap);
         final LifecycleManager lifecycleManager;
         if (lifecycleManagement || !closers.isEmpty()) {
             closers.add(closer(AutoCloseable.class, AutoCloseable::close));
-            lifecycleManager = realLifecycleManager(Closers.closers(this.closers), scope);
+            lifecycleManager = realLifecycleManager(closers(this.closers), scope);
         } else {
             lifecycleManager = noOpLifecycleManager();
         }

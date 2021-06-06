@@ -23,9 +23,9 @@ package de.quantummaid.injectmaid.circledetector;
 
 import de.quantummaid.injectmaid.Definition;
 import de.quantummaid.injectmaid.Definitions;
-import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 
 import java.util.ArrayList;
 import java.util.List;

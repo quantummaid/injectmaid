@@ -25,6 +25,7 @@
         "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
 <suppressions>
     <suppress checks="IllegalCatch" files="InjectMaid|Closeable"/>
+    <suppress checks="MethodCount" files="InjectMaid"/>
     <suppress checks="VisibilityModifier" files="NumberedType|MyNumberedImplementation|StringWrapper"/>
     <suppress checks="MagicNumber|ParameterNumber" files="Factory[0-9]*"/>
     <suppress checks="ParameterNumber|FileLength|MethodCount" files="CustomTypeConfigurators"/>

@@ -38,6 +38,7 @@ import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ReflectMaid;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -48,7 +49,6 @@ import java.util.function.Predicate;
 
 import static de.quantummaid.injectmaid.InjectMaidBuilder.injectMaidBuilder;
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
-import static de.quantummaid.injectmaid.Scope.rootScope;
 import static de.quantummaid.injectmaid.ScopeManager.scopeManager;
 import static de.quantummaid.injectmaid.ShutdownHook.shutdownHook;
 import static de.quantummaid.injectmaid.SingletonStore.singletonStore;
@@ -58,6 +58,7 @@ import static de.quantummaid.injectmaid.circledetector.CircularDependencyDetecto
 import static de.quantummaid.injectmaid.timing.InstanceAndTimedDependencies.instanceWithNoDependencies;
 import static de.quantummaid.injectmaid.timing.TimedInstantiation.timeInstantiation;
 import static de.quantummaid.reflectmaid.typescanner.TypeIdentifier.typeIdentifierFor;
+import static de.quantummaid.reflectmaid.typescanner.scopes.Scope.rootScope;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
@@ -121,7 +122,7 @@ public final class InjectMaid implements Injector {
     }
 
     private void initializeDefinitionsThat(final Predicate<Definition> predicate) {
-        this.definitions.definitionsOnScope(scope).stream()
+        definitions.definitionsOnScope(scope).stream()
                 .filter(predicate)
                 .forEach(definition -> {
                     final TimedInstantiation<Object> timedInstantiation = internalGetInstance(definition);

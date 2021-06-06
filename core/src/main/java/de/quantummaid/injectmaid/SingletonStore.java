@@ -22,6 +22,7 @@
 package de.quantummaid.injectmaid;
 
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ import lombok.ToString;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.quantummaid.injectmaid.Scope.rootScope;
+import static de.quantummaid.reflectmaid.typescanner.scopes.Scope.rootScope;
 
 @ToString
 @EqualsAndHashCode

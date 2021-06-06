@@ -26,8 +26,7 @@ import de.quantummaid.injectmaid.failing.TooManyFactoriesType;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ErrorAggregationSpecs {
@@ -39,17 +38,19 @@ public final class ErrorAggregationSpecs {
                 .withType(TooManyFactoriesType.class)
                 .build());
         assertThat(exception, instanceOf(InjectMaidException.class));
-        assertThat(exception.getMessage(), is("" +
-                "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyConstructorsType':\n" +
-                "More than one public constructors or factory methods found\n" +
-                "No annotations have been detected\n" +
-                "More than one public constructors found\n" +
-                "Static factories are not considered because public constructors have been found]\n" +
-                "\n" +
+        assertThat(exception.getMessage(), containsString("" +
+                "unable to detect registered:\nno registered detected:\n" +
                 "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyFactoriesType':\n" +
                 "More than one public constructors or factory methods found\n" +
                 "No annotations have been detected\n" +
                 "No public constructors found\n" +
                 "More than one factory method has been found]"));
+        assertThat(exception.getMessage(), containsString("" +
+                "unable to detect registered:\nno registered detected:\n" +
+                "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyConstructorsType':\n" +
+                "More than one public constructors or factory methods found\n" +
+                "No annotations have been detected\n" +
+                "More than one public constructors found\n" +
+                "Static factories are not considered because public constructors have been found]"));
     }
 }

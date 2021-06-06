@@ -21,7 +21,10 @@
 
 package de.quantummaid.injectmaid;
 
+import de.quantummaid.injectmaid.statemachine.InjectMaidTypeScannerResult;
+import de.quantummaid.reflectmaid.typescanner.CollectionResult;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +37,7 @@ import java.util.Map;
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @ToString
 @EqualsAndHashCode
@@ -45,8 +47,16 @@ public final class Definitions {
     private final Map<TypeIdentifier, List<Definition>> definitions;
 
     public static Definitions definitions(final List<Scope> scopes,
-                                          final Map<TypeIdentifier, List<Definition>> definitions) {
-        return new Definitions(scopes, definitions);
+                                          final Map<TypeIdentifier, Map<Scope, CollectionResult<InjectMaidTypeScannerResult>>> definitions) {
+        final Map<TypeIdentifier, List<Definition>> mapOfLists = definitions.entrySet().stream()
+                .collect(toMap(Map.Entry::getKey, entry -> {
+                    final Map<Scope, CollectionResult<InjectMaidTypeScannerResult>> byScope = entry.getValue();
+                    return byScope.values().stream()
+                            .map(CollectionResult::getDefinition)
+                            .map(InjectMaidTypeScannerResult::toDefinition)
+                            .collect(toList());
+                }));
+        return new Definitions(scopes, mapOfLists);
     }
 
     public boolean hasDefinitionFor(final TypeIdentifier type, final Scope scope) {

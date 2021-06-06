@@ -214,7 +214,9 @@ public final class AnnotationSpecs {
                 .withType(MultipleAnnotations.class)
                 .build());
         assertThat(exception, instanceOf(InjectMaidException.class));
-        assertThat(exception.getMessage(), is("[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.annotated.MultipleAnnotations':\n" +
+        assertThat(exception.getMessage(), is("unable to detect registered:\n" +
+                "no registered detected:\n" +
+                "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.annotated.MultipleAnnotations':\n" +
                 "More than one constructor or factory method has been annotated for injection (considered are " +
                 "[javax.inject.Inject, com.google.inject.Inject, org.springframework.beans.factory.annotation.Autowired])]"));
     }

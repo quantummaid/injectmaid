@@ -25,6 +25,7 @@ import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.api.SingletonType;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;

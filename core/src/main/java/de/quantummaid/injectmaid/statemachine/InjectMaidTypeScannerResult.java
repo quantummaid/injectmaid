@@ -19,35 +19,33 @@
  * under the License.
  */
 
-package de.quantummaid.mapmaid.builder.resolving;
+package de.quantummaid.injectmaid.statemachine;
 
-import de.quantummaid.mapmaid.builder.resolving.disambiguator.DisambiguationResult;
-import de.quantummaid.mapmaid.debug.ScanInformationBuilder;
+import de.quantummaid.injectmaid.Definition;
+import de.quantummaid.injectmaid.api.ReusePolicy;
+import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import static de.quantummaid.injectmaid.Definition.definition;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MapMaidTypeScannerResult {
-    private final DisambiguationResult disambiguationResult;
-    private final ScanInformationBuilder scanInformationBuilder;
+public final class InjectMaidTypeScannerResult {
+    private final TypeIdentifier typeIdentifier;
+    private final Scope scope;
+    private final Instantiator instantiator;
+    private final ReusePolicy reusePolicy;
 
-    public static MapMaidTypeScannerResult result(final DisambiguationResult disambiguationResult,
-                                                  final TypeIdentifier typeIdentifier) {
-        final ScanInformationBuilder scanInformationBuilder = ScanInformationBuilder.scanInformationBuilder(typeIdentifier);
-        return new MapMaidTypeScannerResult(disambiguationResult, scanInformationBuilder);
+    public static InjectMaidTypeScannerResult result(final TypeIdentifier typeIdentifier,
+                                                     final Scope scope,
+                                                     final Instantiator instantiator,
+                                                     final ReusePolicy reusePolicy) {
+        return new InjectMaidTypeScannerResult(typeIdentifier, scope, instantiator, reusePolicy);
     }
 
-    public static MapMaidTypeScannerResult result(final DisambiguationResult disambiguationResult,
-                                                  final ScanInformationBuilder scanInformationBuilder) {
-        return new MapMaidTypeScannerResult(disambiguationResult, scanInformationBuilder);
-    }
-
-    public DisambiguationResult disambiguationResult() {
-        return disambiguationResult;
-    }
-
-    public ScanInformationBuilder scanInformationBuilder() {
-        return scanInformationBuilder;
+    public Definition toDefinition() {
+        return definition(typeIdentifier, scope, instantiator, reusePolicy);
     }
 }
