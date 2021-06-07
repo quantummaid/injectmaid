@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.statemachine;
 
+import de.quantummaid.reflectmaid.typescanner.Reason;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import de.quantummaid.reflectmaid.typescanner.requirements.DetectionRequirements;
 import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
@@ -50,11 +51,12 @@ public final class InjectMaidResolver implements Resolver<InjectMaidTypeScannerR
                                                              final @NotNull TypeIdentifier type,
                                                              final @NotNull Scope scope,
                                                              final @NotNull DetectionRequirements detectionRequirements) {
+        final Reason reason = becauseOf(type, scope);
         return result.toDefinition()
                 .instantiator()
                 .dependencies().stream()
                 .map(dependency -> AddReasonSignal.<InjectMaidTypeScannerResult>addReasonSignal(
-                        dependency, scope, REGISTERED, becauseOf(type)))
+                        dependency, scope, REGISTERED, reason))
                 .collect(toList());
     }
 }
