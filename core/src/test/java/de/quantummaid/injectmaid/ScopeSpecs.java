@@ -188,7 +188,7 @@ public final class ScopeSpecs {
     }
 
     @Test
-    public void aTypeThatHasBeenRegisteredAsAScopeCannotBeRegisteredNormallyOutsideOfTheScope() {
+    public void aTypeThatHasBeenRegisteredAsAScopeCanBeRegisteredNormallyOutsideOfTheScope() {
         final InjectMaid injectMaid = anInjectMaid()
                 .withCustomType(String.class, () -> "foo")
                 .withScope(String.class, builder -> {
@@ -198,7 +198,7 @@ public final class ScopeSpecs {
         assertThat(instance1, is("foo"));
 
         final String instance2 = injectMaid.enterScope(String.class, "bar").getInstance(String.class);
-        assertThat(instance2, is("foo"));
+        assertThat(instance2, is("bar"));
     }
 
     @Test

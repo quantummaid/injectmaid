@@ -27,43 +27,34 @@ import de.quantummaid.injectmaid.statemachine.ReusePolicyMapper;
 import de.quantummaid.reflectmaid.typescanner.Context;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import de.quantummaid.reflectmaid.typescanner.factories.StateFactory;
-import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
-import de.quantummaid.reflectmaid.typescanner.states.StatefulDefinition;
-import de.quantummaid.reflectmaid.typescanner.states.detected.Unreasoned;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static de.quantummaid.injectmaid.statemachine.InjectMaidTypeScannerResult.result;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CustomInstantiatorFactory implements StateFactory<InjectMaidTypeScannerResult> {
     private final TypeIdentifier typeIdentifier;
-    private final Scope scope;
     private final Instantiator instantiator;
     private final ReusePolicyMapper reusePolicyMapper;
 
     public static CustomInstantiatorFactory customInstantiatorFactory(final TypeIdentifier typeIdentifier,
-                                                                      final Scope scope,
                                                                       final Instantiator instantiator,
                                                                       final ReusePolicyMapper reusePolicyMapper) {
-        return new CustomInstantiatorFactory(typeIdentifier, scope, instantiator, reusePolicyMapper);
+        return new CustomInstantiatorFactory(typeIdentifier, instantiator, reusePolicyMapper);
     }
 
-    @Nullable
     @Override
-    public StatefulDefinition<InjectMaidTypeScannerResult> create(@NotNull final TypeIdentifier type,
-                                                                  @NotNull final Context<InjectMaidTypeScannerResult> context) {
-        if (!typeIdentifier.equals(type)) {
-            return null;
-        }
-        if (!scope.contains(context.getScope())) {
-            return null;
-        }
+    public boolean applies(@NotNull final TypeIdentifier type) {
+        return typeIdentifier.equals(type);
+    }
+
+    @Override
+    public void create(@NotNull final TypeIdentifier type,
+                       @NotNull final Context<InjectMaidTypeScannerResult> context) {
         final ReusePolicy reusePolicy = reusePolicyMapper.reusePolicyFor(type);
-        final InjectMaidTypeScannerResult result = result(typeIdentifier, scope, instantiator, reusePolicy);
+        final InjectMaidTypeScannerResult result = result(typeIdentifier, context.getScope(), instantiator, reusePolicy);
         context.setManuallyConfiguredResult(result);
-        return new Unreasoned<>(context);
     }
 }

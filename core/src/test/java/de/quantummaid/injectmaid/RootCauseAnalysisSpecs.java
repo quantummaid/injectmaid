@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class RootCauseAnalysisCreatorSpecs {
+public final class RootCauseAnalysisSpecs {
 
     @Test
     public void rootCauseAnalysisWorksOnDirectDependency() {
@@ -140,8 +140,6 @@ public final class RootCauseAnalysisCreatorSpecs {
                         .withScope(Integer.class, builder -> builder.withType(MyTypeWithString.class))
                         .build()
         );
-
-        exception.printStackTrace();
 
         assertThat(exception, instanceOf(InjectMaidException.class));
         assertThat(exception.getMessage(), is("" +
