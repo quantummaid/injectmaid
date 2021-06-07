@@ -48,7 +48,7 @@ public final class ScopeSpecs {
                 .withScope(Request.class, builder -> {
                 })
                 .build();
-        final Request request = Request.request("foo");
+        final Request request = request("foo");
         final Injector scopedInjectMaid = injectMaid.enterScope(Request.class, request);
 
         final Request instance = scopedInjectMaid.getInstance(Request.class);
@@ -67,7 +67,7 @@ public final class ScopeSpecs {
                     );
                 })
                 .build();
-        final Request request = Request.request("foo");
+        final Request request = request("foo");
         final Injector scopedInjectMaid = injectMaid.enterScope(Request.class, request);
 
         final StringWrapper instance = scopedInjectMaid.getInstance(StringWrapper.class);
@@ -81,7 +81,7 @@ public final class ScopeSpecs {
                 .withScope(Request.class, builder -> {
                 })
                 .build();
-        final Request request = Request.request("foo");
+        final Request request = request("foo");
         final Injector scopedInjectMaid = injectMaid.enterScope(Request.class, request);
         assertThat(scopedInjectMaid, notNullValue());
 
@@ -153,17 +153,15 @@ public final class ScopeSpecs {
     }
 
     @Test
-    public void typeCannotBeRegisteredTwiceInSameScope() {
-        final Exception exception = catchException(() ->
-                anInjectMaid()
-                        .withScope(Request.class, scope -> {
-                            scope.withType(NumberedType.class);
-                            scope.withType(NumberedType.class);
-                        })
-                        .build()
-        );
-        assertThat(exception, instanceOf(InjectMaidException.class));
-        assertThat(exception.getMessage(), is("Type 'de.quantummaid.injectmaid.domain.NumberedType' has already been registered in scope '/Request'"));
+    public void typeCanBeRegisteredTwiceInSameScope() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withScope(Request.class, scope -> {
+                    scope.withType(NumberedType.class);
+                    scope.withType(NumberedType.class);
+                })
+                .build();
+        final NumberedType instance = injectMaid.enterScope(request("foo")).getInstance(NumberedType.class);
+        assertThat(instance, is(notNullValue()));
     }
 
     @Test

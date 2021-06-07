@@ -19,36 +19,13 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.statemachine.states;
+package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.Scope;
-import de.quantummaid.injectmaid.statemachine.Context;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.requirements.RequirementName;
 
-@FunctionalInterface
-public interface State {
+public final class Requirements {
+    public static final RequirementName REGISTERED = new RequirementName("registered");
 
-    Context context();
-
-    default boolean matches(final ResolvedType otherType, final Scope otherScope) {
-        final Context context = context();
-        final ResolvedType type = context.type();
-        if (!type.equals(otherType)) {
-            return false;
-        }
-        final Scope scope = context.scope();
-        return scope.contains(otherScope);
-    }
-
-    default boolean isFinal() {
-        return false;
-    }
-
-    default State resolvedDependencies() {
-        return this;
-    }
-
-    default State detectInstantiator() {
-        return this;
+    private Requirements() {
     }
 }

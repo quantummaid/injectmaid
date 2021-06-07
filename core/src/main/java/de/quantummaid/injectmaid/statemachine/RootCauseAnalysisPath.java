@@ -19,38 +19,27 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.lifecyclemanagement;
+package de.quantummaid.injectmaid.statemachine;
 
-import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
+import de.quantummaid.reflectmaid.typescanner.Reason;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static java.util.stream.Collectors.joining;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NoOpLifecycleManager implements LifecycleManager {
+public final class RootCauseAnalysisPath {
+    private final List<Reason> reasons;
 
-    public static LifecycleManager noOpLifecycleManager() {
-        return new NoOpLifecycleManager();
+    public static RootCauseAnalysisPath rootCauseAnalysisPath(final List<Reason> reasons) {
+        return new RootCauseAnalysisPath(reasons);
     }
 
-    @Override
-    public LifecycleManager newInstance(final Scope scope) {
-        return new NoOpLifecycleManager();
-    }
-
-    @Override
-    public void registerInstance(final Object instance, final Scope scope) {
-        // do nothing
-    }
-
-    @Override
-    public void closeAll(final List<ExceptionDuringClose> exceptions) {
-        // do nothing
-    }
-
-    @Override
-    public LifecycleManager child() {
-        return this;
+    public String render() {
+        return reasons.stream()
+                .map(Reason::getReason)
+                .collect(joining(" -> "));
     }
 }

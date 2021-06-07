@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.lifecyclemanagement;
 
-import de.quantummaid.injectmaid.Scope;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 
 import java.util.List;
 

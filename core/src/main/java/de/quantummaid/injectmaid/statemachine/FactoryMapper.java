@@ -19,27 +19,31 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.statemachine.states;
+package de.quantummaid.injectmaid.statemachine;
 
-import de.quantummaid.injectmaid.statemachine.Context;
+import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Resolved implements State {
-    private final Context context;
+public final class FactoryMapper {
+    private final Map<TypeIdentifier, ResolvedType> factoryMap;
 
-    public static Resolved resolved(final Context context) {
-        return new Resolved(context);
+    public static FactoryMapper factoryMapper() {
+        return new FactoryMapper(new LinkedHashMap<>());
     }
 
-    @Override
-    public Context context() {
-        return context;
+    public void registerFactory(final TypeIdentifier toInstantiate,
+                                final ResolvedType factory) {
+        factoryMap.put(toInstantiate, factory);
     }
 
-    @Override
-    public boolean isFinal() {
-        return true;
+    public Optional<ResolvedType> factoryFor(final TypeIdentifier type) {
+        return Optional.ofNullable(factoryMap.get(type));
     }
 }

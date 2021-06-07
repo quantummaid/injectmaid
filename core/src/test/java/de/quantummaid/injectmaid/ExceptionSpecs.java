@@ -48,11 +48,17 @@ public final class ExceptionSpecs {
                 .withType(MyInterface.class)
                 .build());
         assertThat(exception, instanceOf(InjectMaidException.class));
-        assertThat(exception.getMessage(), is("Cannot decide how to instantiate type 'de.quantummaid.injectmaid.domain.MyInterface':\n" +
+        assertThat(exception.getMessage(), is("" +
+                "de.quantummaid.injectmaid.domain.MyInterface:\n" +
+                "unable to detect registered:\n" +
+                "no registered detected:\n" +
+                "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.domain.MyInterface':\n" +
                 "No public constructors or static factory methods found\n" +
                 "No annotations have been detected\n" +
                 "No public constructors found\n" +
-                "No static factory methods have been found"));
+                "No static factory methods have been found]\n" +
+                "Why it has been registered:\n" +
+                "manually added"));
     }
 
     @Test
@@ -61,11 +67,17 @@ public final class ExceptionSpecs {
                 .withType(TooManyConstructorsType.class)
                 .build());
         assertThat(exception, instanceOf(InjectMaidException.class));
-        assertThat(exception.getMessage(), is("Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyConstructorsType':\n" +
+        assertThat(exception.getMessage(), is("" +
+                "de.quantummaid.injectmaid.failing.TooManyConstructorsType:\n" +
+                "unable to detect registered:\n" +
+                "no registered detected:\n" +
+                "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyConstructorsType':\n" +
                 "More than one public constructors or factory methods found\n" +
                 "No annotations have been detected\n" +
                 "More than one public constructors found\n" +
-                "Static factories are not considered because public constructors have been found"));
+                "Static factories are not considered because public constructors have been found]\n" +
+                "Why it has been registered:\n" +
+                "manually added"));
     }
 
     @Test
@@ -74,11 +86,17 @@ public final class ExceptionSpecs {
                 .withType(TooManyFactoriesType.class)
                 .build());
         assertThat(exception, instanceOf(InjectMaidException.class));
-        assertThat(exception.getMessage(), is("Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyFactoriesType':\n" +
+        assertThat(exception.getMessage(), is("" +
+                "de.quantummaid.injectmaid.failing.TooManyFactoriesType:\n" +
+                "unable to detect registered:\n" +
+                "no registered detected:\n" +
+                "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.TooManyFactoriesType':\n" +
                 "More than one public constructors or factory methods found\n" +
                 "No annotations have been detected\n" +
                 "No public constructors found\n" +
-                "More than one factory method has been found"));
+                "More than one factory method has been found]\n" +
+                "Why it has been registered:\n" +
+                "manually added"));
     }
 
     @Test
@@ -87,10 +105,16 @@ public final class ExceptionSpecs {
                 .withType(UninstantiableType.class)
                 .build());
         assertThat(exception, instanceOf(InjectMaidException.class));
-        assertThat(exception.getMessage(), is("Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.UninstantiableType':\n" +
+        assertThat(exception.getMessage(), is("" +
+                "de.quantummaid.injectmaid.failing.UninstantiableType:\n" +
+                "unable to detect registered:\n" +
+                "no registered detected:\n" +
+                "[Cannot decide how to instantiate type 'de.quantummaid.injectmaid.failing.UninstantiableType':\n" +
                 "No public constructors or static factory methods found\n" +
                 "No annotations have been detected\n" +
                 "No public constructors found\n" +
-                "No static factory methods have been found"));
+                "No static factory methods have been found]\n" +
+                "Why it has been registered:\n" +
+                "manually added"));
     }
 }

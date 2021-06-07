@@ -24,6 +24,7 @@ package de.quantummaid.injectmaid.timing;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ReflectMaid;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -40,13 +41,13 @@ import static java.util.stream.Collectors.joining;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InstantiationTimes {
     private final ReflectMaid reflectMaid;
-    private final Map<ResolvedType, InstantiationTime> instantiationTimes = new HashMap<>();
+    private final Map<TypeIdentifier, InstantiationTime> instantiationTimes = new HashMap<>();
 
     public static InstantiationTimes instantiationTimes(final ReflectMaid reflectMaid) {
         return new InstantiationTimes(reflectMaid);
     }
 
-    public void addInitializationTime(final ResolvedType type,
+    public void addInitializationTime(final TypeIdentifier type,
                                       final InstantiationTime time) {
         instantiationTimes.put(type, time);
     }
@@ -58,11 +59,12 @@ public final class InstantiationTimes {
 
     public InstantiationTime initializationTimeFor(final GenericType<?> genericType) {
         final ResolvedType resolvedType = reflectMaid.resolve(genericType);
-        if (!instantiationTimes.containsKey(resolvedType)) {
+        final TypeIdentifier typeIdentifier = TypeIdentifier.typeIdentifierFor(resolvedType);
+        if (!instantiationTimes.containsKey(typeIdentifier)) {
             throw injectMaidException(format("no instantiation time available for %s",
                     resolvedType.description()));
         }
-        return instantiationTimes.get(resolvedType);
+        return instantiationTimes.get(typeIdentifier);
     }
 
     public List<InstantiationTime> allInstantiationTimes() {

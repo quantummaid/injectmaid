@@ -21,9 +21,9 @@
 
 package de.quantummaid.injectmaid.lifecyclemanagement;
 
-import de.quantummaid.injectmaid.Scope;
 import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closeable;
 import de.quantummaid.injectmaid.lifecyclemanagement.closer.Closers;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

@@ -19,38 +19,11 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.lifecyclemanagement;
+package de.quantummaid.injectmaid.domain;
 
-import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NoOpLifecycleManager implements LifecycleManager {
-
-    public static LifecycleManager noOpLifecycleManager() {
-        return new NoOpLifecycleManager();
-    }
-
-    @Override
-    public LifecycleManager newInstance(final Scope scope) {
-        return new NoOpLifecycleManager();
-    }
-
-    @Override
-    public void registerInstance(final Object instance, final Scope scope) {
-        // do nothing
-    }
-
-    @Override
-    public void closeAll(final List<ExceptionDuringClose> exceptions) {
-        // do nothing
-    }
-
-    @Override
-    public LifecycleManager child() {
-        return this;
-    }
+@RequiredArgsConstructor
+public final class MyTypeWithString {
+    private final String string;
 }

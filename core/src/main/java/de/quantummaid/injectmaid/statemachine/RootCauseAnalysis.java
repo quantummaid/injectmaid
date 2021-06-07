@@ -19,27 +19,26 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.statemachine.states;
+package de.quantummaid.injectmaid.statemachine;
 
-import de.quantummaid.injectmaid.statemachine.Context;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
+import static java.util.stream.Collectors.joining;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Failed implements State {
-    private final Context context;
+public final class RootCauseAnalysis {
+    private final List<RootCauseAnalysisPath> paths;
 
-    public static Failed failed(final Context context) {
-        return new Failed(context);
+    public static RootCauseAnalysis rootCauseAnalysis(final List<RootCauseAnalysisPath> reasons) {
+        return new RootCauseAnalysis(reasons);
     }
 
-    @Override
-    public Context context() {
-        return context;
-    }
-
-    @Override
-    public boolean isFinal() {
-        return true;
+    public String render() {
+        return paths.stream()
+                .map(RootCauseAnalysisPath::render)
+                .collect(joining("\n"));
     }
 }

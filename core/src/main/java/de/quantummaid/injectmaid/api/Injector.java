@@ -28,10 +28,12 @@ import de.quantummaid.injectmaid.timing.TimedInstantiation;
 import de.quantummaid.reflectmaid.GenericType;
 import de.quantummaid.reflectmaid.ReflectMaid;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
 import java.util.Optional;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
+import static de.quantummaid.reflectmaid.typescanner.TypeIdentifier.typeIdentifierFor;
 
 public interface Injector extends AutoCloseable {
 
@@ -45,7 +47,12 @@ public interface Injector extends AutoCloseable {
         return instanceWithInitializationTime.instance();
     }
 
-    <T> T getInstance(ResolvedType type);
+    default <T> T getInstance(ResolvedType type) {
+        final TypeIdentifier typeIdentifier = typeIdentifierFor(type);
+        return getInstance(typeIdentifier);
+    }
+
+    <T> T getInstance(TypeIdentifier type);
 
     default <T> TimedInstantiation<T> getInstanceWithInitializationTime(final Class<T> type) {
         final GenericType<T> genericType = genericType(type);
@@ -69,7 +76,12 @@ public interface Injector extends AutoCloseable {
 
     <T> Injector enterScope(GenericType<T> scopeType, T scopeObject);
 
-    Injector enterScope(ResolvedType resolvedType, Object scopeObject);
+    default Injector enterScope(final ResolvedType scopeType, final Object scopeObject) {
+        final TypeIdentifier typeIdentifier = typeIdentifierFor(scopeType);
+        return enterScope(typeIdentifier, scopeObject);
+    }
+
+    Injector enterScope(TypeIdentifier scopeType, Object scopeObject);
 
     @SuppressWarnings("unchecked")
     default Optional<Injector> enterScopeIfExists(final Object scopeObject) {
@@ -104,7 +116,12 @@ public interface Injector extends AutoCloseable {
 
     boolean canInstantiate(GenericType<?> type);
 
-    boolean canInstantiate(ResolvedType resolvedType);
+    default boolean canInstantiate(final ResolvedType type) {
+        final TypeIdentifier typeIdentifier = typeIdentifierFor(type);
+        return canInstantiate(typeIdentifier);
+    }
+
+    boolean canInstantiate(TypeIdentifier type);
 
     @Override
     void close();

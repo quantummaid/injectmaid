@@ -23,7 +23,7 @@ package de.quantummaid.injectmaid.api.interception.overwrite;
 
 import de.quantummaid.injectmaid.api.Injector;
 import de.quantummaid.injectmaid.api.interception.Interceptor;
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public final class OverwritingInterceptor implements Interceptor {
     }
 
     @Override
-    public Optional<?> interceptBeforeInstantiation(final ResolvedType type) {
+    public Optional<?> interceptBeforeInstantiation(final TypeIdentifier type) {
         if (!injector.canInstantiate(type)) {
             return Optional.empty();
         }
@@ -51,13 +51,13 @@ public final class OverwritingInterceptor implements Interceptor {
     }
 
     @Override
-    public Object interceptAfterInstantiation(final ResolvedType type,
+    public Object interceptAfterInstantiation(final TypeIdentifier type,
                                               final Object instance) {
         return instance;
     }
 
     @Override
-    public Interceptor enterScope(final ResolvedType scopeType,
+    public Interceptor enterScope(final TypeIdentifier scopeType,
                                   final Object scopeObject) {
         final Injector scopedInjector = injector.enterScope(scopeType, scopeObject);
         return new OverwritingInterceptor(scopedInjector);

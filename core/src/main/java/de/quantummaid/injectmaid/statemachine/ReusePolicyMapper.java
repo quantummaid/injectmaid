@@ -19,38 +19,31 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.detection;
+package de.quantummaid.injectmaid.statemachine;
 
-import de.quantummaid.injectmaid.instantiator.Instantiator;
+import de.quantummaid.injectmaid.api.ReusePolicy;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import static de.quantummaid.injectmaid.validators.NotNullValidator.validateNotNull;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DetectionResult {
-    private final Instantiator instantiator;
-    private final String errorMessage;
+public final class ReusePolicyMapper {
+    private final ReusePolicy defaultReusePolicy;
+    private final Map<TypeIdentifier, ReusePolicy> reusePolicyMap;
 
-    public static DetectionResult success(final Instantiator instantiator) {
-        validateNotNull(instantiator, "instantiator");
-        return new DetectionResult(instantiator, null);
+    public static ReusePolicyMapper reusePolicyMapper(final ReusePolicy reusePolicy) {
+        return new ReusePolicyMapper(reusePolicy, new LinkedHashMap<>());
     }
 
-    public static DetectionResult fail(final String errorMessage) {
-        validateNotNull(errorMessage, "errorMessage");
-        return new DetectionResult(null, errorMessage);
+    public void registerReusePolicy(final TypeIdentifier type,
+                                    final ReusePolicy reusePolicy) {
+        reusePolicyMap.put(type, reusePolicy);
     }
 
-    public Instantiator instantiator() {
-        return instantiator;
-    }
-
-    public boolean isFailure() {
-        return errorMessage != null;
-    }
-
-    public String errorMessage() {
-        return errorMessage;
+    public ReusePolicy reusePolicyFor(final TypeIdentifier type) {
+        return reusePolicyMap.getOrDefault(type, defaultReusePolicy);
     }
 }

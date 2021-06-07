@@ -19,58 +19,33 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.statemachine;
 
+import de.quantummaid.injectmaid.Definition;
 import de.quantummaid.injectmaid.api.ReusePolicy;
-import de.quantummaid.injectmaid.api.SingletonType;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
-@ToString
-@EqualsAndHashCode
+import static de.quantummaid.injectmaid.Definition.definition;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Definition {
-    private final TypeIdentifier type;
+public final class InjectMaidTypeScannerResult {
+    private final TypeIdentifier typeIdentifier;
     private final Scope scope;
     private final Instantiator instantiator;
     private final ReusePolicy reusePolicy;
 
-    public static Definition definition(final TypeIdentifier type,
-                                        final Scope scope,
-                                        final Instantiator instantiator,
-                                        final ReusePolicy reusePolicy) {
-        return new Definition(type, scope, instantiator, reusePolicy);
+    public static InjectMaidTypeScannerResult result(final TypeIdentifier typeIdentifier,
+                                                     final Scope scope,
+                                                     final Instantiator instantiator,
+                                                     final ReusePolicy reusePolicy) {
+        return new InjectMaidTypeScannerResult(typeIdentifier, scope, instantiator, reusePolicy);
     }
 
-    public boolean isEagerSingleton(final SingletonType defaultSingletonType) {
-        if (reusePolicy == ReusePolicy.DEFAULT_SINGLETON) {
-            return defaultSingletonType == SingletonType.EAGER;
-        }
-        return reusePolicy == ReusePolicy.EAGER_SINGLETON;
-    }
-
-    public TypeIdentifier type() {
-        return type;
-    }
-
-    public Scope scope() {
-        return scope;
-    }
-
-    public Instantiator instantiator() {
-        return instantiator;
-    }
-
-    public boolean isSingleton() {
-        return reusePolicy != ReusePolicy.PROTOTYPE;
-    }
-
-    public ReusePolicy reusePolicy() {
-        return reusePolicy;
+    public Definition toDefinition() {
+        return definition(typeIdentifier, scope, instantiator, reusePolicy);
     }
 }

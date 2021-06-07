@@ -21,7 +21,8 @@
 
 package de.quantummaid.injectmaid;
 
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ import lombok.ToString;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.quantummaid.injectmaid.Scope.rootScope;
+import static de.quantummaid.reflectmaid.typescanner.scopes.Scope.rootScope;
 
 @ToString
 @EqualsAndHashCode
@@ -38,19 +39,19 @@ import static de.quantummaid.injectmaid.Scope.rootScope;
 public final class SingletonStore {
     private final Scope scope;
     private final SingletonStore parent;
-    private final Map<ResolvedType, Object> singletons;
+    private final Map<TypeIdentifier, Object> singletons;
 
     public static SingletonStore singletonStore() {
         final Scope scope = rootScope();
         return new SingletonStore(scope, null, new HashMap<>());
     }
 
-    public SingletonStore child(final ResolvedType scopeElement) {
+    public SingletonStore child(final TypeIdentifier scopeElement) {
         final Scope childScope = this.scope.childScope(scopeElement);
         return new SingletonStore(childScope, this, new HashMap<>());
     }
 
-    public boolean contains(final ResolvedType type,
+    public boolean contains(final TypeIdentifier type,
                             final Scope scope) {
         if (!scope.equals(this.scope)) {
             return parent.contains(type, scope);
@@ -58,7 +59,7 @@ public final class SingletonStore {
         return singletons.containsKey(type);
     }
 
-    public Object get(final ResolvedType type,
+    public Object get(final TypeIdentifier type,
                       final Scope scope) {
         if (!scope.equals(this.scope)) {
             return parent.get(type, scope);
@@ -66,7 +67,7 @@ public final class SingletonStore {
         return singletons.get(type);
     }
 
-    public void put(final ResolvedType type,
+    public void put(final TypeIdentifier type,
                     final Scope scope,
                     final Object object) {
         if (!scope.equals(this.scope)) {

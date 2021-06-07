@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
 import java.util.Optional;
 
@@ -32,12 +32,12 @@ public interface SimpleInterceptor extends Interceptor {
     Object intercept(Object object);
 
     @Override
-    default Optional<?> interceptBeforeInstantiation(final ResolvedType type) {
+    default Optional<?> interceptBeforeInstantiation(final TypeIdentifier type) {
         return empty();
     }
 
     @Override
-    default Object interceptAfterInstantiation(final ResolvedType type,
+    default Object interceptAfterInstantiation(final TypeIdentifier type,
                                                final Object instance) {
         return intercept(instance);
     }

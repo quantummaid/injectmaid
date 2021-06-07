@@ -21,18 +21,18 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
-import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
 import java.util.Optional;
 
 @SuppressWarnings("java:S1452")
 public interface Interceptor {
 
-    Optional<?> interceptBeforeInstantiation(ResolvedType type);
+    Optional<?> interceptBeforeInstantiation(TypeIdentifier type);
 
-    Object interceptAfterInstantiation(ResolvedType type, Object instance);
+    Object interceptAfterInstantiation(TypeIdentifier type, Object instance);
 
-    default Interceptor enterScope(final ResolvedType scopeType,
+    default Interceptor enterScope(final TypeIdentifier scopeType,
                                    final Object scopeObject) {
         return this;
     }
