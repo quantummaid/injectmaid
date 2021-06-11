@@ -125,8 +125,10 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
 
     public InjectMaidBuilder withScope(final TypeIdentifier scopeType,
                                        final InjectorConfiguration configuration) {
-        scopes.validateElementNotUsedSomewhereElse(scopeType, scope);
         final Scope subScope = scope.childScope(scopeType);
+        if (!scopes.contains(subScope)) {
+            scopes.validateElementNotUsedSomewhereElse(scopeType);
+        }
         final InjectMaidBuilder scopedBuilder = new InjectMaidBuilder(
                 reflectMaid, signals, stateFactoryMap, factoryMapper, reusePolicyMapper, subScope, scopes);
         scopedBuilder.lifecycleManagement = lifecycleManagement;

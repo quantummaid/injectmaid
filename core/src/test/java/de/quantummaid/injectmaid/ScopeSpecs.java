@@ -177,6 +177,29 @@ public final class ScopeSpecs {
     }
 
     @Test
+    public void nestedScopesCanBeConfiguredInTwoSeparateStatements() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withScope(Object.class, x ->
+                        x.withScope(Integer.class, builder ->
+                                builder.withCustomType(String.class, () -> "foo")
+                        )
+                )
+                .withScope(Object.class, x ->
+                        x.withScope(Integer.class, builder ->
+                                builder.withCustomType(StringWrapper.class, String.class, StringWrapper::new)
+                        )
+                )
+                .build();
+        final StringWrapper instance = injectMaid
+                .enterScope(Object.class, null)
+                .enterScope(Integer.class, null)
+                .getInstance(StringWrapper.class);
+        assertThat(instance, notNullValue());
+        assertThat(instance, instanceOf(StringWrapper.class));
+        assertThat(instance.string, is("foo"));
+    }
+
+    @Test
     public void cannotRegisterSameScopeTwiceAtDifferentLevels() {
         final Exception exception = catchException(() -> anInjectMaid()
                 .withScope(Object.class, builder -> builder.withScope(Object.class, innerBuilder -> {

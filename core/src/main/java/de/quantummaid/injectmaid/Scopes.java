@@ -44,11 +44,8 @@ public final class Scopes {
         return new Scopes(new ArrayList<>());
     }
 
-    public void validateElementNotUsedSomewhereElse(final TypeIdentifier element,
-                                                    final Scope currentScope) {
-        final Scope ignoredScope = currentScope.childScope(element);
+    public void validateElementNotUsedSomewhereElse(final TypeIdentifier element) {
         scopes.stream()
-                .filter(scope -> !scope.equals(ignoredScope))
                 .filter(scope -> scope.containsElement(element))
                 .findFirst()
                 .ifPresent(scope -> {
