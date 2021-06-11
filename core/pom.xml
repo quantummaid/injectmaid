@@ -31,6 +31,13 @@
                 <artifactId>kotlin-stdlib-jdk8</artifactId>
                 <version>1.4.32</version>
             </dependency>
+            <dependency>
+                <groupId>de.quantummaid.reflectmaid</groupId>
+                <artifactId>reflectmaid-bom</artifactId>
+                <version>0.2.14</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -43,12 +50,10 @@
         <dependency>
             <groupId>de.quantummaid.reflectmaid</groupId>
             <artifactId>reflectmaid-core</artifactId>
-            <version>0.2.13</version>
         </dependency>
         <dependency>
             <groupId>de.quantummaid.reflectmaid</groupId>
             <artifactId>reflectmaid-typescanner</artifactId>
-            <version>0.2.13</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -65,7 +70,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>5.3.7</version>
+            <version>5.3.8</version>
             <scope>test</scope>
         </dependency>
 
