@@ -182,7 +182,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
 
     private InjectMaidBuilder withType(final TypeIdentifier type,
                                        final ReusePolicy reusePolicy) {
-        reusePolicyMapper.registerReusePolicy(type, reusePolicy);
+        reusePolicyMapper.registerReusePolicy(type, scope, reusePolicy);
         signals.add(addReasonSignal(type, scope, REGISTERED, manuallyAdded()));
         return this;
     }
