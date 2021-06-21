@@ -191,6 +191,7 @@ public final class InjectMaid implements Injector {
                 InstantiationTimes.instantiationTimes(reflectMaid)
         );
         children.add(scopedInjectMaid);
+        scopedInjectMaid.loadEagerSingletons();
         return Optional.of(scopedInjectMaid);
     }
 

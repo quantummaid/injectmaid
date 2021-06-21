@@ -53,7 +53,7 @@ public final class InjectMaidDetector implements Detector<InjectMaidTypeScannerR
     public DetectionResult<InjectMaidTypeScannerResult> detect(@NotNull final TypeIdentifier type,
                                                                @NotNull final Scope scope,
                                                                @NotNull final DetectionRequirements detectionRequirements) {
-        final ReusePolicy oldReusePolicy = reusePolicyMapper.reusePolicyFor(type);
+        final ReusePolicy oldReusePolicy = reusePolicyMapper.reusePolicyFor(type, scope);
         final SingletonSwitch singletonSwitch = singletonSwitch(oldReusePolicy);
         final ResolvedType factory = factoryMapper.factoryFor(type).orElse(type.realType());
         final DetectionResult<Instantiator> result = Detectors.detect(type, factory, singletonSwitch);

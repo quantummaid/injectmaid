@@ -21,33 +21,22 @@
 
 package de.quantummaid.injectmaid.statemachine;
 
-import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static de.quantummaid.injectmaid.statemachine.TypeAndScope.typeAndScope;
-
+@ToString
+@EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReusePolicyMapper {
-    private final ReusePolicy defaultReusePolicy;
-    private final Map<TypeAndScope, ReusePolicy> reusePolicyMap;
+public final class TypeAndScope {
+    private final TypeIdentifier typeIdentifier;
+    private final Scope scope;
 
-    public static ReusePolicyMapper reusePolicyMapper(final ReusePolicy reusePolicy) {
-        return new ReusePolicyMapper(reusePolicy, new LinkedHashMap<>());
-    }
-
-    public void registerReusePolicy(final TypeIdentifier type,
-                                    final Scope scope,
-                                    final ReusePolicy reusePolicy) {
-        reusePolicyMap.put(typeAndScope(type, scope), reusePolicy);
-    }
-
-    public ReusePolicy reusePolicyFor(final TypeIdentifier type, final Scope scope) {
-        return reusePolicyMap.getOrDefault(typeAndScope(type, scope), defaultReusePolicy);
+    public static TypeAndScope typeAndScope(final TypeIdentifier typeIdentifier,
+                                            final Scope scope) {
+        return new TypeAndScope(typeIdentifier, scope);
     }
 }

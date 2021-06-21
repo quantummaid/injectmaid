@@ -23,10 +23,7 @@ package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.api.Injector;
 import de.quantummaid.injectmaid.api.customtype.api.CustomType;
-import de.quantummaid.injectmaid.domain.NumberedType;
-import de.quantummaid.injectmaid.domain.Request;
-import de.quantummaid.injectmaid.domain.StringWrapper;
-import de.quantummaid.injectmaid.domain.ZeroArgumentsConstructorType;
+import de.quantummaid.injectmaid.domain.*;
 import de.quantummaid.injectmaid.domain.dependency.*;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +32,7 @@ import java.nio.ByteBuffer;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
 import static de.quantummaid.injectmaid.api.ReusePolicy.DEFAULT_SINGLETON;
+import static de.quantummaid.injectmaid.api.ReusePolicy.EAGER_SINGLETON;
 import static de.quantummaid.injectmaid.domain.Request.request;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
 import static org.hamcrest.CoreMatchers.*;
@@ -276,5 +274,26 @@ public final class ScopeSpecs {
                 "/String de.quantummaid.injectmaid.domain.dependency.Dependency (PROTOTYPE)\n" +
                 "/String de.quantummaid.injectmaid.domain.dependency.Layer1 (PROTOTYPE)\n" +
                 "/String java.lang.String (PROTOTYPE)"));
+    }
+
+    @Test
+    public void eagerSingletonsOnScopesAreInitializedOnScopeEntry() {
+        NumberedType.counter = 0;
+        final InjectMaid injectMaid = anInjectMaid()
+                .withScope(String.class, builder -> builder.withType(NumberedType.class, EAGER_SINGLETON))
+                .build();
+        assertThat(NumberedType.counter, is(0));
+        final Injector scope = injectMaid.enterScope("");
+        assertThat(NumberedType.counter, is(1));
+
+        final NumberedType instance0 = scope.getInstance(NumberedType.class);
+        assertThat(instance0, notNullValue());
+        assertThat(instance0.instanceNumber(), is(0));
+
+        final NumberedType instance1 = scope.getInstance(NumberedType.class);
+        assertThat(instance1, notNullValue());
+        assertThat(instance1.instanceNumber(), is(0));
+
+        assertThat(NumberedType.counter, is(1));
     }
 }

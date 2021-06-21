@@ -53,7 +53,7 @@ public final class CustomInstantiatorFactory implements StateFactory<InjectMaidT
     @Override
     public void create(@NotNull final TypeIdentifier type,
                        @NotNull final Context<InjectMaidTypeScannerResult> context) {
-        final ReusePolicy reusePolicy = reusePolicyMapper.reusePolicyFor(type);
+        final ReusePolicy reusePolicy = reusePolicyMapper.reusePolicyFor(type, context.getScope());
         final InjectMaidTypeScannerResult result = result(typeIdentifier, context.getScope(), instantiator, reusePolicy);
         context.setManuallyConfiguredResult(result);
     }
