@@ -69,7 +69,7 @@ class NamespaceBuilder<Namespace>(val namespace: GenericType<Namespace>, val inj
         val internalBuilder = Builder.builder(genericType, namespace)
         val entry: FactoryBuilder00<Type> = FactoryBuilder00<Type>(internalBuilder)
         val customType = builder(entry)
-        injectMaidBuilder.withCustomType(customType)
+        injectMaidBuilder.withCustomType(customType, reusePolicy)
         return this
     }
 }
