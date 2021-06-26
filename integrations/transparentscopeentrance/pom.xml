@@ -26,7 +26,7 @@
     <parent>
         <groupId>de.quantummaid.injectmaid.integrations</groupId>
         <artifactId>integrations-parent</artifactId>
-        <version>0.1.12</version>
+        <version>0.1.13</version>
     </parent>
 
     <artifactId>injectmaid-transparentscopeentrance</artifactId>
