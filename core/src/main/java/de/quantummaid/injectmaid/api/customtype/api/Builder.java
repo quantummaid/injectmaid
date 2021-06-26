@@ -68,12 +68,12 @@ public final class Builder {
             final List<GenericType<?>> namespacedDependencies = dependencies.stream()
                     .map(genericType -> genericType(NamespacedType.class, genericType, namespace))
                     .collect(toList());
-            final InvocableFactory<?> namespacedFactory = dependencies -> {
-                final Object[] namespaced = Arrays.stream(dependencies)
-                        .map(o -> (NamespacedType<?, ?>) o)
+            final InvocableFactory<?> namespacedFactory = namespaced -> {
+                final Object[] unnamespaced = Arrays.stream(namespaced)
+                        .map(NamespacedType.class::cast)
                         .map(NamespacedType::dependency)
                         .toArray();
-                final Object originalResult = factory.invoke(namespaced);
+                final Object originalResult = factory.invoke(unnamespaced);
                 return new NamespacedType<>(originalResult);
             };
             customTypeData = customTypeInstantiator(namespacedDependencies, namespacedFactory);

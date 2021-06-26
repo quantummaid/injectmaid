@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.namespaces;
 
+@SuppressWarnings({"java:S2326", "java:S119"})
 public final class NamespacedType<Dependency, Namespace> {
     private final Dependency dependency;
 
