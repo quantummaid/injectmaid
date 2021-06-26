@@ -21,6 +21,8 @@
 package de.quantummaid.injectmaid.namespaces
 
 import de.quantummaid.injectmaid.InjectMaidBuilder
+import de.quantummaid.injectmaid.api.ReusePolicy
+import de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE
 import de.quantummaid.injectmaid.api.customtype.api.Builder
 import de.quantummaid.injectmaid.api.customtype.api.CustomType
 import de.quantummaid.injectmaid.api.customtype.api.CustomType.customType
@@ -62,7 +64,7 @@ class NamespaceBuilder<Namespace>(val namespace: GenericType<Namespace>, val inj
         return this
     }
 
-    inline fun <reified Type : Any> customType(builder: (FactoryBuilder00<Type>) -> CustomType): NamespaceBuilder<Namespace> {
+    inline fun <reified Type : Any> customType(reusePolicy: ReusePolicy = PROTOTYPE, builder: (FactoryBuilder00<Type>) -> CustomType): NamespaceBuilder<Namespace> {
         val genericType = genericType<Any>(NamespacedType::class.java, genericType<Type>(), namespace)
         val internalBuilder = Builder.builder(genericType, namespace)
         val entry: FactoryBuilder00<Type> = FactoryBuilder00<Type>(internalBuilder)
