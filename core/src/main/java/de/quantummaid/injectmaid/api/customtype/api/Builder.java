@@ -62,6 +62,7 @@ public final class Builder {
         this.factory = factory;
     }
 
+    @SuppressWarnings("rawtypes")
     CustomType build() {
         final CustomTypeData customTypeData;
         if (namespace != null) {
