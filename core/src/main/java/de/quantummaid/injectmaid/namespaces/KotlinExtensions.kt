@@ -20,29 +20,16 @@
  */
 package de.quantummaid.injectmaid.namespaces
 
-import de.quantummaid.injectmaid.InjectMaid
-import de.quantummaid.injectmaid.InjectMaidBuilder
-import de.quantummaid.injectmaid.api.ReusePolicy
-import de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE
-import de.quantummaid.injectmaid.api.customtype.api.Builder
-import de.quantummaid.injectmaid.api.customtype.api.CustomType
-import de.quantummaid.injectmaid.api.customtype.api.CustomType.customType
-import de.quantummaid.injectmaid.api.customtype.api.FactoryBuilder00
+import de.quantummaid.injectmaid.api.Injector
 import de.quantummaid.injectmaid.timing.TimedInstantiation
-import de.quantummaid.reflectmaid.GenericType
 import de.quantummaid.reflectmaid.GenericType.Companion.genericType
 
-class KotlinExtensions<Namespace>(val namespace: GenericType<Namespace>, val injectMaidBuilder: InjectMaidBuilder) {
+inline fun <reified Type : Any> Injector.getInstance(): Type {
+    val type = genericType<Type>()
+    return getInstance(type)
+}
 
-    companion object {
-        inline fun <reified Type : Any> InjectMaid.getInstance(): Type {
-            val type = genericType<Type>()
-            return getInstance(type)
-        }
-
-        inline fun <reified Type : Any> InjectMaid.getInstanceWithInitializationTime(): TimedInstantiation<Type> {
-            val type = genericType<Type>()
-            return getInstanceWithInitializationTime(type)
-        }
-    }
+inline fun <reified Type : Any> Injector.getInstanceWithInitializationTime(): TimedInstantiation<Type> {
+    val type = genericType<Type>()
+    return getInstanceWithInitializationTime(type)
 }
