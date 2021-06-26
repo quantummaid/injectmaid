@@ -19,26 +19,27 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid;
+package de.quantummaid.injectmaid.namespaces;
 
+import de.quantummaid.injectmaid.InjectMaidBuilder;
+import de.quantummaid.injectmaid.api.InjectorConfiguration;
 import de.quantummaid.injectmaid.domain.ZeroArgumentsConstructorType;
-import de.quantummaid.injectmaid.namespaces.MyModule;
-import org.junit.jupiter.api.Test;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MyModule implements InjectorConfiguration {
 
-public final class ModuleSpecs {
+    public static MyModule myModule() {
+        return new MyModule();
+    }
 
-    @Test
-    public void injectMaidCanApplyModules() {
-        final InjectMaid injectMaid = anInjectMaid()
-                .withConfiguration(MyModule.myModule())
-                .build();
-        final ZeroArgumentsConstructorType instance = injectMaid.getInstance(ZeroArgumentsConstructorType.class);
-        assertThat(instance, notNullValue());
-        assertThat(instance, instanceOf(ZeroArgumentsConstructorType.class));
+    @Override
+    public void apply(final InjectMaidBuilder builder) {
+        builder.withType(ZeroArgumentsConstructorType.class);
     }
 }

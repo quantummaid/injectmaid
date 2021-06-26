@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.api.customtype.api;
 
+import de.quantummaid.injectmaid.namespaces.NamespacedType;
 import de.quantummaid.reflectmaid.GenericType;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -28,10 +29,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static de.quantummaid.injectmaid.api.customtype.api.CustomType.customType;
 import static de.quantummaid.injectmaid.api.customtype.api.CustomTypeData.customTypeInstantiator;
+import static de.quantummaid.reflectmaid.GenericType.genericType;
+import static java.util.stream.Collectors.toList;
 
 @ToString
 @EqualsAndHashCode
@@ -40,9 +44,14 @@ public final class Builder {
     private final GenericType<?> type;
     private final List<GenericType<?>> dependencies;
     private InvocableFactory<?> factory;
+    private final GenericType<?> namespace;
 
     public static Builder builder(final GenericType<?> type) {
-        return new Builder(type, new ArrayList<>());
+        return builder(type, null);
+    }
+
+    public static Builder builder(final GenericType<?> type, final GenericType<?> namespace) {
+        return new Builder(type, new ArrayList<>(), namespace);
     }
 
     public void addParameter(final GenericType<?> parameter) {
@@ -54,7 +63,23 @@ public final class Builder {
     }
 
     CustomType build() {
-        final CustomTypeData customTypeData = customTypeInstantiator(dependencies, factory);
+        final CustomTypeData customTypeData;
+        if (namespace != null) {
+            final List<GenericType<?>> namespacedDependencies = dependencies.stream()
+                    .map(genericType -> genericType(NamespacedType.class, genericType, namespace))
+                    .collect(toList());
+            final InvocableFactory<?> namespacedFactory = dependencies -> {
+                final Object[] namespaced = Arrays.stream(dependencies)
+                        .map(o -> (NamespacedType<?, ?>) o)
+                        .map(NamespacedType::dependency)
+                        .toArray();
+                final Object originalResult = factory.invoke(namespaced);
+                return new NamespacedType<>(originalResult);
+            };
+            customTypeData = customTypeInstantiator(namespacedDependencies, namespacedFactory);
+        } else {
+            customTypeData = customTypeInstantiator(dependencies, factory);
+        }
         return customType(type, customTypeData);
     }
 }

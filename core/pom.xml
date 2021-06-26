@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.quantummaid.injectmaid</groupId>
         <artifactId>injectmaid-parent</artifactId>
-        <version>0.1.12</version>
+        <version>0.1.13</version>
     </parent>
 
     <artifactId>core</artifactId>
@@ -20,7 +20,7 @@
             ${project.basedir}/src/test/spotbugs/spotbugs-exclude.xml
         </spotbugs.excludeFilterFile>
         <dependency-update-file-checksum>42f33b16b7099885cd5becc23c104f35</dependency-update-file-checksum>
-        <plugin-update-file-checksum>35fe547b725ca8e71b0d13c8c21894df</plugin-update-file-checksum>
+        <plugin-update-file-checksum>d25694f9d0674135a9b37b909e84d640</plugin-update-file-checksum>
         <sonar.coverage.jacoco.xmlReportPaths>../coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
@@ -93,4 +93,37 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>1.4.32</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <javaParameters>true</javaParameters>
+                    <jvmTarget>11</jvmTarget>
+                    <args>
+                        <arg>-Xinline-classes</arg>
+                    </args>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

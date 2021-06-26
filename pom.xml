@@ -10,7 +10,7 @@
 
     <groupId>de.quantummaid.injectmaid</groupId>
     <artifactId>injectmaid-parent</artifactId>
-    <version>0.1.12</version>
+    <version>0.1.13</version>
     <packaging>pom</packaging>
 
     <name>InjectMaid</name>
@@ -46,7 +46,7 @@
             <dependency>
                 <groupId>de.quantummaid.injectmaid</groupId>
                 <artifactId>injectmaid-bom</artifactId>
-                <version>0.1.12</version>
+                <version>0.1.13</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -68,6 +68,28 @@
                         <phase>validate</phase>
                         <configuration>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>4.0.rc2</version>
+                <configuration>
+                    <header>copyright/Copyright-Header.txt</header>
+                    <properties>
+                        <license.year>2021</license.year>
+                    </properties>
+                    <includes>
+                        <include>**/*.kt</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

@@ -19,27 +19,16 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.modules;
+package de.quantummaid.injectmaid.namespaces;
 
-import de.quantummaid.injectmaid.InjectMaidBuilder;
-import de.quantummaid.injectmaid.api.InjectorConfiguration;
-import de.quantummaid.injectmaid.domain.ZeroArgumentsConstructorType;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+public final class NamespacedType<Dependency, Namespace> {
+    private final Dependency dependency;
 
-@ToString
-@EqualsAndHashCode
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MyModule implements InjectorConfiguration {
-
-    public static MyModule myModule() {
-        return new MyModule();
+    public NamespacedType(final Dependency dependency) {
+        this.dependency = dependency;
     }
 
-    @Override
-    public void apply(final InjectMaidBuilder builder) {
-        builder.withType(ZeroArgumentsConstructorType.class);
+    public Dependency dependency() {
+        return dependency;
     }
 }
