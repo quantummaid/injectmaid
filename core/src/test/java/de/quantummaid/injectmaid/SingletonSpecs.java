@@ -28,11 +28,16 @@ import de.quantummaid.injectmaid.failing.FailingInConstructorType;
 import de.quantummaid.injectmaid.failing.FailingInFactoryType;
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
+
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
 import static de.quantummaid.injectmaid.api.ReusePolicy.*;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class SingletonSpecs {
 
@@ -40,9 +45,9 @@ public final class SingletonSpecs {
     public void injectMaidSupportsLazySingletons() {
         NumberedType.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
-                .withType(TwoNumberedTypes.class)
-                .withType(NumberedType.class, LAZY_SINGLETON)
-                .build();
+            .withType(TwoNumberedTypes.class)
+            .withType(NumberedType.class, LAZY_SINGLETON)
+            .build();
         assertThat(NumberedType.counter, is(0));
         final TwoNumberedTypes instance = injectMaid.getInstance(TwoNumberedTypes.class);
         assertThat(instance, notNullValue());
@@ -55,9 +60,9 @@ public final class SingletonSpecs {
     public void injectMaidSupportsEagerSingletons() {
         NumberedType.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
-                .withType(TwoNumberedTypes.class)
-                .withType(NumberedType.class, EAGER_SINGLETON)
-                .build();
+            .withType(TwoNumberedTypes.class)
+            .withType(NumberedType.class, EAGER_SINGLETON)
+            .build();
         assertThat(NumberedType.counter, is(1));
         final TwoNumberedTypes instance = injectMaid.getInstance(TwoNumberedTypes.class);
         assertThat(instance, notNullValue());
@@ -70,10 +75,10 @@ public final class SingletonSpecs {
     public void injectMaidSupportsEagerSingletonsByDefaultWhenConfigured() {
         NumberedType.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
-                .withType(TwoNumberedTypes.class)
-                .withType(NumberedType.class, DEFAULT_SINGLETON)
-                .usingDefaultSingletonType(SingletonType.EAGER)
-                .build();
+            .withType(TwoNumberedTypes.class)
+            .withType(NumberedType.class, DEFAULT_SINGLETON)
+            .usingDefaultSingletonType(SingletonType.EAGER)
+            .build();
         assertThat(NumberedType.counter, is(1));
         final TwoNumberedTypes instance = injectMaid.getInstance(TwoNumberedTypes.class);
         assertThat(instance, notNullValue());
@@ -86,9 +91,9 @@ public final class SingletonSpecs {
     public void allSingletonsCanBeInitializedOnDemand() {
         NumberedType.counter = 0;
         final InjectMaid injectMaid = anInjectMaid()
-                .withType(TwoNumberedTypes.class)
-                .withType(NumberedType.class, LAZY_SINGLETON)
-                .build();
+            .withType(TwoNumberedTypes.class)
+            .withType(NumberedType.class, LAZY_SINGLETON)
+            .build();
         assertThat(NumberedType.counter, is(0));
         injectMaid.initializeAllSingletons();
         assertThat(NumberedType.counter, is(1));
@@ -102,24 +107,74 @@ public final class SingletonSpecs {
     @Test
     public void exceptionInConstructorDuringEagerInitializationAreThrown() {
         final Exception exception = catchException(() -> anInjectMaid()
-                .withType(FailingInConstructorType.class, EAGER_SINGLETON)
-                .build());
+            .withType(FailingInConstructorType.class, EAGER_SINGLETON)
+            .build());
         assertThat(exception, instanceOf(InjectMaidException.class));
         assertThat(exception.getMessage(), is("Exception during instantiation of 'FailingInConstructorType' using constructor " +
-                "'public de.quantummaid.injectmaid.failing.FailingInConstructorType()'"));
+            "'public de.quantummaid.injectmaid.failing.FailingInConstructorType()'"));
         assertThat(exception.getCause(), instanceOf(IllegalArgumentException.class));
     }
 
     @Test
     public void exceptionInFactoryDuringEagerInitializationAreThrown() {
         final Exception exception = catchException(() -> anInjectMaid()
-                .withType(FailingInFactoryType.class, EAGER_SINGLETON)
-                .build());
+            .withType(FailingInFactoryType.class, EAGER_SINGLETON)
+            .build());
         assertThat(exception, instanceOf(InjectMaidException.class));
         assertThat(exception.getMessage(), is("Exception during instantiation of " +
-                "'FailingInFactoryType' using static method" +
-                " ''FailingInFactoryType failingInFactoryType()' [public static de.quantummaid.injectmaid.failing.FailingInFactoryType " +
-                "de.quantummaid.injectmaid.failing.FailingInFactoryType.failingInFactoryType()]'"));
+            "'FailingInFactoryType' using static method" +
+            " ''FailingInFactoryType failingInFactoryType()' [public static de.quantummaid.injectmaid.failing.FailingInFactoryType " +
+            "de.quantummaid.injectmaid.failing.FailingInFactoryType.failingInFactoryType()]'"));
         assertThat(exception.getCause(), instanceOf(IllegalArgumentException.class));
+    }
+
+    class TimestampedDependency {
+        Long creationTime = System.currentTimeMillis();
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TimestampedDependency that = (TimestampedDependency) o;
+
+            return creationTime.equals(that.creationTime);
+        }
+
+        @Override
+        public int hashCode() {
+            return creationTime.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "TimestampedDependency{" +
+                "creationTime=" + creationTime +
+                '}';
+        }
+    }
+
+    @Test
+    public void instantiatesSingletonOnceWhenRequestedByMultipleThreads() throws ExecutionException, InterruptedException {
+        var rand = new Random();
+        var injector = anInjectMaid()
+            .withCustomType(
+                TimestampedDependency.class,
+                () ->
+                {
+                    try {
+                        Thread.sleep(100L + rand.nextInt(200));
+                        return new TimestampedDependency();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException("interrupted", e);
+                    }
+                },
+                LAZY_SINGLETON
+            ).build();
+
+        var dep1 = supplyAsync(() -> injector.getInstance(TimestampedDependency.class));
+        var dep2 = supplyAsync(() -> injector.getInstance(TimestampedDependency.class));
+        assertEquals(dep1.get(), dep2.get());
     }
 }
