@@ -21,7 +21,7 @@
 package de.quantummaid.injectmaid
 
 import de.quantummaid.injectmaid.InjectMaid.anInjectMaid
-import de.quantummaid.injectmaid.namespaces.NamespaceBuilder.Companion.namespace
+import de.quantummaid.injectmaid.namespaces.NamespaceBuilder.Companion.withNamespace
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
@@ -36,7 +36,7 @@ class NamespaceSpecs {
     fun namespacesWork() {
         val injectMaid = anInjectMaid()
             .withCustomType(String::class.java) { "an injected string" }
-            .namespace<QueueMaid> {
+            .withNamespace<QueueMaid> {
                 importing<String>()
                 exporting<MySerializer>()
                 customType<MySerializer> {

@@ -21,28 +21,29 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
-import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
+import static de.quantummaid.injectmaid.validators.NotNullValidator.validateNotNull;
 
-import static java.util.Optional.empty;
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SingletonInterceptorFactory implements InterceptorFactory {
+    private final Interceptor singleton;
 
-public interface SimpleInterceptor extends Interceptor {
-
-    Object intercept(Object object);
-
-    @Override
-    default Optional<?> interceptBeforeInstantiation(final TypeIdentifier type,
-                                                     final TypeIdentifier rootType) {
-        return empty();
+    public static SingletonInterceptorFactory singletonInterceptorFactory(final Interceptor singleton) {
+        validateNotNull(singleton, "singleton");
+        return new SingletonInterceptorFactory(singleton);
     }
 
     @Override
-    default Object interceptAfterInstantiation(final TypeIdentifier type,
-                                               final TypeIdentifier rootType,
-                                               final ReusePolicy reusePolicy,
-                                               final Object instance) {
-        return intercept(instance);
+    public Interceptor createInterceptor() {
+        return singleton;
+    }
+
+    @Override
+    public InterceptorFactory enterScope(final TypeIdentifier scopeType, final Object scopeObject) {
+        final Interceptor interceptor = singleton.enterScope(scopeType, scopeObject);
+        return singletonInterceptorFactory(interceptor);
     }
 }

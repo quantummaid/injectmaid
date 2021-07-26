@@ -19,26 +19,23 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.api.interception;
+package de.quantummaid.injectmaid;
 
-import de.quantummaid.injectmaid.api.ReusePolicy;
-import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
+import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
+import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@SuppressWarnings("java:S1452")
-public interface Interceptor {
+public final class RootBuilderSpecs {
 
-    Optional<?> interceptBeforeInstantiation(TypeIdentifier type,
-                                             TypeIdentifier rootType);
-
-    Object interceptAfterInstantiation(TypeIdentifier type,
-                                       TypeIdentifier rootType,
-                                       ReusePolicy reusePolicy,
-                                       Object instance);
-
-    default Interceptor enterScope(final TypeIdentifier scopeType,
-                                   final Object scopeObject) {
-        return this;
+    @Test
+    public void scopesCanAccessRootBuilder() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withScope(Long.class, builder -> builder.rootBuilder()
+                        .withCustomType(String.class, () -> "foo"))
+                .build();
+        final String instance = injectMaid.getInstance(String.class);
+        assertThat(instance, is("foo"));
     }
 }

@@ -33,7 +33,7 @@ import de.quantummaid.reflectmaid.GenericType.Companion.genericType
 class NamespaceBuilder<Namespace>(val namespace: GenericType<Namespace>, val injectMaidBuilder: InjectMaidBuilder) {
 
     companion object {
-        inline fun <reified Namespace : Any> InjectMaidBuilder.namespace(builder: NamespaceBuilder<Namespace>.() -> Unit): InjectMaidBuilder {
+        inline fun <reified Namespace : Any> InjectMaidBuilder.withNamespace(builder: NamespaceBuilder<Namespace>.() -> Unit): InjectMaidBuilder {
             val namespace = genericType<Namespace>()
             val namespaceBuilder = NamespaceBuilder(namespace, this)
             builder(namespaceBuilder)
