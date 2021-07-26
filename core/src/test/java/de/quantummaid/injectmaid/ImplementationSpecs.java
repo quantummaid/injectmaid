@@ -21,13 +21,13 @@
 
 package de.quantummaid.injectmaid;
 
+import de.quantummaid.injectmaid.domain.MyAbstractClass;
 import de.quantummaid.injectmaid.domain.MyInterface;
 import de.quantummaid.injectmaid.domain.MySpecificImplementation;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ImplementationSpecs {
@@ -42,5 +42,18 @@ public final class ImplementationSpecs {
         final MyInterface myInterface = injectMaid.getInstance(MyInterface.class);
         assertThat(myInterface, instanceOf(MySpecificImplementation.class));
         assertThat(myInterface.perform(), is("foo"));
+    }
+
+    @Test
+    public void abstractClassCannotBeAutodetected() {
+        InjectMaidException exception = null;
+        try {
+            anInjectMaid()
+                    .withType(MyAbstractClass.class)
+                    .build();
+        } catch (final InjectMaidException e) {
+            exception = e;
+        }
+        assertThat(exception, is(notNullValue()));
     }
 }

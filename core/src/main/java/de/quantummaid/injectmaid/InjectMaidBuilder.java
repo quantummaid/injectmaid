@@ -28,6 +28,8 @@ import de.quantummaid.injectmaid.api.SingletonType;
 import de.quantummaid.injectmaid.api.customtype.CustomTypeInstantiator;
 import de.quantummaid.injectmaid.api.customtype.api.CustomType;
 import de.quantummaid.injectmaid.api.customtype.api.CustomTypeData;
+import de.quantummaid.injectmaid.api.interception.InterceptorFactory;
+import de.quantummaid.injectmaid.api.interception.timing.TimingInterceptorFactory;
 import de.quantummaid.injectmaid.instantiator.BindInstantiator;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
 import de.quantummaid.injectmaid.lifecyclemanagement.LifecycleManager;
@@ -50,6 +52,7 @@ import de.quantummaid.reflectmaid.typescanner.states.RequirementsDescriber;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,6 +65,7 @@ import static de.quantummaid.injectmaid.Requirements.REGISTERED;
 import static de.quantummaid.injectmaid.Scopes.scopes;
 import static de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.injectmaid.api.customtype.CustomTypeInstantiator.customTypeInstantiator;
+import static de.quantummaid.injectmaid.api.interception.timing.TimingInterceptorFactory.timingInterceptorFactory;
 import static de.quantummaid.injectmaid.instantiator.BindInstantiator.bindInstantiator;
 import static de.quantummaid.injectmaid.instantiator.CustomInstantiatorFactory.customInstantiatorFactory;
 import static de.quantummaid.injectmaid.instantiator.ScopeInstantiator.scopeInstantiator;
@@ -74,6 +78,7 @@ import static de.quantummaid.injectmaid.statemachine.InjectMaidDetector.injectMa
 import static de.quantummaid.injectmaid.statemachine.InjectMaidOnCollectionError.injectMaidOnCollectionError;
 import static de.quantummaid.injectmaid.statemachine.InjectMaidResolver.injectMaidResolver;
 import static de.quantummaid.injectmaid.statemachine.ReusePolicyMapper.reusePolicyMapper;
+import static de.quantummaid.injectmaid.validators.NotNullValidator.validateNotNull;
 import static de.quantummaid.reflectmaid.typescanner.Processor.processor;
 import static de.quantummaid.reflectmaid.typescanner.Reason.manuallyAdded;
 import static de.quantummaid.reflectmaid.typescanner.TypeIdentifier.typeIdentifierFor;
@@ -88,6 +93,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     private static final ReusePolicy DEFAULT_REUSE_POLICY = PROTOTYPE;
 
     private final ReflectMaid reflectMaid;
+    private final InjectMaidBuilder parent;
     private boolean registerShutdownHook = false;
     private final List<Signal<InjectMaidTypeScannerResult>> signals;
     private final Map<Scope, List<StateFactory<InjectMaidTypeScannerResult>>> stateFactoryMap;
@@ -98,6 +104,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
     private SingletonType defaultSingletonType = SingletonType.LAZY;
     private boolean lifecycleManagement = false;
     private final List<Closer> closers = new ArrayList<>();
+    private final List<InterceptorFactory> interceptorFactories;
 
     static InjectMaidBuilder injectMaidBuilder(final ReflectMaid reflectMaid) {
         final Scope scope = rootScope();
@@ -107,7 +114,8 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         final List<Signal<InjectMaidTypeScannerResult>> signals = new ArrayList<>();
         final FactoryMapper factoryMapper = factoryMapper();
         final ReusePolicyMapper reusePolicyMapper = reusePolicyMapper(DEFAULT_REUSE_POLICY);
-        return new InjectMaidBuilder(reflectMaid, signals, stateFactoryMap, factoryMapper, reusePolicyMapper, scope, scopes);
+        return new InjectMaidBuilder(
+                reflectMaid, null, signals, stateFactoryMap, factoryMapper, reusePolicyMapper, scope, scopes, new ArrayList<>());
     }
 
     public InjectMaidBuilder withConfiguration(final InjectorConfiguration configuration) {
@@ -130,7 +138,7 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
             scopes.validateElementNotUsedSomewhereElse(scopeType);
         }
         final InjectMaidBuilder scopedBuilder = new InjectMaidBuilder(
-                reflectMaid, signals, stateFactoryMap, factoryMapper, reusePolicyMapper, subScope, scopes);
+                reflectMaid, this, signals, stateFactoryMap, factoryMapper, reusePolicyMapper, subScope, scopes, interceptorFactories);
         scopedBuilder.lifecycleManagement = lifecycleManagement;
         if (!scopes.contains(subScope)) {
             scopedBuilder.withInstantiator(scopeType, scopeInstantiator(scopeType), DEFAULT_REUSE_POLICY);
@@ -138,6 +146,14 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         scopes.add(subScope);
         configuration.apply(scopedBuilder);
         return this;
+    }
+
+    public InjectMaidBuilder rootBuilder() {
+        if (parent == null) {
+            return this;
+        } else {
+            return parent.rootBuilder();
+        }
     }
 
     public InjectMaidBuilder withLifecycleManagement() {
@@ -230,6 +246,17 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         return this;
     }
 
+    public InjectMaidBuilder enforcingMaximumInstantiationTimeOf(final Duration maxInstantiationTime) {
+        final TimingInterceptorFactory factory = timingInterceptorFactory(maxInstantiationTime);
+        return withInterceptorFactory(factory);
+    }
+
+    public InjectMaidBuilder withInterceptorFactory(final InterceptorFactory interceptorFactory) {
+        validateNotNull(interceptorFactory, "interceptorFactory");
+        interceptorFactories.add(interceptorFactory);
+        return this;
+    }
+
     public <T> InjectMaidBuilder closingInstancesOfType(final Class<T> type,
                                                         final CloseFunction<T> closeFunction) {
         closers.add(Closer.closer(type, closeFunction));
@@ -268,7 +295,13 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         } else {
             lifecycleManager = noOpLifecycleManager();
         }
-        final InjectMaid injectMaid = injectMaid(reflectMaid, definitions, defaultSingletonType, lifecycleManager);
+        final InjectMaid injectMaid = injectMaid(
+                reflectMaid,
+                definitions,
+                defaultSingletonType,
+                lifecycleManager,
+                interceptorFactories
+        );
         if (registerShutdownHook) {
             if (!lifecycleManagement) {
                 throw injectMaidException("can only close on JVM shutdown if lifecycle management is activated");

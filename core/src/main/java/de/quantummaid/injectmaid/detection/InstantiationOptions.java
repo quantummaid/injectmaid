@@ -53,10 +53,14 @@ public final class InstantiationOptions {
         final List<ConstructorInstantiator> constructors;
         final List<NonStaticFactoryInstantiator> nonStaticFactoryMethods;
         if (typeToInstantiate.equals(creatingClassType)) {
-            constructors = creatingClassType.constructors().stream()
-                    .filter(ResolvedConstructor::isPublic)
-                    .map(ConstructorInstantiator::constructorInstantiator)
-                    .collect(toList());
+            if (!typeToInstantiate.isAbstract()) {
+                constructors = creatingClassType.constructors().stream()
+                        .filter(ResolvedConstructor::isPublic)
+                        .map(ConstructorInstantiator::constructorInstantiator)
+                        .collect(toList());
+            } else {
+                constructors = emptyList();
+            }
             nonStaticFactoryMethods = emptyList();
         } else {
             constructors = emptyList();

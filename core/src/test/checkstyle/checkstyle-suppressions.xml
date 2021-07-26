@@ -42,4 +42,5 @@
     <suppress checks="MagicNumber|MethodLength|ExecutableStatementCount" files="CloseSpecs|InitializationReportingSpecs"/>
     <suppress checks="ClassFanOutComplexity" files="InjectMaid"/>
     <suppress checks="ClassTypeParameterName" files="NamespacedType"/>
+    <suppress checks="MagicNumber" files="MaxInstantiationTimeEnforcingSpecs"/>
 </suppressions>

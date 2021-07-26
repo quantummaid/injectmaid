@@ -19,36 +19,35 @@
  * under the License.
  */
 
-package de.quantummaid.injectmaid.api.interception.overwrite;
+package de.quantummaid.injectmaid.api.interception.timing;
 
-import de.quantummaid.injectmaid.api.Injector;
 import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.api.interception.Interceptor;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 
-@ToString
-@EqualsAndHashCode
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OverwritingInterceptor implements Interceptor {
-    private final Injector injector;
+import static de.quantummaid.injectmaid.api.interception.timing.EnforcedMaxInstantiationTimeExceededException.enforcedMaxInstantiationTimeExceededException;
+import static java.util.Optional.empty;
 
-    public static OverwritingInterceptor overwritingInterceptor(final Injector injector) {
-        return new OverwritingInterceptor(injector);
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TimingInterceptor implements Interceptor {
+    private final Duration maxDuration;
+    private Instant before;
+
+    public static TimingInterceptor timingInterceptor(final Duration maxDuration) {
+        return new TimingInterceptor(maxDuration);
     }
 
     @Override
-    public Optional<?> interceptBeforeInstantiation(final TypeIdentifier type, final TypeIdentifier rootType) {
-        if (!injector.canInstantiate(type)) {
-            return Optional.empty();
-        }
-        final Object instance = injector.getInstance(type);
-        return Optional.of(instance);
+    public Optional<?> interceptBeforeInstantiation(final TypeIdentifier type,
+                                                    final TypeIdentifier rootType) {
+        before = Instant.now();
+        return empty();
     }
 
     @Override
@@ -56,13 +55,13 @@ public final class OverwritingInterceptor implements Interceptor {
                                               final TypeIdentifier rootType,
                                               final ReusePolicy reusePolicy,
                                               final Object instance) {
+        final Instant after = Instant.now();
+        final Duration duration = Duration.between(before, after);
+        if (duration.compareTo(maxDuration) > 0) {
+            throw enforcedMaxInstantiationTimeExceededException(
+                    type, rootType, instance, maxDuration, duration, reusePolicy
+            );
+        }
         return instance;
-    }
-
-    @Override
-    public Interceptor enterScope(final TypeIdentifier scopeType,
-                                  final Object scopeObject) {
-        final Injector scopedInjector = injector.enterScope(scopeType, scopeObject);
-        return new OverwritingInterceptor(scopedInjector);
     }
 }

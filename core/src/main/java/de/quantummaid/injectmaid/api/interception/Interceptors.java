@@ -21,6 +21,7 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
+import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -40,22 +41,28 @@ import static java.util.stream.Collectors.toList;
 public final class Interceptors {
     private final List<Interceptor> interceptors;
 
+    public static Interceptors interceptors(final List<Interceptor> interceptors) {
+        return new Interceptors(interceptors);
+    }
+
     public static Interceptors interceptors() {
         return new Interceptors(new ArrayList<>());
     }
 
-    public Optional<?> interceptBefore(final TypeIdentifier type) {
+    public Optional<?> interceptBefore(final TypeIdentifier type, final TypeIdentifier rootType) {
         return interceptors.stream()
-                .map(interceptor -> interceptor.interceptBeforeInstantiation(type))
+                .map(interceptor -> interceptor.interceptBeforeInstantiation(type, rootType))
                 .flatMap(Optional::stream)
                 .findFirst();
     }
 
     public Object interceptAfter(final TypeIdentifier type,
+                                 final TypeIdentifier rootType,
+                                 final ReusePolicy reusePolicy,
                                  final Object object) {
         Object current = object;
         for (final Interceptor interceptor : interceptors) {
-            current = interceptor.interceptAfterInstantiation(type, current);
+            current = interceptor.interceptAfterInstantiation(type, rootType, reusePolicy, current);
         }
         return current;
     }
