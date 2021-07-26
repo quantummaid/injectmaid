@@ -27,12 +27,12 @@ import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import java.time.Duration;
 
 public final class EnforcedMaxInstantiationTimeExceededException extends RuntimeException {
-    private final TypeIdentifier type;
-    private final TypeIdentifier rootType;
-    private final Object instance;
-    private final Duration maxTime;
-    private final Duration actualTime;
-    private final ReusePolicy reusePolicy;
+    private transient final TypeIdentifier type;
+    private transient final TypeIdentifier rootType;
+    private transient final Object instance;
+    private transient final Duration maxTime;
+    private transient final Duration actualTime;
+    private transient final ReusePolicy reusePolicy;
 
     public EnforcedMaxInstantiationTimeExceededException(final TypeIdentifier type,
                                                          final TypeIdentifier rootType,
