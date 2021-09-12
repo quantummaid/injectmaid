@@ -23,12 +23,14 @@ package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.api.ReusePolicy;
 import de.quantummaid.injectmaid.api.interception.timing.EnforcedMaxInstantiationTimeExceededException;
+import de.quantummaid.injectmaid.api.interception.timing.EnforcedMaxScopeEntryTimeExceededException;
 import de.quantummaid.injectmaid.domain.MyTypeWithString;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
+import static de.quantummaid.injectmaid.api.ReusePolicy.EAGER_SINGLETON;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -92,7 +94,7 @@ public final class MaxInstantiationTimeEnforcingSpecs {
                     .withCustomType(String.class, () -> {
                         sleep(300);
                         return "foo";
-                    }, ReusePolicy.EAGER_SINGLETON)
+                    }, EAGER_SINGLETON)
                     .enforcingMaximumInstantiationTimeOf(Duration.ofMillis(200))
                     .build();
         } catch (final EnforcedMaxInstantiationTimeExceededException e) {
@@ -104,7 +106,7 @@ public final class MaxInstantiationTimeEnforcingSpecs {
         assertThat(exception.instance(), is("foo"));
         assertThat((int) exception.actualTime().toMillis(), is(greaterThanOrEqualTo(300)));
         assertThat((int) exception.maxTime().toMillis(), is(200));
-        assertThat(exception.reusePolicy(), is(ReusePolicy.EAGER_SINGLETON));
+        assertThat(exception.reusePolicy(), is(EAGER_SINGLETON));
     }
 
     @Test
@@ -131,6 +133,29 @@ public final class MaxInstantiationTimeEnforcingSpecs {
         assertThat((int) exception.actualTime().toMillis(), is(greaterThanOrEqualTo(300)));
         assertThat((int) exception.maxTime().toMillis(), is(200));
         assertThat(exception.reusePolicy(), is(ReusePolicy.PROTOTYPE));
+    }
+
+    @Test
+    public void maxScopeEntryTimeCanBeEnforced() {
+        final InjectMaid injectMaid = anInjectMaid()
+                .withScope(String.class, it -> it.withCustomType(Integer.class, () -> {
+                    sleep(300);
+                    return 1;
+                }, EAGER_SINGLETON))
+                .enforcingMaximumScopeEntryTimeOf(Duration.ofMillis(200))
+                .build();
+        EnforcedMaxScopeEntryTimeExceededException exception = null;
+        try {
+            injectMaid.enterScope("foo");
+        } catch (final EnforcedMaxScopeEntryTimeExceededException e) {
+            exception = e;
+        }
+        assertThat(exception, is(notNullValue()));
+        assertThat(exception.scopeObject(), is("foo"));
+        assertThat(exception.scope().render(), is("/String"));
+        assertThat(exception.scopedInjectMaid(), notNullValue());
+        assertThat((int) exception.actualTime().toMillis(), is(greaterThanOrEqualTo(300)));
+        assertThat((int) exception.maxTime().toMillis(), is(200));
     }
 
     private static void sleep(final long milliseconds) {

@@ -30,6 +30,7 @@ import de.quantummaid.reflectmaid.ReflectMaid;
 import de.quantummaid.reflectmaid.resolvedtype.ResolvedType;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
+import java.time.Duration;
 import java.util.Optional;
 
 import static de.quantummaid.reflectmaid.GenericType.genericType;
@@ -61,27 +62,55 @@ public interface Injector extends AutoCloseable {
 
     <T> TimedInstantiation<T> getInstanceWithInitializationTime(GenericType<T> type);
 
-    void initializeAllSingletons();
+    default void initializeAllSingletons() {
+        initializeAllSingletons(null);
+    }
 
-    @SuppressWarnings("unchecked")
+    void initializeAllSingletons(Duration enforcedMaxTime);
+
     default Injector enterScope(final Object scopeObject) {
-        final Class<Object> scopeType = (Class<Object>) scopeObject.getClass();
-        return enterScope(scopeType, scopeObject);
+        return enterScopeWithTimeout(scopeObject, null);
     }
 
     default <T> Injector enterScope(final Class<T> scopeType, final T scopeObject) {
-        final GenericType<T> genericType = genericType(scopeType);
-        return enterScope(genericType, scopeObject);
+        return enterScopeWithTimeout(scopeType, scopeObject, null);
     }
 
-    <T> Injector enterScope(GenericType<T> scopeType, T scopeObject);
+    default <T> Injector enterScope(GenericType<T> scopeType, T scopeObject) {
+        return enterScopeWithTimeout(scopeType, scopeObject, null);
+    }
 
     default Injector enterScope(final ResolvedType scopeType, final Object scopeObject) {
-        final TypeIdentifier typeIdentifier = typeIdentifierFor(scopeType);
-        return enterScope(typeIdentifier, scopeObject);
+        return enterScopeWithTimeout(scopeType, scopeObject, null);
     }
 
-    Injector enterScope(TypeIdentifier scopeType, Object scopeObject);
+    default Injector enterScope(final TypeIdentifier scopeType, final Object scopeObject) {
+        return enterScopeWithTimeout(scopeType, scopeObject, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    default Injector enterScopeWithTimeout(final Object scopeObject, final Duration enforcedMaxTime) {
+        final Class<Object> scopeType = (Class<Object>) scopeObject.getClass();
+        return enterScopeWithTimeout(scopeType, scopeObject, enforcedMaxTime);
+    }
+
+    default <T> Injector enterScopeWithTimeout(final Class<T> scopeType,
+                                    final T scopeObject,
+                                    final Duration enforcedMaxTime) {
+        final GenericType<T> genericType = genericType(scopeType);
+        return enterScopeWithTimeout(genericType, scopeObject, enforcedMaxTime);
+    }
+
+    <T> Injector enterScopeWithTimeout(GenericType<T> scopeType, T scopeObject, Duration enforcedMaxTime);
+
+    default Injector enterScopeWithTimeout(final ResolvedType scopeType,
+                                final Object scopeObject,
+                                final Duration enforcedMaxTime) {
+        final TypeIdentifier typeIdentifier = typeIdentifierFor(scopeType);
+        return enterScopeWithTimeout(typeIdentifier, scopeObject, enforcedMaxTime);
+    }
+
+    Injector enterScopeWithTimeout(TypeIdentifier scopeType, Object scopeObject, Duration enforcedMaxTime);
 
     @SuppressWarnings("unchecked")
     default Optional<Injector> enterScopeIfExists(final Object scopeObject) {

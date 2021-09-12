@@ -21,13 +21,25 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
-import static de.quantummaid.injectmaid.api.interception.ConstantScopeEntryInterceptor.constantScopeEntryInterceptor;
+import de.quantummaid.injectmaid.api.ReusePolicy;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
-public interface InterceptorFactory {
+import java.util.Optional;
 
-    Interceptor createInterceptor();
+public final class NoOpInterceptor implements Interceptor {
+    public static final NoOpInterceptor NO_OP_INTERCEPTOR = new NoOpInterceptor();
 
-    default ScopeEntryInterceptor createScopeEntryInterceptor() {
-        return constantScopeEntryInterceptor(this);
+    @Override
+    public Optional<?> interceptBeforeInstantiation(final TypeIdentifier type,
+                                                    final TypeIdentifier rootType) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Object interceptAfterInstantiation(final TypeIdentifier type,
+                                              final TypeIdentifier rootType,
+                                              final ReusePolicy reusePolicy,
+                                              final Object instance) {
+        return instance;
     }
 }

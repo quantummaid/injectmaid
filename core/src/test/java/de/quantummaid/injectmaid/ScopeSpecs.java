@@ -271,6 +271,7 @@ public final class ScopeSpecs {
                 "/ de.quantummaid.injectmaid.domain.dependency.Layer1 (PROTOTYPE)\n" +
                 "/ de.quantummaid.injectmaid.domain.dependency.Layer2 (PROTOTYPE)\n" +
                 "/ de.quantummaid.injectmaid.domain.dependency.Layer3 (PROTOTYPE)\n" +
+                "/ de.quantummaid.reflectmaid.ReflectMaid (DEFAULT_SINGLETON)\n" +
                 "/String de.quantummaid.injectmaid.domain.dependency.Dependency (PROTOTYPE)\n" +
                 "/String de.quantummaid.injectmaid.domain.dependency.Layer1 (PROTOTYPE)\n" +
                 "/String java.lang.String (PROTOTYPE)"));

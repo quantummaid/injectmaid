@@ -23,12 +23,12 @@ package de.quantummaid.injectmaid;
 
 import de.quantummaid.injectmaid.api.Injector;
 import de.quantummaid.injectmaid.domain.WithDependencyToInjectMaid;
+import de.quantummaid.reflectmaid.ReflectMaid;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
 import static de.quantummaid.injectmaid.testsupport.TestSupport.catchException;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class SelfInjectionSpecs {
@@ -79,5 +79,12 @@ public final class SelfInjectionSpecs {
         final WithDependencyToInjectMaid instance = injectMaid.getInstance(WithDependencyToInjectMaid.class);
         final boolean sameReference = instance.injectMaid == otherInjectMaid;
         assertThat(sameReference, is(true));
+    }
+
+    @Test
+    public void injectMaidCanInjectReflectMaid() {
+        final InjectMaid injectMaid = anInjectMaid().build();
+        final ReflectMaid instance = injectMaid.getInstance(ReflectMaid.class);
+        assertThat(instance, notNullValue());
     }
 }
