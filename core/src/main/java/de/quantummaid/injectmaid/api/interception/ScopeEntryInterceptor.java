@@ -21,13 +21,12 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
-import static de.quantummaid.injectmaid.api.interception.ConstantScopeEntryInterceptor.constantScopeEntryInterceptor;
+import de.quantummaid.injectmaid.InjectMaid;
+import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 
-public interface InterceptorFactory {
+public interface ScopeEntryInterceptor {
 
-    Interceptor createInterceptor();
+    InterceptorFactory beforeEnterScope(TypeIdentifier scopeType, Object scopeObject);
 
-    default ScopeEntryInterceptor createScopeEntryInterceptor() {
-        return constantScopeEntryInterceptor(this);
-    }
+    void afterEnterScope(TypeIdentifier scopeType, Object scopeObject, InjectMaid scopedInjectMaid);
 }

@@ -29,6 +29,7 @@ import de.quantummaid.injectmaid.api.customtype.CustomTypeInstantiator;
 import de.quantummaid.injectmaid.api.customtype.api.CustomType;
 import de.quantummaid.injectmaid.api.customtype.api.CustomTypeData;
 import de.quantummaid.injectmaid.api.interception.InterceptorFactory;
+import de.quantummaid.injectmaid.api.interception.timing.ScopeEntryTimingInterceptorFactory;
 import de.quantummaid.injectmaid.api.interception.timing.TimingInterceptorFactory;
 import de.quantummaid.injectmaid.instantiator.BindInstantiator;
 import de.quantummaid.injectmaid.instantiator.Instantiator;
@@ -65,6 +66,7 @@ import static de.quantummaid.injectmaid.Requirements.REGISTERED;
 import static de.quantummaid.injectmaid.Scopes.scopes;
 import static de.quantummaid.injectmaid.api.ReusePolicy.PROTOTYPE;
 import static de.quantummaid.injectmaid.api.customtype.CustomTypeInstantiator.customTypeInstantiator;
+import static de.quantummaid.injectmaid.api.interception.timing.ScopeEntryTimingInterceptorFactory.scopeEntryTimingInterceptorFactory;
 import static de.quantummaid.injectmaid.api.interception.timing.TimingInterceptorFactory.timingInterceptorFactory;
 import static de.quantummaid.injectmaid.instantiator.BindInstantiator.bindInstantiator;
 import static de.quantummaid.injectmaid.instantiator.CustomInstantiatorFactory.customInstantiatorFactory;
@@ -114,8 +116,10 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
         final List<Signal<InjectMaidTypeScannerResult>> signals = new ArrayList<>();
         final FactoryMapper factoryMapper = factoryMapper();
         final ReusePolicyMapper reusePolicyMapper = reusePolicyMapper(DEFAULT_REUSE_POLICY);
-        return new InjectMaidBuilder(
+        final InjectMaidBuilder injectMaidBuilder = new InjectMaidBuilder(
                 reflectMaid, null, signals, stateFactoryMap, factoryMapper, reusePolicyMapper, scope, scopes, new ArrayList<>());
+        injectMaidBuilder.withInstance(ReflectMaid.class, reflectMaid);
+        return injectMaidBuilder;
     }
 
     public InjectMaidBuilder withConfiguration(final InjectorConfiguration configuration) {
@@ -248,6 +252,11 @@ public final class InjectMaidBuilder implements AbstractInjectorBuilder<InjectMa
 
     public InjectMaidBuilder enforcingMaximumInstantiationTimeOf(final Duration maxInstantiationTime) {
         final TimingInterceptorFactory factory = timingInterceptorFactory(maxInstantiationTime);
+        return withInterceptorFactory(factory);
+    }
+
+    public InjectMaidBuilder enforcingMaximumScopeEntryTimeOf(final Duration maxScopeEntryTime) {
+        final ScopeEntryTimingInterceptorFactory factory = scopeEntryTimingInterceptorFactory(maxScopeEntryTime);
         return withInterceptorFactory(factory);
     }
 

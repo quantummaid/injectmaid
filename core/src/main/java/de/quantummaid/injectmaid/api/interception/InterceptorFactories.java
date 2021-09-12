@@ -21,7 +21,6 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
-import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -54,11 +53,10 @@ public final class InterceptorFactories {
         return Interceptors.interceptors(interceptors);
     }
 
-    public InterceptorFactories enterScope(final TypeIdentifier scopeType,
-                                           final Object scopeObject) {
-        final List<InterceptorFactory> scopedFactories = factories.stream()
-                .map(factory -> factory.enterScope(scopeType, scopeObject))
+    public ScopeEntryInterceptors scopeEntryInterceptors() {
+        final List<ScopeEntryInterceptor> scopeEntryInterceptors = factories.stream()
+                .map(InterceptorFactory::createScopeEntryInterceptor)
                 .collect(toList());
-        return new InterceptorFactories(scopedFactories);
+        return ScopeEntryInterceptors.scopeEntryInterceptors(scopeEntryInterceptors);
     }
 }

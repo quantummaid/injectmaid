@@ -21,7 +21,7 @@
 
 package de.quantummaid.injectmaid.api.interception;
 
-import de.quantummaid.injectmaid.api.ReusePolicy;
+import de.quantummaid.injectmaid.InjectMaid;
 import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -29,34 +29,29 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
-import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1452")
-public final class Interceptors {
-    private final List<Interceptor> interceptors;
+public final class ScopeEntryInterceptors {
+    private final List<ScopeEntryInterceptor> interceptors;
 
-    public static Interceptors interceptors(final List<Interceptor> interceptors) {
-        return new Interceptors(interceptors);
+    public static ScopeEntryInterceptors scopeEntryInterceptors(final List<ScopeEntryInterceptor> interceptors) {
+        return new ScopeEntryInterceptors(interceptors);
     }
 
-    public Optional<?> interceptBefore(final TypeIdentifier type, final TypeIdentifier rootType) {
+    public List<InterceptorFactory> interceptBefore(final TypeIdentifier scopeType, final Object scopeObject) {
         return interceptors.stream()
-                .map(interceptor -> interceptor.interceptBeforeInstantiation(type, rootType))
-                .flatMap(Optional::stream)
-                .findFirst();
+                .map(interceptor -> interceptor.beforeEnterScope(scopeType, scopeObject))
+                .collect(toList());
     }
 
-    public Object interceptAfter(final TypeIdentifier type,
-                                 final TypeIdentifier rootType,
-                                 final ReusePolicy reusePolicy,
-                                 final Object object) {
-        Object current = object;
-        for (final Interceptor interceptor : interceptors) {
-            current = interceptor.interceptAfterInstantiation(type, rootType, reusePolicy, current);
-        }
-        return current;
+    public void interceptAfter(final TypeIdentifier scopeType,
+                               final Object scopeObject,
+                               final InjectMaid scopedInjectMaid) {
+        interceptors.forEach(scopeEntryInterceptor -> scopeEntryInterceptor.afterEnterScope(scopeType, scopeObject, scopedInjectMaid));
     }
 }

@@ -41,6 +41,8 @@ import de.quantummaid.reflectmaid.typescanner.scopes.Scope;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -113,15 +115,17 @@ public final class InjectMaid implements Injector {
     }
 
     @Override
-    public void initializeAllSingletons() {
-        initializeDefinitionsThat(Definition::isSingleton);
+    public void initializeAllSingletons(final Duration enforcedMaxTime) {
+        initializeDefinitionsThat(Definition::isSingleton, enforcedMaxTime);
     }
 
     private void loadEagerSingletons() {
-        initializeDefinitionsThat(definition -> definition.isEagerSingleton(defaultSingletonType));
+        initializeDefinitionsThat(definition -> definition.isEagerSingleton(defaultSingletonType), null);
     }
 
-    private void initializeDefinitionsThat(final Predicate<Definition> predicate) {
+    private void initializeDefinitionsThat(final Predicate<Definition> predicate,
+                                           final Duration enforcedMaxTime) {
+        final Instant before = Instant.now();
         definitions.definitionsOnScope(scope).stream()
                 .filter(predicate)
                 .forEach(definition -> {
@@ -130,22 +134,35 @@ public final class InjectMaid implements Injector {
                     final InstantiationTime time = timedInstantiation.instantiationTime();
                     instantiationTimes.addInitializationTime(type, time);
                 });
+        final Instant after = Instant.now();
+        final Duration duration = Duration.between(before, after);
+        if (enforcedMaxTime != null && enforcedMaxTime.compareTo(duration) < 0) {
+            throw injectMaidException("" +
+                    "initializing all singletons " +
+                    "must not take longer than " + enforcedMaxTime.toMillis() + "ms but took " + duration.toMillis() + "ms.\n" +
+                    "Individual instantion times:\n" + instantiationTimes.render()
+            );
+        }
     }
 
     @Override
-    public <T> Injector enterScope(final GenericType<T> type, final T scopeObject) {
+    public <T> Injector enterScopeWithTimeout(final GenericType<T> type, final T scopeObject, final Duration enforcedMaxTime) {
         final ResolvedType resolvedType = reflectMaid.resolve(type);
-        return enterScope(resolvedType, scopeObject);
+        return enterScopeWithTimeout(resolvedType, scopeObject, enforcedMaxTime);
     }
 
     @Override
-    public Injector enterScope(final ResolvedType resolvedType, final Object scopeObject) {
+    public Injector enterScopeWithTimeout(final ResolvedType resolvedType, final Object scopeObject, final Duration enforcedMaxTime) {
         final TypeIdentifier typeIdentifier = typeIdentifierFor(resolvedType);
-        return enterScope(typeIdentifier, scopeObject);
+        return enterScopeWithTimeout(typeIdentifier, scopeObject, enforcedMaxTime);
     }
 
-    public Injector enterScope(final TypeIdentifier typeIdentifier, final Object scopeObject) {
-        return enterScopeIfExists(typeIdentifier, scopeObject).orElseThrow(() -> {
+    @Override
+    public Injector enterScopeWithTimeout(final TypeIdentifier typeIdentifier,
+                                          final Object scopeObject,
+                                          final Duration enforcedMaxTime) {
+        final Instant before = Instant.now();
+        final Injector scopedInjector = enterScopeIfExists(typeIdentifier, scopeObject).orElseThrow(() -> {
             final Scope childScope = this.scope.childScope(typeIdentifier);
             final String registeredScopes = definitions.allScopes().stream()
                     .map(Scope::render)
@@ -155,6 +172,17 @@ public final class InjectMaid implements Injector {
                             "Registered scopes: %s",
                     childScope.render(), scopeObject, registeredScopes));
         });
+        final Instant after = Instant.now();
+        final Duration duration = Duration.between(before, after);
+        if (enforcedMaxTime != null && enforcedMaxTime.compareTo(duration) < 0) {
+            final InjectMaid scopedInjectMaid = (InjectMaid) scopedInjector;
+            throw injectMaidException("" +
+                    "entering scope " + typeIdentifier.description() + " " +
+                    "must not take longer than " + enforcedMaxTime.toMillis() + "ms but took " + duration.toMillis() + "ms.\n" +
+                    "Individual instantion times:\n" + scopedInjectMaid.instantiationTimes.render()
+            );
+        }
+        return scopedInjector;
     }
 
     @Override
@@ -177,7 +205,8 @@ public final class InjectMaid implements Injector {
         }
         final SingletonStore childSingletonStore = singletonStore.child(typeIdentifier);
         final ScopeManager childScopeManager = scopeManager.add(typeIdentifier, scopeObject);
-        final InterceptorFactories childInterceptorFactories = interceptorFactories.enterScope(typeIdentifier, scopeObject);
+        final ScopeEntryInterceptors scopeEntryInterceptors = interceptorFactories.scopeEntryInterceptors();
+        final List<InterceptorFactory> childInterceptorFactories = scopeEntryInterceptors.interceptBefore(typeIdentifier, scopeObject);
         final InjectMaid scopedInjectMaid = new InjectMaid(
                 reflectMaid,
                 definitions,
@@ -185,13 +214,14 @@ public final class InjectMaid implements Injector {
                 childSingletonStore,
                 childScope,
                 childScopeManager,
-                childInterceptorFactories,
+                interceptorFactories(childInterceptorFactories),
                 lifecycleManager.newInstance(childScope),
                 this,
                 InstantiationTimes.instantiationTimes(reflectMaid)
         );
         children.add(scopedInjectMaid);
         scopedInjectMaid.loadEagerSingletons();
+        scopeEntryInterceptors.interceptAfter(typeIdentifier, scopeObject, scopedInjectMaid);
         return Optional.of(scopedInjectMaid);
     }
 

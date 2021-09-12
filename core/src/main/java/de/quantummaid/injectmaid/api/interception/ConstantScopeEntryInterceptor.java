@@ -26,31 +26,17 @@ import de.quantummaid.reflectmaid.typescanner.TypeIdentifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import static de.quantummaid.injectmaid.validators.NotNullValidator.validateNotNull;
-
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SingletonInterceptorFactory implements InterceptorFactory, ScopeEntryInterceptor {
-    private final Interceptor singleton;
+public final class ConstantScopeEntryInterceptor implements ScopeEntryInterceptor {
+    private final InterceptorFactory interceptorFactory;
 
-    public static SingletonInterceptorFactory singletonInterceptorFactory(final Interceptor singleton) {
-        validateNotNull(singleton, "singleton");
-        return new SingletonInterceptorFactory(singleton);
-    }
-
-    @Override
-    public Interceptor createInterceptor() {
-        return singleton;
-    }
-
-    @Override
-    public ScopeEntryInterceptor createScopeEntryInterceptor() {
-        return this;
+    public static ScopeEntryInterceptor constantScopeEntryInterceptor(final InterceptorFactory interceptorFactory) {
+        return new ConstantScopeEntryInterceptor(interceptorFactory);
     }
 
     @Override
     public InterceptorFactory beforeEnterScope(final TypeIdentifier scopeType, final Object scopeObject) {
-        final Interceptor interceptor = singleton.enterScope(scopeType, scopeObject);
-        return singletonInterceptorFactory(interceptor);
+        return interceptorFactory;
     }
 
     @Override

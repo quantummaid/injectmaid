@@ -26,7 +26,7 @@ import de.quantummaid.injectmaid.domain.ZeroArgumentsConstructorType;
 import org.junit.jupiter.api.Test;
 
 import static de.quantummaid.injectmaid.InjectMaid.anInjectMaid;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class DebugInformationSpecs {
@@ -38,9 +38,9 @@ public final class DebugInformationSpecs {
                 .withScope(String.class, builder -> builder.withCustomType(StringWrapper.class, () -> new StringWrapper("foo")))
                 .build();
         final String debugInformation = injectMaid.debugInformation();
-        assertThat(debugInformation, is("" +
-                "/ de.quantummaid.injectmaid.domain.ZeroArgumentsConstructorType (PROTOTYPE)\n" +
-                "/String de.quantummaid.injectmaid.domain.StringWrapper (PROTOTYPE)\n" +
-                "/String java.lang.String (PROTOTYPE)"));
+        assertThat(debugInformation, containsString("/ de.quantummaid.injectmaid.domain.ZeroArgumentsConstructorType (PROTOTYPE)"));
+        assertThat(debugInformation, containsString("/ de.quantummaid.reflectmaid.ReflectMaid (DEFAULT_SINGLETON)"));
+        assertThat(debugInformation, containsString("/String de.quantummaid.injectmaid.domain.StringWrapper (PROTOTYPE)"));
+        assertThat(debugInformation, containsString("/String de.quantummaid.injectmaid.domain.StringWrapper (PROTOTYPE)"));
     }
 }
