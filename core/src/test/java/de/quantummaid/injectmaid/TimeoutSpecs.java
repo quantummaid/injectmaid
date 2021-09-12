@@ -31,6 +31,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@SuppressWarnings("java:S2925")
 public final class TimeoutSpecs {
 
     @Test
