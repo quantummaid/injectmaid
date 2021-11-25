@@ -6,6 +6,7 @@
             <ignoreVersions>
                 <ignoreVersion>4.0</ignoreVersion>
                 <ignoreVersion>4.1</ignoreVersion>
+                <ignoreVersion type="regex">4.2\..*</ignoreVersion>
             </ignoreVersions>
         </rule>
     </rules>

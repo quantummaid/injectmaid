@@ -5,6 +5,9 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/aws.xml
+.idea/checkstyle-idea.xml
+.idea/runConfigurations.xml
 
 .idea/**/contentModel.xml
 

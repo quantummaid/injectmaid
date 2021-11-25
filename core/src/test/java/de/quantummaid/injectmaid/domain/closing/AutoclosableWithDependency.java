@@ -22,17 +22,17 @@
 package de.quantummaid.injectmaid.domain.closing;
 
 public final class AutoclosableWithDependency implements AutoCloseable {
-    public final AutoclosableType autoclosableType;
+    public final AutoclosableType dependency;
     public boolean closed = false;
     public boolean dependencyHasBeenClosedFirst = false;
 
-    public AutoclosableWithDependency(final AutoclosableType autoclosableType) {
-        this.autoclosableType = autoclosableType;
+    public AutoclosableWithDependency(final AutoclosableType dependency) {
+        this.dependency = dependency;
     }
 
     @Override
     public void close() {
-        dependencyHasBeenClosedFirst = autoclosableType.closed;
+        dependencyHasBeenClosedFirst = dependency.closed;
         closed = true;
     }
 }

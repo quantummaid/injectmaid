@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import static de.quantummaid.injectmaid.InjectMaidException.injectMaidException;
 
@@ -65,10 +66,12 @@ public final class RealLifecycleManager implements LifecycleManager {
 
     @Override
     public void closeAll(final List<ExceptionDuringClose> exceptions) {
-        closeables.forEach(autoCloseable ->
-                autoCloseable.close()
-                        .ifPresent(exceptions::add)
-        );
+        final ListIterator<Closeable> descendingIterator = closeables.listIterator(closeables.size());
+        while (descendingIterator.hasPrevious()) {
+            final Closeable closeable = descendingIterator.previous();
+            closeable.close()
+                    .ifPresent(exceptions::add);
+        }
     }
 
     @Override

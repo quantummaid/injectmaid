@@ -146,14 +146,14 @@ public final class CloseSpecs {
                 .withLifecycleManagement()
                 .build();
         final AutoclosableWithDependency instance = injectMaid.getInstance(AutoclosableWithDependency.class);
-        instance.autoclosableType.fail = true;
+        instance.dependency.fail = true;
         final Exception exception = catchException(injectMaid::close);
         assertThat(exception.getMessage(), is("exception(s) during close:\n" +
                 "AutoclosableType(closed=true, fail=true): failed to close"));
         assertThat(exception.getSuppressed().length, is(1));
         assertThat(exception.getSuppressed()[0].getMessage(), is("failed to close"));
         assertThat(instance.closed, is(true));
-        assertThat(instance.dependencyHasBeenClosedFirst, is(true));
+        assertThat(instance.dependency.closed, is(true));
     }
 
     @Test
@@ -173,11 +173,12 @@ public final class CloseSpecs {
         final Exception exception = catchException(injectMaid::close);
         assertThat(exception, instanceOf(InjectMaidException.class));
         assertThat(exception.getMessage(), is("exception(s) during close:\n" +
-                "AutoclosableType(closed=true, fail=true): failed to close\n" +
-                "NonAutoclosableType(closed=true, fail=true): failed to close"));
+                "NonAutoclosableType(closed=true, fail=true): failed to close\n" +
+                "AutoclosableType(closed=true, fail=true): failed to close"
+        ));
         assertThat(exception.getSuppressed().length, is(2));
-        assertThat(exception.getSuppressed()[0], instanceOf(UnsupportedOperationException.class));
-        assertThat(exception.getSuppressed()[1], instanceOf(IllegalArgumentException.class));
+        assertThat(exception.getSuppressed()[0], instanceOf(IllegalArgumentException.class));
+        assertThat(exception.getSuppressed()[1], instanceOf(UnsupportedOperationException.class));
 
         assertThat(instance1.closed, is(true));
         assertThat(instance2.closed, is(true));
@@ -260,7 +261,7 @@ public final class CloseSpecs {
     }
 
     @Test
-    public void dependenciesAreClosedFirst() {
+    public void dependenciesAreClosedAfterTheDependingClassIsClosed() {
         final InjectMaid injectMaid = anInjectMaid()
                 .withType(AutoclosableWithDependency.class)
                 .withLifecycleManagement()
@@ -268,7 +269,8 @@ public final class CloseSpecs {
         final AutoclosableWithDependency instance = injectMaid.getInstance(AutoclosableWithDependency.class);
         injectMaid.close();
         assertThat(instance.closed, is(true));
-        assertThat(instance.dependencyHasBeenClosedFirst, is(true));
+        assertThat(instance.dependencyHasBeenClosedFirst, is(false));
+        assertThat(instance.dependency.closed, is(true));
     }
 
     @Test
