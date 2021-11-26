@@ -46,7 +46,7 @@
             <dependency>
                 <groupId>de.quantummaid.injectmaid</groupId>
                 <artifactId>injectmaid-bom</artifactId>
-                <version>0.1.19</version>
+                <version>0.1.20</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
